@@ -42,19 +42,22 @@ export default class MainFeedScreen extends Component {
     // this.state.initially_loaded_cards = true;
     
 
-    if (!this.state.initially_loaded_cards) {
+    // if (!this.state.initially_loaded_cards) {
       console.log("inside component if");
       this.setState({Loading: true});
       // this.state.Loading = true
-      this.readFromDB(this.props.navigation);
-      this.setState({Loading: false});
-      this.state.initially_loaded_cards = true;
-      // this.setState({initially_loaded_cards: false});
-      // this.forceUpdate(); 
-      this.unsubscribe = this.props.navigation.addListener('focus', async () => {
-        this.refreshScreen();
+      await this.readFromDB(this.props.navigation).then(() => {
+        // this.makeDelay(2000).then(()=> this.setState({Loading: false}));
+        this.setState({Loading: false});
+        this.state.initially_loaded_cards = true;
+        // this.setState({initially_loaded_cards: false});
+        // this.forceUpdate(); 
+        this.unsubscribe = this.props.navigation.addListener('focus', async () => {
+          this.refreshScreen();
+        });
       });
-    }   
+      
+    // }   
   }
 
   componentWillUnmount(){
@@ -214,7 +217,7 @@ export default class MainFeedScreen extends Component {
     const db = getDatabase();
     const postRef = ref(db, 'posts/');
 
-    onValue(postRef, (snapshot) => {
+    onValue(postRef, (snapshot) =>  {
       let postItems = [];
       snapshot.forEach((child) => {
         var alreadyLikedpost = 'black';
@@ -226,7 +229,6 @@ export default class MainFeedScreen extends Component {
         if (child.val().reportedBy.includes(uid)) {
           alreadyReportedpost = 'orange';
         }
-
 
         postItems.push({
           key: child.key,
@@ -247,11 +249,9 @@ export default class MainFeedScreen extends Component {
       this.state.posts = postItems.reverse();
       // this.setState({posts: postItems.reverse()});
 
-      
-    }, {
-      onlyOnce: true,
+      this.loadPostCards(navigation); 
     });
-    await this.loadPostCards(navigation); 
+    
   }
 
   render() {
@@ -267,12 +267,12 @@ export default class MainFeedScreen extends Component {
           refreshControl={
             <RefreshControl
               refreshing={this.state.Loading}
-              onRefresh={async () => {this.refreshScreen();}}
+              onRefresh={async () => {await this.refreshScreen();}}
             />
           }
         >
           <View style={styles.container}>
-            {this.state.display.length > 0 ?
+            {(this.state.display.length > 0 && !this.state.Loading) ?
               this.state.display
               :
               <Text style={styles.generalText}>
