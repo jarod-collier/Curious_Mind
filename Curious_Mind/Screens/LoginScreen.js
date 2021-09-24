@@ -41,8 +41,8 @@ export default class LoginScreen extends Component {
   logInUser(navigation) {
     const auth = getAuth();
     // signInWithEmailAndPassword(auth, this.state.Email, this.state.Password)
-    // signInWithEmailAndPassword(auth, "collierj@mail.gvsu.edu", "Admin703")
-    signInWithEmailAndPassword(auth, "jarod.collier@yahoo.com", "User703")
+    signInWithEmailAndPassword(auth, "collierj@mail.gvsu.edu", "Admin703")
+    // signInWithEmailAndPassword(auth, "jarod.collier@yahoo.com", "User703")
       .then((userCredential) => {
         console.log("signed in");
 

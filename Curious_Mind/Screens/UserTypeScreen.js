@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   LayoutAnimation,
+  ScrollView,
 } from 'react-native';
 
 export default class UserTypeScreen extends Component {
@@ -15,27 +16,29 @@ export default class UserTypeScreen extends Component {
     LayoutAnimation.easeInEaseOut();
     return (
       <SafeAreaView style={{flex: 1}}>
-        <View style={styles.container}>
-          <View style={styles.logo}>
-            <Image source={require('../images/CM_logo02.png')} />
+        <ScrollView>
+          <View style={styles.container}>
+            <View style={styles.logo}>
+              <Image source={require('../images/CM_logo02.png')} />
+            </View>
+            <View>
+              <Text style={styles.iAmText}>Please choose{'\n'}user type</Text>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <TouchableOpacity
+                style={styles.Buttons}
+                onPress={() => this.props.navigation.navigate('Security Code')}
+              >
+                <Text style={styles.customBtnText}>Pastor</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.Buttons}
+                onPress={() => this.props.navigation.navigate('User SignUp')}>
+                <Text style={styles.customBtnText}>Normal user</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          <View>
-            <Text style={styles.iAmText}>Please choose{'\n'}user type</Text>
-          </View>
-          <View style={{flexDirection: 'row'}}>
-            <TouchableOpacity
-              style={styles.Buttons}
-              onPress={() => this.props.navigation.navigate('Security Code')}
-            >
-              <Text style={styles.customBtnText}>Pastor</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.Buttons}
-              onPress={() => this.props.navigation.navigate('User SignUp')}>
-              <Text style={styles.customBtnText}>Normal user</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }

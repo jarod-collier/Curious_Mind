@@ -17,51 +17,30 @@ import {
 
 export default class MainFeedScreen extends Component {
 
-  _isMounted = false;
-
   constructor(props) {
     super(props);
     this.state = {
       posts: [],
       display: [],
       Loading: true,
-      initially_loaded_cards: false,
     };
   }
 
   async componentDidMount(){
     
-    this._isMounted = true;
-    // this.setState({Loading: true});
-    // this.state.Loading = true;
-    // console.log("loading: " + this.state.Loading);
-    // this.readFromDB(this.props.navigation);
-    // this.state.Loading = false;
+    console.log("component did mount");
 
-    // this.setState({Loading: false});
-    // this.state.initially_loaded_cards = true;
-    
-
-    // if (!this.state.initially_loaded_cards) {
-      console.log("inside component if");
-      this.setState({Loading: true});
-      // this.state.Loading = true
-      await this.readFromDB(this.props.navigation).then(() => {
-        // this.makeDelay(2000).then(()=> this.setState({Loading: false}));
-        this.setState({Loading: false});
-        this.state.initially_loaded_cards = true;
-        // this.setState({initially_loaded_cards: false});
-        // this.forceUpdate(); 
-        this.unsubscribe = this.props.navigation.addListener('focus', async () => {
-          this.refreshScreen();
-        });
-      });
+    this.setState({Loading: true});
+    await this.readFromDB(this.props.navigation).then(() => {
+      this.makeDelay(500).then(()=> this.setState({Loading: false}));
+      // this.unsubscribe = this.props.navigation.addListener('focus', async () => {
+      //   this.refreshScreen();
+      // });
+    });
       
-    // }   
   }
 
   componentWillUnmount(){
-    this._isMounted = false;
     // this.unsubscribe();
   }
 
@@ -206,12 +185,12 @@ export default class MainFeedScreen extends Component {
     console.log("inside refresh screen");
     this.setState({Loading: true});
     // this.state.Loading = true;
-    await this.readFromDB(this.props.navigation);
-    this.makeDelay(500).then(()=> this.setState({Loading: false}));
+    await this.readFromDB(this.props.navigation).then(() => {
+      this.makeDelay(500).then(()=> this.setState({Loading: false}));
+    });
   }
 
   async readFromDB(navigation){
-    // console.log("inside read from db");
     let uid = getAuth().currentUser.uid;
 
     const db = getDatabase();
@@ -245,9 +224,7 @@ export default class MainFeedScreen extends Component {
         });
       })
 
-      // Using this.state makes the cards load right away
-      this.state.posts = postItems.reverse();
-      // this.setState({posts: postItems.reverse()});
+      this.setState({posts: postItems.reverse()});
 
       this.loadPostCards(navigation); 
     });
@@ -256,11 +233,6 @@ export default class MainFeedScreen extends Component {
 
   render() {
     LayoutAnimation.easeInEaseOut(); 
-    // if (!this.state.initially_loaded_cards) {
-    //   console.log("inside render if");
-    //   this.readFromDB(this.props.navigation);
-
-    // }
     return (
       <SafeAreaView style={{flex: 1}}>
         <ScrollView
@@ -272,7 +244,7 @@ export default class MainFeedScreen extends Component {
           }
         >
           <View style={styles.container}>
-            {(this.state.display.length > 0 && !this.state.Loading) ?
+            {(this.state.display.length > 0 || this.state.Loading) ?
               this.state.display
               :
               <Text style={styles.generalText}>

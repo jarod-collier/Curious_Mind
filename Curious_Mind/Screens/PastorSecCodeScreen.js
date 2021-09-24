@@ -14,6 +14,7 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 export default class PastorSecCodeScreen extends Component {
 
@@ -57,37 +58,39 @@ export default class PastorSecCodeScreen extends Component {
     return (
       <SafeAreaView style={{flex: 1}}>
         <ScrollView>
-          <KeyboardAvoidingView
-          style={styles.container}
-          behavior="position"
-          >
-            <View style={styles.logo}>
-              <Image source={require('../images/CM_logo02.png')} />
-            </View>
-            <View>
-              <Text style={styles.securityCodeText}>Please enter a Pastor's{"\n"}Security Code*</Text>
-            </View>
-            <View style = {{alignItems: 'center'}}>
-              <TextInput
-                style={styles.inputBox}
-                placeholder="Enter Code Here"
-                placeholderTextColor="black"
-                onChangeText={e => {this.setState({Code: e});}}
-                ref={this.clearCode}
-              />
-              <TouchableOpacity
-                style={styles.Buttons}
-                onPress={() => this.validateCode(this.props.navigation)}>
-                <Text style={styles.customBtnText}>Confirm</Text>
-              </TouchableOpacity>
-            </View>
-            <View>
-            <Text style={styles.securityCodeAsterisk}>
-                *To sign up as a pastor, you must get a security code from a pastor that already has an account.
-                {'\n\n'}Security codes can be found on the pastor's profile screen.
-              </Text>
-            </View>
-          </KeyboardAvoidingView>
+          <KeyboardAwareScrollView>
+            {/* <KeyboardAvoidingView
+            style={styles.container}
+            behavior="position"
+            > */}
+              <View style={styles.logo}>
+                <Image source={require('../images/CM_logo02.png')} />
+              </View>
+              <View>
+                <Text style={styles.securityCodeText}>Please enter a Pastor's{"\n"}Security Code*</Text>
+              </View>
+              <View style = {{alignItems: 'center'}}>
+                <TextInput
+                  style={styles.inputBox}
+                  placeholder="Enter Code Here"
+                  placeholderTextColor="black"
+                  onChangeText={e => {this.setState({Code: e});}}
+                  ref={this.clearCode}
+                />
+                <TouchableOpacity
+                  style={styles.Buttons}
+                  onPress={() => this.validateCode(this.props.navigation)}>
+                  <Text style={styles.customBtnText}>Confirm</Text>
+                </TouchableOpacity>
+              </View>
+              <View>
+              <Text style={styles.securityCodeAsterisk}>
+                  *To sign up as a pastor, you must get a security code from a pastor that already has an account.
+                  {'\n\n'}Security codes can be found on the pastor's profile screen.
+                </Text>
+              </View>
+            {/* </KeyboardAvoidingView> */}
+          </KeyboardAwareScrollView>
         </ScrollView>
       </SafeAreaView>
     );
@@ -104,6 +107,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 100,
     marginTop: 100,
     marginBottom:50,
+    alignItems: 'center',
   },
   inputBox: {
     borderBottomWidth: 1.0,
