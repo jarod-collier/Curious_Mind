@@ -2,11 +2,10 @@ import 'react-native-gesture-handler';
 import React, {Component} from 'react';
 import {Card} from 'react-native-shadow-cards';
 import {Button} from 'react-native-vector-icons/FontAwesome';
-import { getAuth } from 'firebase/auth';
-import { getDatabase, ref, onValue, update, remove} from "firebase/database";
+import {getAuth} from 'firebase/auth';
+import {getDatabase, ref, onValue, update, remove} from 'firebase/database';
 import {
   SafeAreaView,
-  StyleSheet,
   View,
   Text,
   ScrollView,
@@ -14,9 +13,9 @@ import {
   Alert,
   LayoutAnimation,
 } from 'react-native';
+import {styles} from '../assets/styles/styles';
 
 export default class MainFeedScreen extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -26,21 +25,11 @@ export default class MainFeedScreen extends Component {
     };
   }
 
-  async componentDidMount(){
-    
-    console.log("component did mount");
-
-    this.setState({Loading: true});
-    await this.readFromDB(this.props.navigation).then(() => {
-      this.makeDelay(500).then(()=> this.setState({Loading: false}));
-      // this.unsubscribe = this.props.navigation.addListener('focus', async () => {
-      //   this.refreshScreen();
-      // });
-    });
-      
+  async componentDidMount() {
+    await this.readFromDB(this.props.navigation);
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     // this.unsubscribe();
   }
 
@@ -48,7 +37,7 @@ export default class MainFeedScreen extends Component {
     return new Promise(res => setTimeout(res, ms));
   }
 
-  async likePost(key){
+  async likePost(key) {
     let uid = getAuth().currentUser.uid;
     let likedBy = [];
     let likesCount;
@@ -56,157 +45,157 @@ export default class MainFeedScreen extends Component {
     const db = getDatabase();
     const postRef = ref(db, 'posts/' + key);
 
-    onValue(postRef, (snapshot) => {
+    onValue(postRef, snapshot => {
       likedBy = snapshot.val().likedBy;
       likesCount = snapshot.val().likes;
     });
-    
-    if(!likedBy.includes(uid)){
+
+    if (!likedBy.includes(uid)) {
       likedBy.push(uid);
 
       const updates = {};
       updates['/posts/' + key + '/likedBy'] = likedBy;
       updates['/posts/' + key + '/likes'] = likesCount + 1;
-        
+
       update(ref(db), updates);
       this.refreshScreen();
-    }else{
+    } else {
       Alert.alert('This post has already been liked.');
     }
   }
 
-  async reportPost(key){
+  async reportPost(key) {
     let uid = getAuth().currentUser.uid;
     let reportedBy = [];
     let reportCount;
-    let incAmount = 1; 
+    let incAmount = 1;
     let pastorReportWeight = 5;
     const db = getDatabase();
     const reportPostRef = ref(db, 'posts/' + key);
     const userInfoRef = ref(db, 'userInfo/' + uid);
 
-    onValue(userInfoRef, (userInfo_snapshot) => {
-      if (userInfo_snapshot.val().userType === 'pastor'){
+    onValue(userInfoRef, userInfo_snapshot => {
+      if (userInfo_snapshot.val().userType === 'pastor') {
         incAmount = pastorReportWeight;
-      } 
-      onValue(reportPostRef, (report_snapshot) => {
+      }
+      onValue(reportPostRef, report_snapshot => {
         reportedBy = report_snapshot.val().reportedBy;
         reportCount = report_snapshot.val().reports;
 
-        if(!reportedBy.includes(uid)){
-          Alert.alert('Report Post', 'Are you sure you want to report this post?',
+        if (!reportedBy.includes(uid)) {
+          Alert.alert(
+            'Report Post',
+            'Are you sure you want to report this post?',
             [
               {text: 'Cancel', onPress: () => {}},
-              {text: 'REPORT', onPress: async () => {
-                if((reportCount + incAmount) >= pastorReportWeight){
-                  remove(reportPostRef);
-                  this.refreshScreen();
-                  Alert.alert('Post Removed', 'The report count exceeded the limit. This post will be deleted now. Please refresh the screen.');
-                }else{
-                  reportedBy.push(uid);
-    
-                  const report_updates = {};
-                  report_updates['posts/' + key + '/reportedBy'] =  reportedBy;
-                  report_updates['posts/' + key + '/reports'] =  (reportCount + incAmount);
-                  update(ref(db), report_updates);
-    
-                  this.refreshScreen();
-                  Alert.alert('This post was reported.\nThank you.');
-                }
-              }, style: {color: 'red'}}
-            ],
-            {cancelable: true}
-          )
-        }else{
-          Alert.alert('You already reported this post.');
-        } 
-      });
-    });  
+              {
+                text: 'REPORT',
+                onPress: async () => {
+                  if (reportCount + incAmount >= pastorReportWeight) {
+                    remove(reportPostRef);
+                    this.refreshScreen();
+                    Alert.alert(
+                      'Post Removed',
+                      'The report count exceeded the limit. This post will be deleted now. Please refresh the screen.',
+                    );
+                  } else {
+                    reportedBy.push(uid);
 
-    
-    
+                    const report_updates = {};
+                    report_updates['posts/' + key + '/reportedBy'] = reportedBy;
+                    report_updates['posts/' + key + '/reports'] =
+                      reportCount + incAmount;
+                    update(ref(db), report_updates);
+
+                    this.refreshScreen();
+                    Alert.alert('This post was reported.\nThank you.');
+                  }
+                },
+                style: {color: 'red'},
+              },
+            ],
+            {cancelable: true},
+          );
+        } else {
+          Alert.alert('You already reported this post.');
+        }
+      });
+    });
   }
 
-  async loadPostCards(navigation){
-    this.state.display = this.state.posts.map(postData => {
-      return(
+  async loadPostCards(navigation) {
+    var posts = this.state.posts.map(postData => {
+      return (
         <View key={postData.key}>
           <Button
-            style={{backgroundColor: 'silver'}}
-            onPress = {()=> navigation.navigate('Thread', {ID: postData.key})}
-          >
-            <Card style={{ padding: 15, alignSelf: 'center', elevation: 3}}>
-              <Text style={{fontSize: 18, fontWeight: 'bold'}}>{postData.question}</Text>
-              <Text style={{marginTop: 3}}>{postData.desc}</Text>
-              <View style={{flexDirection: 'row', alignSelf: 'flex-end', opacity: 0.5}}>
+            style={styles.defaultBackground}
+            onPress={() => navigation.navigate('Thread', {ID: postData.key})}>
+            <Card style={styles.defualtCardStyles}>
+              <Text style={styles.cardTitle}>{postData.question}</Text>
+              <Text style={styles.cardDesc}>{postData.desc}</Text>
+              <View style={styles.cardDateAndBy}>
                 <Text>Posted</Text>
-                { !postData.anon && <Text> by: {postData.username}</Text>}
+                {!postData.anon && <Text> by: {postData.username}</Text>}
                 <Text> on {postData.date}</Text>
               </View>
-              <View style={{flexDirection:'row', alignItems: 'stretch'}}>
+              <View style={styles.row}>
                 <Button
-                  style={{backgroundColor: 'white'}}
-                  color='black'
-                  name='comment'
-                  onPress={()=> navigation.navigate('Thread', {ID: postData.key})} />
+                  style={styles.whiteBackground}
+                  color="#cac5c4"
+                  name="comment"
+                  onPress={() =>
+                    navigation.navigate('Thread', {ID: postData.key})
+                  }
+                />
                 <Button
-                  style={{backgroundColor: 'white'}}
-                  color='black'
-                  name='language'
-                  onPress={()=> Alert.alert('Translate')} />
-                <Button
-                  style={{backgroundColor: 'white'}}
-                  color= {postData.likeColor}
-                  name='thumbs-up'
+                  style={styles.whiteBackground}
+                  color={postData.likeColor}
+                  name="thumbs-up"
                   onPress={() => this.likePost(postData.key)}
-                  />
-                  {postData.likes > 0 &&
-                  <Text
-                    style={{marginTop: 9, opacity: .5, marginLeft: -10}}
-                  >{postData.likes}</Text>}
+                />
+                {postData.likes > 0 && (
+                  <Text style={styles.iconBadge}>{postData.likes}</Text>
+                )}
                 <Button
-                  style={{backgroundColor: 'white'}}
+                  style={styles.whiteBackground}
                   color={postData.reportColor}
-                  name='exclamation-triangle'
-                  onPress={async ()=> await this.reportPost(postData.key)} />
-                  {postData.reports > 0 &&
-                  <Text
-                    style={{marginTop: 9, opacity: .5, marginLeft: -10}}
-                  >{postData.reports}</Text>}
+                  name="exclamation-triangle"
+                  onPress={async () => await this.reportPost(postData.key)}
+                />
+                {postData.reports > 0 && (
+                  <Text style={styles.iconBadge}>{postData.reports}</Text>
+                )}
               </View>
             </Card>
           </Button>
         </View>
-      )
+      );
     });
+    this.setState({Loading: false, display: posts});
   }
 
-  async refreshScreen (){
-    console.log("inside refresh screen");
+  async refreshScreen() {
     this.setState({Loading: true});
-    // this.state.Loading = true;
-    await this.readFromDB(this.props.navigation).then(() => {
-      this.makeDelay(500).then(()=> this.setState({Loading: false}));
-    });
+    await this.readFromDB(this.props.navigation);
   }
 
-  async readFromDB(navigation){
+  async readFromDB(navigation) {
     let uid = getAuth().currentUser.uid;
 
     const db = getDatabase();
     const postRef = ref(db, 'posts/');
 
-    onValue(postRef, (snapshot) =>  {
+    onValue(postRef, snapshot => {
       let postItems = [];
-      snapshot.forEach((child) => {
-        var alreadyLikedpost = 'black';
-        var alreadyReportedpost = 'black';
+      snapshot.forEach(child => {
+        var alreadyLikedpost = '#cac5c4';
+        var alreadyReportedpost = '#cac5c4';
         if (child.val().likedBy.includes(uid)) {
-          alreadyLikedpost = 'blue';
+          alreadyLikedpost = '#588dea';
         }
 
         if (child.val().reportedBy.includes(uid)) {
-          alreadyReportedpost = 'orange';
+          alreadyReportedpost = '#f3b725';
         }
 
         postItems.push({
@@ -222,35 +211,39 @@ export default class MainFeedScreen extends Component {
           likeColor: alreadyLikedpost,
           reportColor: alreadyReportedpost,
         });
-      })
-
-      this.setState({posts: postItems.reverse()});
-
-      this.loadPostCards(navigation); 
+      });
+      this.state.posts = postItems.reverse();
+      this.loadPostCards(navigation);
     });
-    
   }
 
   render() {
-    LayoutAnimation.easeInEaseOut(); 
+    LayoutAnimation.easeInEaseOut();
+    console.log('render');
     return (
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={styles.safeAreaStyle}>
         <ScrollView
           refreshControl={
             <RefreshControl
               refreshing={this.state.Loading}
-              onRefresh={async () => {await this.refreshScreen();}}
+              onRefresh={async () => {
+                await this.refreshScreen();
+              }}
             />
-          }
-        >
+          }>
           <View style={styles.container}>
-            {(this.state.display.length > 0 || this.state.Loading) ?
-              this.state.display
-              :
-              <Text style={styles.generalText}>
-                No posts found. Please make a new post or try refreshing the screen.
-              </Text>
-            }
+            {!this.state.Loading ? (
+              this.state.display.length > 0 ? (
+                this.state.display
+              ) : (
+                <Text style={styles.generalText}>
+                  No posts found. Please make a new post or try refreshing the
+                  screen.
+                </Text>
+              )
+            ) : (
+              <Text style={styles.generalText}>Loading ...</Text>
+            )}
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -258,15 +251,16 @@ export default class MainFeedScreen extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  generalText: {
-    padding: 15, 
-    color: 'black', 
-    alignSelf: 'center', 
-    marginTop: 15, 
-    fontSize: 30
-  }
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#f7f2f1',
+//   },
+//   generalText: {
+//     padding: 15,
+//     color: 'black',
+//     alignSelf: 'center',
+//     marginTop: 15,
+//     fontSize: 20,
+//   },
+// });

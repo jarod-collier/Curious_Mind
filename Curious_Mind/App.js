@@ -1,14 +1,9 @@
-
 import React from 'react';
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {NavigationContainer} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
-import { Image, Text, View, StyleSheet, TouchableOpacity, Alert, SafeAreaView, StatusBar, ScrollView} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-// import {Button} from 'react-native-vector-icons/FontAwesome';
-
+import {Image, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
 import LoginScreen from './Screens/LoginScreen';
 import UserTypeScreen from './Screens/UserTypeScreen';
 import PastorSecCodeScreen from './Screens/PastorSecCodeScreen';
@@ -23,43 +18,48 @@ import ThreadScreen from './Screens/ThreadScreen';
 import ForgotPasswordScreen from './Screens/ForgotPasswordScreen';
 import ResetPasswordScreen from './Screens/ResetPasswordScreen';
 
-import { signOut, getAuth } from 'firebase/auth';
-import './Firebase/config'
+import {signOut, getAuth} from 'firebase/auth';
+import './Firebase/config';
 
-
-import { LogBox } from 'react-native';
+import {LogBox} from 'react-native';
 LogBox.ignoreLogs(['AsyncStorage', 'Require cycle']); // Ignore log notification by message
-//-------------------------- YOU ARE WELCOME XD----------------------------------------------
 
 const Tab = createBottomTabNavigator();
 
 function Main_Screen() {
-
   return (
     <Tab.Navigator
       initialRouteName="Home Tab"
       screenOptions={{
-        "tabBarActiveTintColor": 'dodgerblue',
-        "tabBarInactiveTintColor": 'black',
-        "tabBarActiveBackgroundColor": 'white',
-        "tabBarInactiveBackgroundColor": 'dodgerblue',
-        "tabBarstyle": [{
-          "display": "flex"
-          },
-          null]
-      }}
-    >
+        tabBarActiveTintColor: '#3c4498',
+        tabBarInactiveTintColor: 'black',
+        tabBarShowLabel: false,
+        tabBarActiveBackgroundColor: '#f7f2f1',
+        tabBarInactiveBackgroundColor: '#f7f2f1',
+        tabBarstyle: [
+          {display: 'flex', elevation: 0, borderTopColor: 'transparent'},
+          null,
+        ],
+      }}>
       <Tab.Screen
         name="Home Tab"
         component={Nested_Main}
         options={{
           headerShown: false,
-          tabBarLabel: "Home",
+          tabBarLabel: 'Home',
           tabBarLabelStyle: styles.tabText,
-          tabBarIcon: ({ color}) => (
-            <MaterialCommunityIcons name="home" color={color} size={30} />
-          ),
-        }} />
+          tabBarIcon: ({color, focused}) =>
+            focused ? (
+              <MaterialCommunityIcons name="home" color={color} size={30} />
+            ) : (
+              <MaterialCommunityIcons
+                name="home-outline"
+                color={color}
+                size={30}
+              />
+            ),
+        }}
+      />
       <Tab.Screen
         name="Post"
         component={NewPostScreen}
@@ -67,9 +67,20 @@ function Main_Screen() {
           tabBarLabel: 'Post',
           headerShown: false,
           tabBarLabelStyle: styles.tabText,
-          tabBarIcon: ({ color }) => ( 
-            <MaterialCommunityIcons name="chat-plus" color={color} size={30} />
-          ),
+          tabBarIcon: ({color, focused}) =>
+            focused ? (
+              <MaterialCommunityIcons
+                name="chat-plus"
+                color={color}
+                size={30}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="chat-plus-outline"
+                color={color}
+                size={30}
+              />
+            ),
         }}
       />
       <Tab.Screen
@@ -79,9 +90,20 @@ function Main_Screen() {
           tabBarLabel: 'Events',
           headerShown: false,
           tabBarLabelStyle: styles.tabText,
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="calendar-text" color={color} size={30} />
-          ),
+          tabBarIcon: ({color, focused}) =>
+            focused ? (
+              <MaterialCommunityIcons
+                name="calendar-text"
+                color={color}
+                size={30}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="calendar-text-outline"
+                color={color}
+                size={30}
+              />
+            ),
         }}
       />
       <Tab.Screen
@@ -91,46 +113,44 @@ function Main_Screen() {
           tabBarLabel: 'Profile',
           headerShown: false,
           tabBarLabelStyle: styles.tabText,
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="account" color={color} size={30} />
-          ),
+          tabBarIcon: ({color, focused}) =>
+            focused ? (
+              <MaterialCommunityIcons name="account" color={color} size={30} />
+            ) : (
+              <MaterialCommunityIcons
+                name="account-outline"
+                color={color}
+                size={30}
+              />
+            ),
         }}
       />
     </Tab.Navigator>
   );
 }
 const Nested_Stack = createStackNavigator();
-function Nested_Main(){
+function Nested_Main() {
   return (
     <Nested_Stack.Navigator
       screenOptions={{
-        headerStyle: {
-          backgroundColor: 'dodgerblue',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
-        headerTitleAlign: 'center',
-        headerStatusBarHeight: 5,
-      }}
-    >
+        headerShown: false,
+      }}>
       <Nested_Stack.Screen
         name="Main Feed"
         component={MainFeedScreen}
-        options={({ route }) => ({
-          headerShown: false
+        options={({route}) => ({
+          headerShown: false,
         })}
       />
       <Nested_Stack.Screen
         name="Thread"
         component={ThreadScreen}
-        options={({ route, navigation }) => ({
-          headerTitle: "Thread",
+        options={({route, navigation}) => ({
+          headerTitle: 'Thread',
           headerLeft: () => (
             <TouchableOpacity
               style={styles.Buttons}
-              onPress={()=> navigation.navigate("Main Feed")}>
+              onPress={() => navigation.navigate('Main Feed')}>
               <Text style={styles.customBtnText}>Back</Text>
             </TouchableOpacity>
           ),
@@ -139,12 +159,12 @@ function Nested_Main(){
       <Nested_Stack.Screen
         name="Add Event"
         component={NewEventScreen}
-        options={({ route, navigation }) => ({
-          headerTitle: "Add Event",
+        options={({route, navigation}) => ({
+          headerTitle: 'Add Event',
           headerLeft: () => (
             <TouchableOpacity
               style={styles.Buttons}
-              onPress={()=> navigation.navigate("Events")}>
+              onPress={() => navigation.navigate('Events')}>
               <Text style={styles.customBtnText}>Back</Text>
             </TouchableOpacity>
           ),
@@ -153,29 +173,32 @@ function Nested_Main(){
       <Nested_Stack.Screen
         name="Reset Password"
         component={ResetPasswordScreen}
-        options={({ route, navigation }) => ({
-          headerTitle: "Reset Password",
+        options={({route, navigation}) => ({
+          headerTitle: 'Reset Password',
           headerLeft: () => (
             <TouchableOpacity
               style={styles.Buttons}
-              onPress={()=> navigation.navigate("Profile")}>
+              onPress={() => navigation.navigate('Profile')}>
               <Text style={styles.customBtnText}>Back</Text>
             </TouchableOpacity>
           ),
         })}
       />
     </Nested_Stack.Navigator>
-  )
+  );
 }
-const delay = ms => new Promise(res=>setTimeout(res,ms));
-function signUserOut(navigation){
+const delay = ms => new Promise(res => setTimeout(res, ms));
+function signUserOut(navigation) {
   const auth = getAuth();
   signOut(auth)
-  .then(() => delay(500), navigation.reset({
-    index: 0,
-    routes: [{ name: 'Login'}],
-  }))
-  .catch(error => Alert.alert(error.message));
+    .then(
+      () => delay(500),
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Login'}],
+      }),
+    )
+    .catch(error => Alert.alert(error.message));
 }
 const Stack = createStackNavigator();
 const MyTheme = {
@@ -183,7 +206,7 @@ const MyTheme = {
   colors: {
     primary: 'orange',
     background: 'silver',
-    card: 'green',
+    card: '#f7f2f1',
     text: 'red',
     // border: 'red',
   },
@@ -194,16 +217,8 @@ function AppContainer() {
     <NavigationContainer theme={MyTheme}>
       <Stack.Navigator
         screenOptions={{
-          headerStyle: {
-            backgroundColor: 'dodgerblue',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-          headerTitleAlign: 'center',
-        }}
-      >
+          headerShown: false,
+        }}>
         {/* Do we need to add more back buttons for ios??? */}
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="User Type" component={UserTypeScreen} />
@@ -211,38 +226,39 @@ function AppContainer() {
         <Stack.Screen name="Security Code" component={PastorSecCodeScreen} />
         <Stack.Screen name="Pastor SignUp" component={PastorSignUpScreen} />
         <Stack.Screen name="User SignUp" component={UserSignUpScreen} />
-        <Stack.Screen 
-          name="Forgot Password" 
+        <Stack.Screen
+          name="Forgot Password"
           component={ForgotPasswordScreen}
-          options={({ navigation, route }) => ({
+          options={({navigation, route}) => ({
             headerLeft: () => (
               <TouchableOpacity
                 style={styles.Buttons}
-                onPress={()=> navigation.navigate("Login")}>
+                onPress={() => navigation.navigate('Login')}>
                 <Text style={styles.customBtnText}>Back</Text>
               </TouchableOpacity>
-          ),
+            ),
           })}
         />
         <Stack.Screen
           name="Home"
           component={Main_Screen}
-          options={({ navigation, route }) => ({
-            headerTitle: props => <Image source={require('./images/CM_logo02_header.png')}/>,
+          options={({navigation, route}) => ({
+            headerTitle: props => (
+              <Image source={require('./assets/images/CM_logo02.png')} />
+            ),
             headerRight: () => (
               <TouchableOpacity
                 style={styles.Buttons}
-                onPress={()=> signUserOut(navigation)}>
+                onPress={() => signUserOut(navigation)}>
                 <Text style={styles.customBtnText}>Log Out</Text>
               </TouchableOpacity>
-          ),
+            ),
           })}
         />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
 
 const styles = StyleSheet.create({
   tabText: {
@@ -251,9 +267,9 @@ const styles = StyleSheet.create({
   logoutText: {
     // fontSize: 20,
     // fontWeight: '400',
-    color: "black",
-    textAlign: "center",
-    marginHorizontal: 7
+    color: 'black',
+    textAlign: 'center',
+    marginHorizontal: 7,
   },
   Buttons: {
     shadowColor: 'rgba(0,0,0, .4)', // IOS
@@ -267,13 +283,13 @@ const styles = StyleSheet.create({
     width: 100,
     height: 30,
     marginVertical: 10,
-    margin: 10
+    margin: 10,
   },
   customBtnText: {
     fontSize: 20,
     fontWeight: '400',
-    color: "white",
-    textAlign: "center"
+    color: 'white',
+    textAlign: 'center',
   },
 });
 
