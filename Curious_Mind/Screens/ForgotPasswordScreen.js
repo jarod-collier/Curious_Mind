@@ -4,7 +4,8 @@ import React, {Component} from 'react';
 import {getAuth, sendPasswordResetEmail} from 'firebase/auth';
 import {getDatabase, ref, onValue} from 'firebase/database';
 import {Button} from 'react-native-vector-icons/FontAwesome';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+// import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {
   SafeAreaView,
   View,

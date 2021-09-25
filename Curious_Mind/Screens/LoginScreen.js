@@ -1,7 +1,9 @@
 import 'react-native-gesture-handler';
 import React, {Component} from 'react';
 import {getAuth, signOut, signInWithEmailAndPassword} from 'firebase/auth';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+// import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+
 import {
   ScrollView,
   SafeAreaView,
@@ -93,13 +95,15 @@ export default class LoginScreen extends Component {
         <ScrollView>
           <KeyboardAwareScrollView
             resetScrollToCoords={{x: 0, y: 0}}
+            enableResetScrollToCoords={false}
             contentContainerStyle={[
               styles.container,
               styles.aligItemsCenter,
               styles.marginTop35,
             ]}
             scrollEnabled={true}
-            extraHeight={100}>
+            enableOnAndroid={true}
+            keyboardShouldPersistTaps={'handled'}>
             <Image
               style={styles.logo}
               source={require('../assets/images/CM_logo02.png')}
