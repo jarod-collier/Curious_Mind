@@ -1,5 +1,5 @@
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer } from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Image, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
@@ -17,9 +17,12 @@ import NewEventScreen from './Screens/NewEventScreen';
 import ThreadScreen from './Screens/ThreadScreen';
 import ForgotPasswordScreen from './Screens/ForgotPasswordScreen';
 import ResetPasswordScreen from './Screens/ResetPasswordScreen';
+import ViewProfileScreen from './Screens/ViewProfileScreen';
 
 import {signOut, getAuth} from 'firebase/auth';
 import './Firebase/config';
+
+import {styles} from './assets/styles/styles';
 
 import {LogBox} from 'react-native';
 LogBox.ignoreLogs(['AsyncStorage', 'Require cycle']); // Ignore log notification by message
@@ -40,12 +43,18 @@ function Main_Screen() {
           {display: 'flex', elevation: 0, borderTopColor: 'transparent'},
           null,
         ],
+        headerStyle: {backgroundColor: "#f7f2f1", borderBottomWidth: 0}
       }}>
       <Tab.Screen
         name="Home Tab"
         component={Nested_Main}
         options={{
-          headerShown: false,
+          headerShown: true,
+          headerTitleAlign: 'center',
+          headerTitle: props => (
+            <Image source={require('./assets/images/CM_logo02_header.png')} />
+          ),
+   
           tabBarLabel: 'Home',
           tabBarLabelStyle: styles.tabText,
           tabBarIcon: ({color, focused}) =>
@@ -64,8 +73,11 @@ function Main_Screen() {
         name="Post"
         component={NewPostScreen}
         options={{
-          tabBarLabel: 'Post',
-          headerShown: false,
+          headerTitleAlign: 'center',
+          headerTitle: props => (
+            <Image source={require('./assets/images/CM_logo02_header.png')} />
+          ),
+          headerShown: true,
           tabBarLabelStyle: styles.tabText,
           tabBarIcon: ({color, focused}) =>
             focused ? (
@@ -87,8 +99,11 @@ function Main_Screen() {
         name="Events"
         component={EventScreen}
         options={{
-          tabBarLabel: 'Events',
-          headerShown: false,
+          headerShown: true,
+          headerTitleAlign: 'center',
+          headerTitle: props => (
+            <Image source={require('./assets/images/CM_logo02_header.png')} />
+          ),
           tabBarLabelStyle: styles.tabText,
           tabBarIcon: ({color, focused}) =>
             focused ? (
@@ -110,8 +125,18 @@ function Main_Screen() {
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarLabel: 'Profile',
-          headerShown: false,
+          headerShown: true,
+          headerTitleAlign: 'center',
+          headerTitle: props => (
+            <Image source={require('./assets/images/CM_logo02_header.png')} />
+          ),
+           headerRight: () => (
+              <TouchableOpacity
+                style={styles.logoutButtons}
+                onPress={() => signUserOut() }>
+                <Text style={styles.customBtnText}>Log Out</Text>
+              </TouchableOpacity>
+            ),
           tabBarLabelStyle: styles.tabText,
           tabBarIcon: ({color, focused}) =>
             focused ? (
@@ -132,166 +157,54 @@ const Nested_Stack = createStackNavigator();
 function Nested_Main() {
   return (
     <Nested_Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}>
-      <Nested_Stack.Screen
-        name="Main Feed"
-        component={MainFeedScreen}
-        options={({route}) => ({
-          headerShown: false,
-        })}
-      />
-      <Nested_Stack.Screen
-        name="Thread"
-        component={ThreadScreen}
-        options={({route, navigation}) => ({
-          headerTitle: 'Thread',
-          headerLeft: () => (
-            <TouchableOpacity
-              style={styles.Buttons}
-              onPress={() => navigation.navigate('Main Feed')}>
-              <Text style={styles.customBtnText}>Back</Text>
-            </TouchableOpacity>
-          ),
-        })}
-      />
-      <Nested_Stack.Screen
-        name="Add Event"
-        component={NewEventScreen}
-        options={({route, navigation}) => ({
-          headerTitle: 'Add Event',
-          headerLeft: () => (
-            <TouchableOpacity
-              style={styles.Buttons}
-              onPress={() => navigation.navigate('Events')}>
-              <Text style={styles.customBtnText}>Back</Text>
-            </TouchableOpacity>
-          ),
-        })}
-      />
-      <Nested_Stack.Screen
-        name="Reset Password"
-        component={ResetPasswordScreen}
-        options={({route, navigation}) => ({
-          headerTitle: 'Reset Password',
-          headerLeft: () => (
-            <TouchableOpacity
-              style={styles.Buttons}
-              onPress={() => navigation.navigate('Profile')}>
-              <Text style={styles.customBtnText}>Back</Text>
-            </TouchableOpacity>
-          ),
-        })}
-      />
+      screenOptions={{ headerShown: false, }}>
+      <Nested_Stack.Screen name="Main Feed" component={MainFeedScreen} />
+      <Nested_Stack.Screen name="Thread" component={ThreadScreen} />
+      <Nested_Stack.Screen name="Add Event" component={NewEventScreen} />
+      <Nested_Stack.Screen name="Reset Password" component={ResetPasswordScreen} />
     </Nested_Stack.Navigator>
   );
 }
+
 const delay = ms => new Promise(res => setTimeout(res, ms));
-function signUserOut(navigation) {
+function signUserOut() {
+  console.log("inside sing user out");
+  // const resetAction = NavigationActions.reset({
+  //   index: 0,
+  //   actions: [
+  //     NavigationActions.navigate({ routeName: 'HomeScreen'})
+  //   ] });
   const auth = getAuth();
   signOut(auth)
     .then(
       () => delay(500),
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Login'}],
-      }),
+      // this.props.navigation.dispatch(resetAction)
     )
     .catch(error => Alert.alert(error.message));
 }
 const Stack = createStackNavigator();
-const MyTheme = {
-  dark: false,
-  colors: {
-    primary: 'orange',
-    background: 'silver',
-    card: '#f7f2f1',
-    text: 'red',
-    // border: 'red',
-  },
-};
 
 function AppContainer() {
   return (
-    <NavigationContainer theme={MyTheme}>
+    <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
+          headerTitleAlign: 'center',
           headerShown: false,
         }}>
-        {/* Do we need to add more back buttons for ios??? */}
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="User Type" component={UserTypeScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}} />
+        <Stack.Screen name="User Type" component={UserTypeScreen} options= {{headerShown: false}} />
         <Stack.Screen name="Thread" component={ThreadScreen} />
-        <Stack.Screen name="Security Code" component={PastorSecCodeScreen} />
-        <Stack.Screen name="Pastor SignUp" component={PastorSignUpScreen} />
-        <Stack.Screen name="User SignUp" component={UserSignUpScreen} />
-        <Stack.Screen
-          name="Forgot Password"
-          component={ForgotPasswordScreen}
-          options={({navigation, route}) => ({
-            headerLeft: () => (
-              <TouchableOpacity
-                style={styles.Buttons}
-                onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.customBtnText}>Back</Text>
-              </TouchableOpacity>
-            ),
-          })}
-        />
-        <Stack.Screen
-          name="Home"
-          component={Main_Screen}
-          options={({navigation, route}) => ({
-            headerTitle: props => (
-              <Image source={require('./assets/images/CM_logo02.png')} />
-            ),
-            headerRight: () => (
-              <TouchableOpacity
-                style={styles.Buttons}
-                onPress={() => signUserOut(navigation)}>
-                <Text style={styles.customBtnText}>Log Out</Text>
-              </TouchableOpacity>
-            ),
-          })}
-        />
+        <Stack.Screen name="Security Code" component={PastorSecCodeScreen} options= {{headerShown: false}} />
+        <Stack.Screen name="Pastor SignUp" component={PastorSignUpScreen} options= {{headerShown: false}} />
+        <Stack.Screen name="User SignUp" component={UserSignUpScreen} options= {{headerShown: false}} />
+        <Stack.Screen name="Forgot Password" component={ForgotPasswordScreen} options= {{headerShown: false}} />
+        <Stack.Screen name="Home" component={Main_Screen} />
+        <Stack.Screen name="View Profile" component={ViewProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  tabText: {
-    fontSize: 15,
-  },
-  logoutText: {
-    // fontSize: 20,
-    // fontWeight: '400',
-    color: 'black',
-    textAlign: 'center',
-    marginHorizontal: 7,
-  },
-  Buttons: {
-    shadowColor: 'rgba(0,0,0, .4)', // IOS
-    shadowOffset: {height: 2, width: 2}, // IOS
-    shadowOpacity: 1, // IOS
-    shadowRadius: 1, //IOS
-    elevation: 4, // Android
-    backgroundColor: 'silver',
-    justifyContent: 'center',
-    borderRadius: 25,
-    width: 100,
-    height: 30,
-    marginVertical: 10,
-    margin: 10,
-  },
-  customBtnText: {
-    fontSize: 20,
-    fontWeight: '400',
-    color: 'white',
-    textAlign: 'center',
-  },
-});
 
 export default class App extends React.Component {
   render() {

@@ -63,7 +63,7 @@ export default class ForgotPasswordScreen extends Component {
     LayoutAnimation.easeInEaseOut();
     return (
       <SafeAreaView style={styles.safeAreaStyle}>
-        <View style={styles.alignSelfStart}>
+        <View style={styles.backButtonContainer}>
           <Button
             style={styles.backButton}
             color="black"

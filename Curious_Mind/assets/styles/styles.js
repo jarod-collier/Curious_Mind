@@ -58,6 +58,12 @@ export const styles = StyleSheet.create({
   backButton: {
     backgroundColor: '#f7f2f1',
     width: 50,
+    // marginLeft: 5
+  },
+  backButtonContainer:{
+    alignSelf: 'flex-start',
+    paddingLeft: 10,
+    backgroundColor: '#f7f2f1'
   },
   logo: {
     marginTop: 40,
@@ -133,6 +139,20 @@ export const styles = StyleSheet.create({
     width: 300,
     height: 40,
     marginVertical: 10,
+  },
+  logoutButtons: {
+    shadowColor: 'rgba(0,0,0, .4)', // IOS
+    shadowOffset: {height: 2, width: 2}, // IOS
+    shadowOpacity: 1, // IOS
+    shadowRadius: 1, //IOS
+    elevation: 4, // Android
+    backgroundColor: 'silver',
+    justifyContent: 'center',
+    borderRadius: 25,
+    width: 100,
+    height: 30,
+    marginVertical: 10,
+    margin: 10
   },
   userTypeButtons: {
     width: 160,
@@ -272,7 +292,7 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 10,
     marginBottom: 20,
-    marginTop: 20,
+    // marginTop: 20,
     textAlign: 'center',
   },
   profileCounters: {
@@ -282,5 +302,10 @@ export const styles = StyleSheet.create({
   profileInfoTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  logoutText: {
+    color: 'black',
+    textAlign: 'center',
+    marginHorizontal: 7,
   },
 });

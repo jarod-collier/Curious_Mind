@@ -25,7 +25,8 @@ export default class UserSignUpScreen extends Component {
       FirstName: '',
       LastName: '',
       Username: '',
-      Password: '',
+      Password1: '',
+      Password2: '',
       Email: '',
     };
     this.clearFirstName = React.createRef();
@@ -36,50 +37,73 @@ export default class UserSignUpScreen extends Component {
   }
 
   async handleSignUp(navigation) {
-    const valid = await this.checkUsername();
-    if (valid) {
+    const validUserName = await this.checkUsername();
+    if ( validUserName ) {
       let UserId;
 
       const auth = getAuth();
-      createUserWithEmailAndPassword(
-        auth,
-        this.state.Email,
-        this.state.Password,
-      )
-        .then(userCredential => {
-          // Signed in
-          console.log('successfully created user account');
-          UserId = userCredential.user.uid;
-        })
-        .catch(error => {
-          console.log('failure creating account');
-          const errorMessage = error.message;
-          console.log('error message: ' + errorMessage);
-        })
-        .then(() => {
-          const db = getDatabase();
-          set(ref(db, 'userInfo/' + UserId), {
-            First: '' + this.state.FirstName,
-            Last: '' + this.state.LastName,
-            Username: '' + this.state.Username,
-            uid: UserId,
-            postNum: 0,
-            commentNum: 0,
-            AddintionalInfo: '',
-            score: 0,
-            userType: 'user',
-            Email: this.state.Email,
-          });
-        })
-        .catch(error => {
-          console.log('failure setting data');
-        })
-        .then(() =>
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Home'}],
-          }),
-        );
+
+      // Password are not empty
+      if ( this.state.Password1 !== '' && this.state.Password2 !== '' ) {
+
+        // Passwords match
+        if (this.state.Password1 === this.state.Password2) {
+
+          // Passwords are greater than length 6
+          if (this.state.Password1.length >= 6 && this.state.Password2.length >= 6 ) {
+
+            createUserWithEmailAndPassword(auth, this.state.Email, this.state.Password1)
+            .then(userCredential => {
+              // Signed in
+              console.log('successfully created user account');
+              UserId = userCredential.user.uid;
+            })
+            .catch(error => {
+              console.log('failure creating account');
+              const errorMessage = error.message;
+              console.log('error message: ' + errorMessage);
+            })
+            .then(() => {
+              const db = getDatabase();
+              set(ref(db, 'userInfo/' + UserId), {
+                First: '' + this.state.FirstName,
+                Last: '' + this.state.LastName,
+                Username: '' + this.state.Username,
+                uid: UserId,
+                postNum: 0,
+                commentNum: 0,
+                AddintionalInfo: '',
+                score: 0,
+                userType: 'user',
+                Email: this.state.Email,
+              });
+            })
+            .catch(error => {
+              console.log('failure setting data');
+            })
+            .then(() =>
+              navigation.reset({
+                index: 0,
+                routes: [{name: 'Home'}],
+              }),
+            );
+         } 
+          else {
+            
+            //new passwords less than 6 characters
+            Alert.alert(
+              'New password needs to be at least 6 characters long',
+            );
+          }
+        } else {
+          //passwords dont match
+          Alert.alert("New passwords don't match");
+        }
+      } else {
+        //empty new password
+        Alert.alert('Please fill all fields');
+      
+      }
     }
   }
 
@@ -109,7 +133,7 @@ export default class UserSignUpScreen extends Component {
     LayoutAnimation.easeInEaseOut();
     return (
       <SafeAreaView style={styles.safeAreaStyle}>
-        <View style={styles.alignSelfStart}>
+        <View style={styles.backButtonContainer}>
           <Button
             style={styles.backButton}
             color="black"
@@ -182,6 +206,17 @@ export default class UserSignUpScreen extends Component {
               }}
               ref={this.clearPassword}
             />
+            <TextInput
+              style={[styles.inputBox, styles.width300]}
+              placeholder="Confirm Password*"
+              secureTextEntry={true}
+              placeholderTextColor="black"
+              blurOnSubmit={true}
+              onChangeText={e => {
+                this.setState({Password: e});
+              }}
+              ref={this.clearPassword}
+            />
             <View style={[styles.marginBottom30, styles.marginTop35]}>
               <TouchableOpacity
                 style={styles.Buttons}
@@ -195,67 +230,3 @@ export default class UserSignUpScreen extends Component {
     );
   }
 }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#f7f2f1',
-//     alignItems: 'center',
-//   },
-//   logo: {
-//     marginHorizontal: 100,
-//     // marginTop: 100,
-//     marginBottom: 50,
-//   },
-//   namesInput: {
-//     borderRadius: 15,
-//     borderColor: 'black',
-//     backgroundColor: 'white',
-//     borderWidth: 1,
-//     width: 150,
-//     height: 40,
-//     textAlign: 'left',
-//     marginTop: 10,
-//     margin: 10,
-//     paddingHorizontal: 10,
-//   },
-//   inputBox: {
-//     borderRadius: 15,
-//     borderColor: 'black',
-//     backgroundColor: 'white',
-//     borderWidth: 1,
-//     width: 320,
-//     height: 40,
-//     marginTop: 10,
-//     margin: 10,
-//     paddingHorizontal: 10,
-//   },
-//   Buttons: {
-//     shadowColor: 'rgba(0,0,0, .4)', // IOS
-//     shadowOffset: {height: 3, width: 3}, // IOS
-//     shadowOpacity: 1, // IOS
-//     shadowRadius: 1, //IOS
-//     elevation: 4, // Android
-//     borderWidth: 1,
-//     backgroundColor: '#3c4498',
-//     justifyContent: 'center',
-//     alignSelf: 'center',
-//     borderColor: '#3c4498',
-//     borderRadius: 25,
-//     width: 250,
-//     height: 35,
-//     marginVertical: 10,
-//   },
-//   customBtnText: {
-//     fontSize: 20,
-//     fontWeight: '400',
-//     color: 'white',
-//     textAlign: 'center',
-//   },
-//   infoHereText: {
-//     fontSize: 16,
-//     fontWeight: '400',
-//     color: 'red',
-//     textAlign: 'center',
-//   },
-// });

@@ -14,6 +14,7 @@ import {
   LayoutAnimation,
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
+import { thisTypeAnnotation } from '@babel/types';
 
 export default class MainFeedScreen extends Component {
   constructor(props) {
@@ -125,6 +126,7 @@ export default class MainFeedScreen extends Component {
 
   async loadPostCards(navigation) {
     var posts = this.state.posts.map(postData => {
+      
       return (
         <View key={postData.key}>
           <Button
@@ -135,7 +137,8 @@ export default class MainFeedScreen extends Component {
               <Text style={styles.cardDesc}>{postData.desc}</Text>
               <View style={styles.cardDateAndBy}>
                 <Text>Posted</Text>
-                {!postData.anon && <Text> by: {postData.username}</Text>}
+                {!postData.anon && 
+                <Text onPress={()=> navigation.navigate('View Profile', {uid: "" + postData.key.substring(0, 28)})}> by: {postData.username}</Text>}
                 <Text> on {postData.date}</Text>
               </View>
               <View style={styles.row}>
@@ -250,17 +253,3 @@ export default class MainFeedScreen extends Component {
     );
   }
 }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#f7f2f1',
-//   },
-//   generalText: {
-//     padding: 15,
-//     color: 'black',
-//     alignSelf: 'center',
-//     marginTop: 15,
-//     fontSize: 20,
-//   },
-// });

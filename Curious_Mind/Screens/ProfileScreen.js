@@ -9,6 +9,7 @@ import {
   LayoutAnimation,
   TouchableOpacity,
   Alert,
+  RefreshControl,
   ScrollView,
 } from 'react-native';
 // import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -16,7 +17,6 @@ import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scrol
 import {styles} from '../assets/styles/styles';
 
 export default class ProfileScreen extends Component {
-  _isMounted = false;
 
   constructor(props) {
     super(props);
@@ -43,7 +43,6 @@ export default class ProfileScreen extends Component {
   }
 
   async componentDidMount() {
-    this._isMounted = true;
     await this.getUserInfo();
     // this.unsubscribe = this.props.navigation.addListener('focus', async e => {
     //   this.setState({Loading: true});
@@ -53,7 +52,6 @@ export default class ProfileScreen extends Component {
   }
 
   componentWillUnmount() {
-    this._isMounted = false;
     // this.unsubscribe.remove();
   }
 
@@ -104,7 +102,7 @@ export default class ProfileScreen extends Component {
     let uid = getAuth().currentUser.uid;
     const db = getDatabase();
     const userInfoRef = ref(db, 'userInfo/' + uid);
-    this.setState({Loading: true});
+    // this.setState({Loading: true});
     onValue(userInfoRef, snapshot => {
       this.state.fName = snapshot.val().First;
       this.state.lName = snapshot.val().Last;
@@ -120,33 +118,44 @@ export default class ProfileScreen extends Component {
         this.state.seminary = snapshot.val().Seminary;
         this.state.pastorCode = snapshot.val().pastorCode;
       }
+      this.setState({Loading: false});
     });
-    this.setState({Loading: false});
+    
   }
 
   render() {
     LayoutAnimation.easeInEaseOut();
     return (
       <View style={styles.container}>
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.Loading}
+              onRefresh={async () => {
+                await this.refreshScreen();
+              }}
+            />
+          }>
           <KeyboardAwareScrollView
             resetScrollToCoords={{x: 0, y: 0}}
             contentContainerStyle={[styles.container, styles.marginTop25]}
             scrollEnabled={true}
             extraHeight={100}>
-            <View style={styles.profileTopView}>
+              {!this.state.Loading?(
+                <>
+                 <View style={styles.profileTopView}>
               <View style={[styles.column, styles.justifyCenter, styles.flex1]}>
                 <Text style={styles.profileTitle}>
                   {this.state.fName} {this.state.lName}
                 </Text>
                 <View style={styles.rowSpaceAround}>
-                  <Text style={[styles.profileCounters, styles.flex1]}>
+                  <Text style={[styles.profileCounters, styles.flex1, styles.italic]}>
                     Posts{'\n'}written
                   </Text>
-                  <Text style={[styles.profileCounters, styles.flex1]}>
+                  <Text style={[styles.profileCounters, styles.flex1, styles.italic]}>
                     Posts{'\n'}commented on
                   </Text>
-                  <Text style={[styles.profileCounters, styles.flex1]}>
+                  <Text style={[styles.profileCounters, styles.flex1, styles.italic]}>
                     {'\n'}Score
                   </Text>
                 </View>
@@ -323,71 +332,14 @@ export default class ProfileScreen extends Component {
                 />
               </TouchableOpacity>
             </View>
+                </>
+              ):(
+                <Text style={styles.generalText}>Loading ...</Text>
+              )}
+           
           </KeyboardAwareScrollView>
         </ScrollView>
       </View>
     );
   }
 }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#f7f2f1',
-//     paddingVertical: 15,
-//   },
-//   image: {
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     backgroundColor: '#A59F9F',
-//     width: 125,
-//     height: 125,
-//     borderRadius: 65,
-//     margin: 15,
-//   },
-//   Delete: {
-//     shadowColor: 'rgba(0,0,0, .4)', // IOS
-//     shadowOffset: {height: 3, width: 3}, // IOS
-//     shadowOpacity: 1, // IOS
-//     shadowRadius: 1, //IOS
-//     elevation: 4, // Android
-//     borderWidth: 1,
-//     backgroundColor: 'red',
-//     justifyContent: 'center',
-//     borderColor: 'red',
-//     borderRadius: 10,
-//     width: 250,
-//     marginVertical: 15,
-//     bottom: 0,
-//     alignSelf: 'center',
-//   },
-//   Buttons: {
-//     shadowColor: 'rgba(0,0,0, .4)', // IOS
-//     shadowOffset: {height: 2, width: 2}, // IOS
-//     shadowOpacity: 1, // IOS
-//     shadowRadius: 1, //IOS
-//     elevation: 4, // Android
-//     borderWidth: 1,
-//     backgroundColor: '#B2ACAC',
-//     justifyContent: 'center',
-//     borderColor: '#B2ACAC',
-//     borderRadius: 10,
-//     height: 25,
-//     marginTop: 20,
-//     marginHorizontal: 20,
-//   },
-//   multiline: {
-//     borderRadius: 15,
-//     borderColor: 'white',
-//     borderWidth: 1,
-//     alignItems: 'stretch',
-//     height: 150,
-//     textAlign: 'left',
-//     margin: 15,
-//   },
-//   customBtnText: {
-//     color: 'black',
-//     textAlign: 'center',
-//     marginHorizontal: 7,
-//   },
-// });

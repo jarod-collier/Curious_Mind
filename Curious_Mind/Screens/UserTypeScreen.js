@@ -19,7 +19,7 @@ export default class UserTypeScreen extends Component {
       <SafeAreaView style={styles.safeAreaStyle}>
         <View style={styles.alignSelfStart}>
           <Button
-            style={styles.backButton}
+            style={styles.backButtonContainer}
             color="black"
             name="arrow-left"
             onPress={() => this.props.navigation.goBack()}
@@ -51,42 +51,3 @@ export default class UserTypeScreen extends Component {
     );
   }
 }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#f7f2f1',
-//     alignItems: 'center',
-//   },
-//   logo: {
-//     marginHorizontal: 100,
-//     // marginTop: 50,
-//     marginBottom: 50,
-//   },
-//   Buttons: {
-//     shadowColor: 'rgba(0,0,0, .4)', // IOS
-//     shadowOffset: {height: 3, width: 3}, // IOS
-//     shadowOpacity: 1, // IOS
-//     shadowRadius: 1, //IOS
-//     elevation: 4, // Android
-//     backgroundColor: '#3c4498',
-//     justifyContent: 'center',
-//     borderRadius: 25,
-//     width: 170,
-//     height: 80,
-//     margin: 10,
-//     marginTop: 50,
-//   },
-//   customBtnText: {
-//     fontSize: 28,
-//     fontWeight: '400',
-//     color: 'white',
-//     textAlign: 'center',
-//   },
-//   iAmText: {
-//     fontSize: 35,
-//     fontWeight: '400',
-//     color: 'black',
-//     textAlign: 'center',
-//   },
-// });
