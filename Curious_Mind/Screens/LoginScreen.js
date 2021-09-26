@@ -27,19 +27,6 @@ export default class LoginScreen extends Component {
     };
     this.clearEmail = React.createRef();
     this.clearPassword = React.createRef();
-
-    const auth = getAuth();
-
-    /*TODO: IF WE WANT USERS TO STAY LOGGED IN WE CAN'T DO THIS */
-    signOut(auth)
-      .then(() => {
-        console.log('signed out from opening app');
-        // Sign-out successful.
-      })
-      .catch(error => {
-        // An error happened.
-        console.log("couldn't sign out");
-      });
   }
 
   logInUser(navigation) {

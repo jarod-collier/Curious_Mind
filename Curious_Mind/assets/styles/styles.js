@@ -60,10 +60,10 @@ export const styles = StyleSheet.create({
     width: 50,
     // marginLeft: 5
   },
-  backButtonContainer:{
+  backButtonContainer: {
     alignSelf: 'flex-start',
     paddingLeft: 10,
-    backgroundColor: '#f7f2f1'
+    backgroundColor: '#f7f2f1',
   },
   logo: {
     marginTop: 40,
@@ -152,7 +152,7 @@ export const styles = StyleSheet.create({
     width: 100,
     height: 30,
     marginVertical: 10,
-    margin: 10
+    margin: 10,
   },
   userTypeButtons: {
     width: 160,

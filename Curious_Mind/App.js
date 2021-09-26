@@ -1,8 +1,8 @@
 import React from 'react';
-import {NavigationContainer } from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
-import {Image, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import {Image, Text, TouchableOpacity, Alert} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import LoginScreen from './Screens/LoginScreen';
 import UserTypeScreen from './Screens/UserTypeScreen';
@@ -29,7 +29,7 @@ LogBox.ignoreLogs(['AsyncStorage', 'Require cycle']); // Ignore log notification
 
 const Tab = createBottomTabNavigator();
 
-function Main_Screen() {
+function Main_Screen({navigation}) {
   return (
     <Tab.Navigator
       initialRouteName="Home Tab"
@@ -40,10 +40,17 @@ function Main_Screen() {
         tabBarActiveBackgroundColor: '#f7f2f1',
         tabBarInactiveBackgroundColor: '#f7f2f1',
         tabBarstyle: [
-          {display: 'flex', elevation: 0, borderTopColor: 'transparent'},
+          {
+            display: 'flex',
+            elevation: 0,
+            backgroundColor: '#f7f2f1',
+          },
           null,
         ],
-        headerStyle: {backgroundColor: "#f7f2f1", borderBottomWidth: 0}
+        headerStyle: {
+          backgroundColor: '#f7f2f1',
+          borderBottomWidth: 0,
+        },
       }}>
       <Tab.Screen
         name="Home Tab"
@@ -51,12 +58,11 @@ function Main_Screen() {
         options={{
           headerShown: true,
           headerTitleAlign: 'center',
-          headerTitle: props => (
+          headerTitle: () => (
             <Image source={require('./assets/images/CM_logo02_header.png')} />
           ),
-   
+
           tabBarLabel: 'Home',
-          tabBarLabelStyle: styles.tabText,
           tabBarIcon: ({color, focused}) =>
             focused ? (
               <MaterialCommunityIcons name="home" color={color} size={30} />
@@ -74,7 +80,7 @@ function Main_Screen() {
         component={NewPostScreen}
         options={{
           headerTitleAlign: 'center',
-          headerTitle: props => (
+          headerTitle: () => (
             <Image source={require('./assets/images/CM_logo02_header.png')} />
           ),
           headerShown: true,
@@ -101,7 +107,7 @@ function Main_Screen() {
         options={{
           headerShown: true,
           headerTitleAlign: 'center',
-          headerTitle: props => (
+          headerTitle: () => (
             <Image source={require('./assets/images/CM_logo02_header.png')} />
           ),
           tabBarLabelStyle: styles.tabText,
@@ -127,16 +133,16 @@ function Main_Screen() {
         options={{
           headerShown: true,
           headerTitleAlign: 'center',
-          headerTitle: props => (
+          headerTitle: () => (
             <Image source={require('./assets/images/CM_logo02_header.png')} />
           ),
-           headerRight: () => (
-              <TouchableOpacity
-                style={styles.logoutButtons}
-                onPress={() => signUserOut() }>
-                <Text style={styles.customBtnText}>Log Out</Text>
-              </TouchableOpacity>
-            ),
+          headerRight: props => (
+            <TouchableOpacity
+              style={styles.logoutButtons}
+              onPress={() => signUserOut(navigation)}>
+              <Text style={styles.customBtnText}>Log Out</Text>
+            </TouchableOpacity>
+          ),
           tabBarLabelStyle: styles.tabText,
           tabBarIcon: ({color, focused}) =>
             focused ? (
@@ -156,49 +162,72 @@ function Main_Screen() {
 const Nested_Stack = createStackNavigator();
 function Nested_Main() {
   return (
-    <Nested_Stack.Navigator
-      screenOptions={{ headerShown: false, }}>
+    <Nested_Stack.Navigator screenOptions={{headerShown: false}}>
       <Nested_Stack.Screen name="Main Feed" component={MainFeedScreen} />
       <Nested_Stack.Screen name="Thread" component={ThreadScreen} />
       <Nested_Stack.Screen name="Add Event" component={NewEventScreen} />
-      <Nested_Stack.Screen name="Reset Password" component={ResetPasswordScreen} />
+      <Nested_Stack.Screen
+        name="Reset Password"
+        component={ResetPasswordScreen}
+      />
     </Nested_Stack.Navigator>
   );
 }
 
-const delay = ms => new Promise(res => setTimeout(res, ms));
-function signUserOut() {
-  console.log("inside sing user out");
-  // const resetAction = NavigationActions.reset({
-  //   index: 0,
-  //   actions: [
-  //     NavigationActions.navigate({ routeName: 'HomeScreen'})
-  //   ] });
+function signUserOut(navigation) {
   const auth = getAuth();
   signOut(auth)
-    .then(
-      () => delay(500),
-      // this.props.navigation.dispatch(resetAction)
-    )
+    .then(navigation.navigate('Login'))
     .catch(error => Alert.alert(error.message));
 }
 const Stack = createStackNavigator();
 
+const MyTheme = {
+  colors: {
+    background: '#f7f2f1',
+    border: 'transparent',
+  },
+};
+
 function AppContainer() {
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={MyTheme}>
       <Stack.Navigator
         screenOptions={{
           headerTitleAlign: 'center',
           headerShown: false,
         }}>
-        <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}} />
-        <Stack.Screen name="User Type" component={UserTypeScreen} options= {{headerShown: false}} />
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="User Type"
+          component={UserTypeScreen}
+          options={{headerShown: false}}
+        />
         <Stack.Screen name="Thread" component={ThreadScreen} />
-        <Stack.Screen name="Security Code" component={PastorSecCodeScreen} options= {{headerShown: false}} />
-        <Stack.Screen name="Pastor SignUp" component={PastorSignUpScreen} options= {{headerShown: false}} />
-        <Stack.Screen name="User SignUp" component={UserSignUpScreen} options= {{headerShown: false}} />
-        <Stack.Screen name="Forgot Password" component={ForgotPasswordScreen} options= {{headerShown: false}} />
+        <Stack.Screen
+          name="Security Code"
+          component={PastorSecCodeScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Pastor SignUp"
+          component={PastorSignUpScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="User SignUp"
+          component={UserSignUpScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Forgot Password"
+          component={ForgotPasswordScreen}
+          options={{headerShown: false}}
+        />
         <Stack.Screen name="Home" component={Main_Screen} />
         <Stack.Screen name="View Profile" component={ViewProfileScreen} />
       </Stack.Navigator>
