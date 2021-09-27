@@ -14,6 +14,9 @@ export const styles = StyleSheet.create({
     backgroundColor: 'red',
     borderColor: 'red',
   },
+  blueText: {
+    color: 'blue',
+  },
   flex1: {
     flex: 1,
   },

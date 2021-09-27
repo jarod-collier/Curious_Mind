@@ -155,7 +155,6 @@ function Nested_Main({navigation}) {
             name="arrow-left"
             onPress={() => navigation.goBack()}
           />
-          // <MaterialCommunityIcons name="arrow-left" color="black" size={30} />
         ),
         headerBackTitle: '',
       }}>
