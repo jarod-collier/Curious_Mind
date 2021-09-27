@@ -46,6 +46,9 @@ export const styles = StyleSheet.create({
   justifyCenter: {
     justifyContent: 'center',
   },
+  textCenter: {
+    textAlign: 'center',
+  },
   marginTop35: {
     marginTop: 35,
   },
@@ -91,7 +94,6 @@ export const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderWidth: 1,
     height: 40,
-    textAlign: 'center',
     padding: 8,
     marginVertical: 10,
     margin: 10,

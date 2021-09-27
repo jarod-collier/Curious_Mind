@@ -1,9 +1,7 @@
 import 'react-native-gesture-handler';
 import React, {Component} from 'react';
-import {getAuth, signOut, signInWithEmailAndPassword} from 'firebase/auth';
-// import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
-
+import {logInUser} from '../logic/DbLogic';
 import {
   ScrollView,
   SafeAreaView,
@@ -12,10 +10,8 @@ import {
   LayoutAnimation,
   TouchableOpacity,
   Image,
-  Alert,
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
-// import {ScrollView} from 'react-native-gesture-handler';
 
 export default class LoginScreen extends Component {
   constructor(props) {
@@ -27,52 +23,6 @@ export default class LoginScreen extends Component {
     };
     this.clearEmail = React.createRef();
     this.clearPassword = React.createRef();
-  }
-
-  logInUser(navigation) {
-    const auth = getAuth();
-    // signInWithEmailAndPassword(auth, this.state.Email, this.state.Password)
-    signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin703')
-      // signInWithEmailAndPassword(auth, "jarod.collier@yahoo.com", "User703")
-      .then(userCredential => {
-        console.log('signed in');
-
-        this.setState({Email: '', Password: ''});
-        //navigate to Main screen
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Home'}],
-        });
-      })
-      .catch(error => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-
-        console.log('error code:');
-        console.log(errorCode);
-        //user doesn't exist
-        if (errorCode === 'auth/user-not-found') {
-          Alert.alert('Incorrect username or password. \nPlease try again');
-        } else if (errorCode === 'auth/invalid-email') {
-          Alert.alert(
-            'Invalid email',
-            'Please enter a correct email. You entered: "' +
-              this.state.Email +
-              '"',
-          );
-        } else if (errorCode === 'auth/wrong-password') {
-          Alert.alert(
-            'Invalid Entry',
-            "Invalid email-password combination. If you're seeing this error, " +
-              'it is likely that the password entered does not match the email you provided, but the email does exist in ' +
-              ' our database.\n\nPlease try again.',
-          );
-        } else if (this.state.Password === '') {
-          Alert.alert('Please enter a password.');
-        } else {
-          Alert.alert(errorCode + ': ' + errorMessage);
-        }
-      });
   }
 
   render() {
@@ -117,7 +67,16 @@ export default class LoginScreen extends Component {
             />
             <TouchableOpacity
               style={styles.Buttons}
-              onPress={async () => this.logInUser(this.props.navigation)}>
+              onPress={async () =>
+                logInUser(this.state.Email, this.state.Password).then(() => {
+                  this.setState({Email: '', Password: ''});
+                  //navigate to Main screen
+                  this.props.navigation.reset({
+                    index: 0,
+                    routes: [{name: 'Home'}],
+                  });
+                })
+              }>
               <Text style={styles.customBtnText}>Log In</Text>
             </TouchableOpacity>
             <TouchableOpacity

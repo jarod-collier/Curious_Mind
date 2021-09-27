@@ -1,79 +1,173 @@
-import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
-import {getDatabase, ref, set, onValue} from 'firebase/database';
+import {styles} from '../assets/styles/styles';
+import {View, Text, TouchableOpacity} from 'react-native';
+import {Button} from 'react-native-vector-icons/FontAwesome';
+import {likePost, reportPost, reportComment} from './DbLogic';
+import React from 'react';
+import {Card} from 'react-native-shadow-cards';
+import * as AddCalendarEvent from 'react-native-add-calendar-event';
 
+export const loadPostCards = async (posts, MainFeedView, navigation) => {
+  console.log(MainFeedView);
+  return posts.map(postData => {
+    return (
+      <View key={postData.key}>
+        <Button
+          style={styles.defaultBackground}
+          onPress={() => navigation.navigate('Thread', {ID: postData.key})}>
+          <Card style={styles.defualtCardStyles}>
+            <Text style={styles.cardTitle}>{postData.question}</Text>
+            <Text style={styles.cardDesc}>{postData.desc}</Text>
+            <View style={styles.cardDateAndBy}>
+              <Text>Posted{!postData.anon ? ' by: ' : ' '}</Text>
+              {!postData.anon && (
+                <Text
+                  style={styles.blueText}
+                  onPress={() =>
+                    navigation.navigate('View Profile', {
+                      uid: '' + postData.key.substring(0, 28),
+                    })
+                  }>
+                  {postData.username}
+                </Text>
+              )}
+              <Text> on {postData.date}</Text>
+            </View>
+            <View style={styles.row}>
+              {MainFeedView && (
+                <Button
+                  style={styles.whiteBackground}
+                  color="#cac5c4"
+                  name="comment"
+                  onPress={() =>
+                    navigation.navigate('Thread', {ID: postData.key})
+                  }
+                />
+              )}
+              <Button
+                style={styles.whiteBackground}
+                color={postData.likeColor}
+                name="thumbs-up"
+                onPress={() =>
+                  likePost(postData.key).then(() => this.refreshScreen)
+                }
+              />
+              {postData.likes > 0 && (
+                <Text style={styles.iconBadge}>{postData.likes}</Text>
+              )}
+              <Button
+                style={styles.whiteBackground}
+                color={postData.reportColor}
+                name="exclamation-triangle"
+                onPress={() =>
+                  reportPost(postData.key).then(() => this.refreshScreen())
+                }
+              />
+              {postData.reports > 0 && (
+                <Text style={styles.iconBadge}>{postData.reports}</Text>
+              )}
+            </View>
+          </Card>
+        </Button>
+      </View>
+    );
+  });
+};
 
-export default class Helpers {
+export const loadEventCards = async (events, navigation) => {
+  return events.map(eventData => {
+    return (
+      <View key={eventData.title} style={styles.defaultBackground}>
+        <Card style={styles.defualtCardStyles}>
+          <Text style={styles.cardTitle}>{eventData.title}</Text>
+          <Text style={styles.cardDesc}>{eventData.desc}</Text>
+          <Text>Date: {eventData.date}</Text>
+          <Text>Time: {eventData.time}</Text>
+          <Text>Where: {eventData.location}</Text>
+          <TouchableOpacity
+            style={[styles.Buttons, styles.alignSelfCenter]}
+            onPress={() =>
+              addToCalendar(
+                eventData.title,
+                eventData.date,
+                eventData.time,
+                eventData.location,
+                eventData.desc,
+              )
+            }>
+            <View style={[styles.rowCenter, styles.aligItemsCenter]}>
+              <Text style={styles.customBtnText}>Add event to calendar</Text>
+              <Button
+                style={styles.defaultButtonColor}
+                name="calendar"
+                color="white"
+              />
+            </View>
+          </TouchableOpacity>
+        </Card>
+      </View>
+    );
+  });
+};
 
-    async signUserUp () {
+export const loadCommentCards = async (postItems, commentItems) => {
+  return commentItems.map(commentData => {
+    return (
+      <View
+        key={commentData.key}
+        style={[styles.defaultBackground, styles.marginTop15]}>
+        <Card style={styles.defualtCardStyles}>
+          <Text style={styles.cardTitle}>{commentData.comment}</Text>
+          <View style={styles.cardDateAndBy}>
+            <Text
+              style={styles.blueText}
+              onPress={() =>
+                this.props.navigation.navigate('View Profile', {
+                  uid: '' + commentData.key.substring(0, 28),
+                })
+              }>
+              By: {commentData.username}
+            </Text>
+            <Text> on {commentData.date}</Text>
+          </View>
+          <View style={styles.row}>
+            <Button
+              style={styles.whiteBackground}
+              color={commentData.ReportColor}
+              name="exclamation-triangle"
+              onPress={async () =>
+                reportComment(postItems[0].key, commentData.key)
+              }
+            />
+            {commentData.ReportCount > 0 && (
+              <Text style={styles.iconBadge}>{commentData.ReportCount}</Text>
+            )}
+          </View>
+        </Card>
+      </View>
+    );
+  });
+};
 
-        const auth = getAuth();
-    
-        if ( this.state.Password1 !== '' && this.state.Password2 !== '' ) {
-            if (this.state.Password1 === this.state.Password2) {
-
-            }
-            else {
-                Alert.alert("New passwords don't match");
-            }
-        } 
-        else {
-            Alert.alert('One of the password prompts is empty.');
-        }
-    
-    }
-
-    //  // Passwords match
-    //  if (this.state.Password1 === this.state.Password2) {
-    
-    //     // Passwords are greater than length 6
-    //     if (this.state.Password1.length >= 6 && this.state.Password2.length >= 6 ) {
-
-    //     createUserWithEmailAndPassword(auth, this.state.Email, this.state.Password1)
-    //     .then(userCredential => {
-    //         // Signed in
-    //         console.log('successfully created user account');
-    //         UserId = userCredential.user.uid;
-    //     })
-    //     .catch(error => {
-    //         console.log('failure creating account');
-    //         const errorMessage = error.message;
-    //         console.log('error message: ' + errorMessage);
-    //     })
-    //     .then(() => {
-    //         const db = getDatabase();
-    //         set(ref(db, 'userInfo/' + UserId), {
-    //         First: '' + this.state.FirstName,
-    //         Last: '' + this.state.LastName,
-    //         Username: '' + this.state.Username,
-    //         uid: UserId,
-    //         postNum: 0,
-    //         commentNum: 0,
-    //         AddintionalInfo: '',
-    //         score: 0,
-    //         userType: 'user',
-    //         Email: this.state.Email,
-    //         });
-    //     })
-    //     .catch(error => {
-    //         console.log('failure setting data');
-    //     })
-    //     .then(() =>
-    //         navigation.reset({
-    //         index: 0,
-    //         routes: [{name: 'Home'}],
-    //         }),
-    //     );
-    // } 
-    //     else {
-        
-    //     //new passwords less than 6 characters
-    //     Alert.alert(
-    //         'New password needs to be at least 6 characters long',
-    //     );
-    //     }
-    // } else {
-    //     //passwords dont match
-    //     Alert.alert("New passwords don't match");
-    // }
-
-}
+export const addToCalendar = (title, date, time, location, notes) => {
+  date = date.split(' ');
+  time = time.split(' ');
+  var startDate = new Date(
+    '' +
+      date[1] +
+      ' ' +
+      date[2] +
+      ', ' +
+      date[3] +
+      ' ' +
+      time[0] +
+      ':00 ' +
+      time[1],
+  ).toISOString();
+  const eventConfig = {
+    title,
+    startDate,
+    location,
+    notes,
+  };
+  AddCalendarEvent.presentEventCreatingDialog(eventConfig);
+};

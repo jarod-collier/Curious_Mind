@@ -19,7 +19,6 @@ import ForgotPasswordScreen from './Screens/ForgotPasswordScreen';
 import ResetPasswordScreen from './Screens/ResetPasswordScreen';
 import ViewProfileScreen from './Screens/ViewProfileScreen';
 import {Button} from 'react-native-vector-icons/FontAwesome';
-
 import {signOut, getAuth} from 'firebase/auth';
 import './Firebase/config';
 
@@ -158,11 +157,7 @@ function Nested_Main({navigation}) {
         ),
         headerBackTitle: '',
       }}>
-      <Nested_Stack.Screen
-        name="Main Feed"
-        component={MainFeedScreen}
-        options={{}}
-      />
+      <Nested_Stack.Screen name="Main Feed" component={MainFeedScreen} />
       <Nested_Stack.Screen name="Thread" component={ThreadScreen} />
       <Nested_Stack.Screen name="Add Event" component={NewEventScreen} />
       <Nested_Stack.Screen

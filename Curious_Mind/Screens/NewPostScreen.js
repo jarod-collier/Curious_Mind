@@ -1,8 +1,6 @@
 import 'react-native-gesture-handler';
 import React, {Component} from 'react';
 import {CheckBox} from 'react-native-elements';
-import {getAuth} from 'firebase/auth';
-import {getDatabase, ref, set, onValue, update} from 'firebase/database';
 import {TextInput} from 'react-native-gesture-handler';
 import {
   SafeAreaView,
@@ -10,16 +8,13 @@ import {
   Text,
   TouchableOpacity,
   LayoutAnimation,
-  Alert,
   ScrollView,
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
-// import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import {createPost, updateUserPostCount} from '../logic/DbLogic';
 
 export default class ResetPasswordScreen extends Component {
-  _isMounted = false;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -32,62 +27,6 @@ export default class ResetPasswordScreen extends Component {
     };
     this.clearQuestion = React.createRef();
     this.clearDescription = React.createRef();
-  }
-
-  async updateProfile() {
-    let uid = getAuth().currentUser.uid;
-    let numberOfPosts = 0;
-
-    const db = getDatabase();
-    const userInfoRef = ref(db, 'userInfo/');
-
-    // Get the current value
-    onValue(userInfoRef, snapshot => {
-      snapshot.forEach(child => {
-        if (child.val().uid === uid) {
-          numberOfPosts = child.val().postNum;
-        }
-      });
-    });
-
-    numberOfPosts = numberOfPosts + 1;
-
-    const updates = {};
-    updates['userInfo/' + uid + '/postNum'] = numberOfPosts;
-
-    //update the value.
-    update(ref(db), updates);
-  }
-
-  async createPost() {
-    let uid = getAuth().currentUser.uid;
-
-    const db = getDatabase();
-    const userInfoRef = ref(db, 'userInfo/' + uid);
-
-    let post_question = this.state.Question;
-    let post_description = this.state.Description;
-    let post_anon = this.state.Anon;
-    let post_pastor_only = this.state.pastorOnly;
-
-    // Get the current value
-    onValue(userInfoRef, snapshot => {
-      set(ref(db, 'posts/' + uid + post_question), {
-        username: '' + snapshot.val().Username,
-        date: '' + new Date().toLocaleDateString(),
-        question: '' + post_question,
-        desc: '' + post_description,
-        likes: 0,
-        likedBy: [''],
-        reports: 0,
-        reportedBy: [''],
-        Anon: post_anon,
-        PastorOnly: post_pastor_only,
-      }).catch(error => {
-        Alert.alert('error ', error);
-      });
-      Alert.alert('Post added successfully.');
-    });
   }
 
   render() {
@@ -116,7 +55,7 @@ export default class ResetPasswordScreen extends Component {
                 Your Question
               </Text>
               <TextInput
-                style={[styles.inputBox, styles.width320]}
+                style={[styles.inputBox, styles.width320, styles.justifyStart]}
                 placeholder="Type your question here"
                 value={this.state.Question}
                 placeholderTextColor="black"
@@ -185,8 +124,8 @@ export default class ResetPasswordScreen extends Component {
               <TouchableOpacity
                 style={[styles.Buttons, styles.alignSelfCenter]}
                 onPress={async () => {
-                  await this.createPost();
-                  await this.updateProfile();
+                  await createPost(this.state);
+                  await updateUserPostCount();
                   this.setState({
                     Question: '',
                     Description: '',
@@ -204,55 +143,3 @@ export default class ResetPasswordScreen extends Component {
     );
   }
 }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#f7f2f1',
-//   },
-//   inputBox: {
-//     alignItems: 'stretch',
-//     borderRadius: 15,
-//     borderColor: 'black',
-//     backgroundColor: 'white',
-//     borderWidth: 1,
-//     textAlign: 'left',
-//     padding: 10,
-//     margin: 15,
-//   },
-//   Buttons: {
-//     shadowColor: 'rgba(0,0,0, .4)', // IOS
-//     shadowOffset: {height: 3, width: 3}, // IOS
-//     shadowOpacity: 1, // IOS
-//     shadowRadius: 1, //IOS
-//     elevation: 4, // Android
-//     borderWidth: 0,
-//     backgroundColor: '#3c4498',
-//     justifyContent: 'center',
-//     alignSelf: 'stretch',
-//     borderRadius: 15,
-//     height: 40,
-//     width: 350,
-//     marginHorizontal: 15,
-//     marginBottom: 15,
-//   },
-//   multiline: {
-//     borderRadius: 15,
-//     borderColor: 'black',
-//     backgroundColor: 'white',
-//     borderWidth: 1,
-//     alignItems: 'stretch',
-//     height: 150,
-//     textAlign: 'left',
-//     margin: 15,
-//     paddingHorizontal: 10,
-//     paddingVertical: 10,
-//     paddingTop: 15,
-//   },
-//   customBtnText: {
-//     fontSize: 20,
-//     fontWeight: '400',
-//     color: 'white',
-//     textAlign: 'center',
-//   },
-// });

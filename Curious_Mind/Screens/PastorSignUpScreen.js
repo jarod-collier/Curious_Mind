@@ -1,8 +1,5 @@
 import React, {Component} from 'react';
-// import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
-import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
-import {getDatabase, ref, set, onValue} from 'firebase/database';
 import {
   SafeAreaView,
   ScrollView,
@@ -10,13 +7,12 @@ import {
   Text,
   LayoutAnimation,
   TextInput,
-  Alert,
   TouchableOpacity,
   Image,
 } from 'react-native';
 import {Button} from 'react-native-vector-icons/FontAwesome';
 import {styles} from '../assets/styles/styles';
-
+import {handleSignUp} from '../logic/DbLogic';
 export default class PastorSignUpScreen extends Component {
   constructor(props) {
     super(props);
@@ -38,82 +34,6 @@ export default class PastorSignUpScreen extends Component {
     this.clearPreach = React.createRef();
     this.clearSeminary = React.createRef();
     this.clearAdditionalInfo = React.createRef();
-  }
-
-  async handleSignUp(navigation) {
-    const valid = await this.checkUsername();
-    if (valid) {
-      let UserId;
-
-      const auth = getAuth();
-      createUserWithEmailAndPassword(
-        auth,
-        this.state.Email,
-        this.state.Password,
-      )
-        .then(userCredential => {
-          // Signed in
-          console.log('successfully created pastor account');
-          UserId = userCredential.user.uid;
-        })
-        .catch(error => {
-          console.log('failure creating account');
-          const errorMessage = error.message;
-          console.log('error message: ' + errorMessage);
-        })
-        .then(() => {
-          const db = getDatabase();
-          set(ref(db, 'userInfo/' + UserId), {
-            First: '' + this.state.FirstName,
-            Last: '' + this.state.LastName,
-            Username: '' + this.state.Username,
-            Email: '' + this.state.Email,
-            Preach: '' + this.state.preach,
-            Seminary: '' + this.state.seminary,
-            AddintionalInfo: '' + this.state.addintionalInfo,
-            pastorCode:
-              '' +
-              (Math.random().toString(16).substring(2, 6) +
-                Math.random().toString(16).substring(2, 6)),
-            uid: UserId,
-            commentNum: 0,
-            postNum: 0,
-            score: 0,
-            userType: 'pastor',
-          });
-        })
-        .catch(error => {
-          console.log('failure setting data');
-        })
-        .then(() =>
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Home'}],
-          }),
-        );
-    }
-  }
-
-  async checkUsername() {
-    let usernames = [];
-    const db = getDatabase();
-    const dbRef = ref(db, 'userInfo/');
-    onValue(dbRef, snapshot => {
-      snapshot.forEach(child => {
-        usernames.push(child.val().Username);
-      });
-    });
-    if (usernames.includes(this.state.Username)) {
-      Alert.alert(
-        'Username Error',
-        'The username "' +
-          this.state.Username +
-          '" is already in use. Please try a different username.',
-      );
-      return false;
-    } else {
-      return true;
-    }
   }
 
   render() {
@@ -138,9 +58,7 @@ export default class PastorSignUpScreen extends Component {
               styles={styles.logo}
               source={require('../assets/images/CM_logo02.png')}
             />
-
             <Text style={styles.infoHereText}>* Denotes Required Fields</Text>
-
             <View style={styles.rowCenter}>
               <TextInput
                 style={styles.namesInput}
@@ -231,7 +149,9 @@ export default class PastorSignUpScreen extends Component {
             <View style={[styles.marginBottom30, styles.marginTop35]}>
               <TouchableOpacity
                 style={styles.Buttons}
-                onPress={() => this.handleSignUp(this.props.navigation)}>
+                onPress={() =>
+                  handleSignUp(false, this.state, this.props.navigation)
+                }>
                 <Text style={styles.customBtnText}>Sign Up</Text>
               </TouchableOpacity>
             </View>
@@ -241,79 +161,3 @@ export default class PastorSignUpScreen extends Component {
     );
   }
 }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     backgroundColor: '#f7f2f1',
-//     alignItems: 'center',
-//   },
-//   logo: {
-//     marginHorizontal: 100,
-//     // marginTop: 50,
-//     marginBottom: 10,
-//   },
-//   namesInput: {
-//     borderRadius: 15,
-//     borderColor: 'black',
-//     backgroundColor: 'white',
-//     borderWidth: 1,
-//     width: 150,
-//     height: 40,
-//     textAlign: 'left',
-//     marginTop: 10,
-//     margin: 10,
-//     paddingHorizontal: 10,
-//   },
-//   inputBox: {
-//     borderRadius: 15,
-//     borderColor: 'black',
-//     backgroundColor: 'white',
-//     borderWidth: 1,
-//     width: 320,
-//     height: 40,
-//     textAlign: 'left',
-//     marginTop: 10,
-//     margin: 10,
-//     paddingHorizontal: 10,
-//   },
-//   multiline: {
-//     borderRadius: 15,
-//     borderColor: 'black',
-//     backgroundColor: 'white',
-//     borderWidth: 1,
-//     width: 320,
-//     height: 100,
-//     textAlign: 'left',
-//     marginTop: 10,
-//     margin: 10,
-//     paddingHorizontal: 10,
-//   },
-//   Buttons: {
-//     shadowColor: 'rgba(0,0,0, .4)', // IOS
-//     shadowOffset: {height: 3, width: 3}, // IOS
-//     shadowOpacity: 1, // IOS
-//     shadowRadius: 1, //IOS
-//     elevation: 4, // Android
-//     borderWidth: 1,
-//     backgroundColor: '#3c4498',
-//     justifyContent: 'center',
-//     alignSelf: 'center',
-//     borderColor: '#3c4498',
-//     borderRadius: 25,
-//     width: 250,
-//     height: 35,
-//     marginVertical: 10,
-//   },
-//   customBtnText: {
-//     fontSize: 20,
-//     fontWeight: '400',
-//     color: 'white',
-//     textAlign: 'center',
-//   },
-//   infoHereText: {
-//     fontSize: 16,
-//     fontWeight: '400',
-//     color: 'red',
-//     textAlign: 'center',
-//   },
-// });

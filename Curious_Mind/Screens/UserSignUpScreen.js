@@ -1,9 +1,6 @@
-import 'react-native-gesture-handler';
+import 'react-native-gesture-handler'; // is this needed?
 import React, {Component} from 'react';
-// import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
-import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
-import {getDatabase, ref, set, onValue} from 'firebase/database';
 import {
   SafeAreaView,
   ScrollView,
@@ -13,10 +10,10 @@ import {
   LayoutAnimation,
   TouchableOpacity,
   Image,
-  Alert,
 } from 'react-native';
 import {Button} from 'react-native-vector-icons/FontAwesome';
 import {styles} from '../assets/styles/styles';
+import {handleSignUp} from '../logic/DbLogic';
 
 export default class UserSignUpScreen extends Component {
   constructor(props) {
@@ -36,99 +33,7 @@ export default class UserSignUpScreen extends Component {
     this.clearEmail = React.createRef();
   }
 
-  async handleSignUp(navigation) {
-    const validUserName = await this.checkUsername();
-    if ( validUserName ) {
-      let UserId;
-
-      const auth = getAuth();
-
-      // Password are not empty
-      if ( this.state.Password1 !== '' && this.state.Password2 !== '' ) {
-
-        // Passwords match
-        if (this.state.Password1 === this.state.Password2) {
-
-          // Passwords are greater than length 6
-          if (this.state.Password1.length >= 6 && this.state.Password2.length >= 6 ) {
-
-            createUserWithEmailAndPassword(auth, this.state.Email, this.state.Password1)
-            .then(userCredential => {
-              // Signed in
-              console.log('successfully created user account');
-              UserId = userCredential.user.uid;
-            })
-            .catch(error => {
-              console.log('failure creating account');
-              const errorMessage = error.message;
-              console.log('error message: ' + errorMessage);
-            })
-            .then(() => {
-              const db = getDatabase();
-              set(ref(db, 'userInfo/' + UserId), {
-                First: '' + this.state.FirstName,
-                Last: '' + this.state.LastName,
-                Username: '' + this.state.Username,
-                uid: UserId,
-                postNum: 0,
-                commentNum: 0,
-                AddintionalInfo: '',
-                score: 0,
-                userType: 'user',
-                Email: this.state.Email,
-              });
-            })
-            .catch(error => {
-              console.log('failure setting data');
-            })
-            .then(() =>
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'Home'}],
-              }),
-            );
-         } 
-          else {
-            
-            //new passwords less than 6 characters
-            Alert.alert(
-              'New password needs to be at least 6 characters long',
-            );
-          }
-        } else {
-          //passwords dont match
-          Alert.alert("New passwords don't match");
-        }
-      } else {
-        //empty new password
-        Alert.alert('Please fill all fields');
-      
-      }
-    }
-  }
-
-  async checkUsername() {
-    let usernames = [];
-    const db = getDatabase();
-    const dbRef = ref(db, 'userInfo/');
-    onValue(dbRef, snapshot => {
-      snapshot.forEach(child => {
-        usernames.push(child.val().Username);
-      });
-    });
-    if (usernames.includes(this.state.Username)) {
-      Alert.alert(
-        'Username Error',
-        'The username "' +
-          this.state.Username +
-          '" is already in use. Please try a different username.',
-      );
-      return false;
-    } else {
-      return true;
-    }
-  }
-
+  //needs a loading widget while creating account
   render() {
     LayoutAnimation.easeInEaseOut();
     return (
@@ -202,7 +107,7 @@ export default class UserSignUpScreen extends Component {
               placeholderTextColor="black"
               blurOnSubmit={true}
               onChangeText={e => {
-                this.setState({Password: e});
+                this.setState({Password1: e});
               }}
               ref={this.clearPassword}
             />
@@ -213,14 +118,16 @@ export default class UserSignUpScreen extends Component {
               placeholderTextColor="black"
               blurOnSubmit={true}
               onChangeText={e => {
-                this.setState({Password: e});
+                this.setState({Password2: e});
               }}
               ref={this.clearPassword}
             />
             <View style={[styles.marginBottom30, styles.marginTop35]}>
               <TouchableOpacity
                 style={styles.Buttons}
-                onPress={() => this.handleSignUp(this.props.navigation)}>
+                onPress={() =>
+                  handleSignUp(true, this.state, this.props.navigation)
+                }>
                 <Text style={styles.customBtnText}>Sign Up</Text>
               </TouchableOpacity>
             </View>

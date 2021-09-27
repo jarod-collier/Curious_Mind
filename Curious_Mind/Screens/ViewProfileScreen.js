@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {getDatabase, ref, onValue} from 'firebase/database';
 import {
   View,
   Text,
@@ -7,9 +6,9 @@ import {
   RefreshControl,
   ScrollView,
 } from 'react-native';
-// import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {styles} from '../assets/styles/styles';
+import {getUserInfo} from '../logic/DbLogic';
 
 export default class ViewProfileScreen extends Component {
   constructor(props) {
@@ -35,44 +34,26 @@ export default class ViewProfileScreen extends Component {
   }
 
   async componentDidMount() {
-    // this.setState({Loading: true});
-    await this.getUserInfo(this.props.route.params.uid);
-    // this.unsubscribe = this.props.navigation.addListener('focus', async e => {
-    //   this.setState({Loading: true});
-    //   await this.getUserInfo();
-    //   this.setState({Loading: false});
-    // });
+    this.getUserProfile();
   }
 
-  componentWillUnmount() {
-    // this.unsubscribe.remove();
-  }
-
-  async getUserInfo(uid) {
-    const db = getDatabase();
-    const userInfoRef = ref(db, 'userInfo/' + uid);
-    // this.setState({Loading: true});
-    onValue(userInfoRef, snapshot => {
-      this.state.fName = snapshot.val().First;
-      this.state.lName = snapshot.val().Last;
-      this.state.username = snapshot.val().Username;
-      this.state.commentNum = snapshot.val().commentNum;
-      this.state.postNum = snapshot.val().postNum;
-      this.state.score = this.state.postNum * 2 + this.state.commentNum;
-      this.state.aboutMe = snapshot.val().AddintionalInfo;
-      if (snapshot.val().userType === 'pastor') {
+  async getUserProfile() {
+    await getUserInfo({uid: this.props.route.params.uid}).then(userObj => {
+      this.state.username = userObj.username;
+      this.state.aboutMe = userObj.aboutMe;
+      this.state.fName = userObj.fName;
+      this.state.lName = userObj.lName;
+      this.state.commentNum = userObj.commentNum;
+      this.state.postNum = userObj.postNum;
+      this.state.score = userObj.score;
+      if (userObj.pastorUser) {
         this.state.pastorUser = true;
-        this.state.preach = snapshot.val().Preach;
-        this.state.seminary = snapshot.val().Seminary;
+        this.state.preach = userObj.preach;
+        this.state.seminary = userObj.seminary;
+        this.state.pastorCode = userObj.pastorCode;
       }
-
-      this.setState({Loading: false});
     });
-  }
-
-  async refreshScreen() {
-    this.setState({Loading: true});
-    await this.getUserInfo(this.props.route.params.uid);
+    this.setState({Loading: false});
   }
 
   render() {
@@ -84,7 +65,8 @@ export default class ViewProfileScreen extends Component {
             <RefreshControl
               refreshing={this.state.Loading}
               onRefresh={async () => {
-                await this.refreshScreen();
+                this.setState({Loading: true});
+                await this.getUserProfile();
               }}
             />
           }>
