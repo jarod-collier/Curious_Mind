@@ -17,9 +17,9 @@ export default class UserTypeScreen extends Component {
     LayoutAnimation.easeInEaseOut();
     return (
       <SafeAreaView style={styles.safeAreaStyle}>
-        <View style={styles.alignSelfStart}>
+        <View style={styles.backButtonContainer}>
           <Button
-            style={styles.backButtonContainer}
+            style={styles.backButton}
             color="black"
             name="arrow-left"
             onPress={() => this.props.navigation.goBack()}

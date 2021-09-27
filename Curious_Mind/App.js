@@ -18,6 +18,7 @@ import ThreadScreen from './Screens/ThreadScreen';
 import ForgotPasswordScreen from './Screens/ForgotPasswordScreen';
 import ResetPasswordScreen from './Screens/ResetPasswordScreen';
 import ViewProfileScreen from './Screens/ViewProfileScreen';
+import {Button} from 'react-native-vector-icons/FontAwesome';
 
 import {signOut, getAuth} from 'firebase/auth';
 import './Firebase/config';
@@ -39,6 +40,9 @@ function Main_Screen({navigation}) {
         tabBarShowLabel: false,
         tabBarActiveBackgroundColor: '#f7f2f1',
         tabBarInactiveBackgroundColor: '#f7f2f1',
+        headerTitle: () => (
+          <Image source={require('./assets/images/CM_logo02_header.png')} />
+        ),
         tabBarstyle: [
           {
             display: 'flex',
@@ -56,13 +60,7 @@ function Main_Screen({navigation}) {
         name="Home Tab"
         component={Nested_Main}
         options={{
-          headerShown: true,
-          headerTitleAlign: 'center',
-          headerTitle: () => (
-            <Image source={require('./assets/images/CM_logo02_header.png')} />
-          ),
-
-          tabBarLabel: 'Home',
+          headerShown: false,
           tabBarIcon: ({color, focused}) =>
             focused ? (
               <MaterialCommunityIcons name="home" color={color} size={30} />
@@ -79,12 +77,6 @@ function Main_Screen({navigation}) {
         name="Post"
         component={NewPostScreen}
         options={{
-          headerTitleAlign: 'center',
-          headerTitle: () => (
-            <Image source={require('./assets/images/CM_logo02_header.png')} />
-          ),
-          headerShown: true,
-          tabBarLabelStyle: styles.tabText,
           tabBarIcon: ({color, focused}) =>
             focused ? (
               <MaterialCommunityIcons
@@ -105,12 +97,6 @@ function Main_Screen({navigation}) {
         name="Events"
         component={EventScreen}
         options={{
-          headerShown: true,
-          headerTitleAlign: 'center',
-          headerTitle: () => (
-            <Image source={require('./assets/images/CM_logo02_header.png')} />
-          ),
-          tabBarLabelStyle: styles.tabText,
           tabBarIcon: ({color, focused}) =>
             focused ? (
               <MaterialCommunityIcons
@@ -131,11 +117,6 @@ function Main_Screen({navigation}) {
         name="Profile"
         component={ProfileScreen}
         options={{
-          headerShown: true,
-          headerTitleAlign: 'center',
-          headerTitle: () => (
-            <Image source={require('./assets/images/CM_logo02_header.png')} />
-          ),
           headerRight: props => (
             <TouchableOpacity
               style={styles.logoutButtons}
@@ -143,7 +124,6 @@ function Main_Screen({navigation}) {
               <Text style={styles.customBtnText}>Log Out</Text>
             </TouchableOpacity>
           ),
-          tabBarLabelStyle: styles.tabText,
           tabBarIcon: ({color, focused}) =>
             focused ? (
               <MaterialCommunityIcons name="account" color={color} size={30} />
@@ -162,13 +142,42 @@ function Main_Screen({navigation}) {
 const Nested_Stack = createStackNavigator();
 function Nested_Main() {
   return (
-    <Nested_Stack.Navigator screenOptions={{headerShown: false}}>
-      <Nested_Stack.Screen name="Main Feed" component={MainFeedScreen} />
+    <Nested_Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerTitle: () => (
+          <Image source={require('./assets/images/CM_logo02_header.png')} />
+        ),
+        headerBackImage: () => (
+          <Button
+            style={styles.backButton}
+            color="black"
+            name="arrow-left"
+            onPress={() => {}}
+          />
+        ),
+        headerBackTitle: '',
+      }}>
+      <Nested_Stack.Screen
+        name="Main Feed"
+        component={MainFeedScreen}
+        options={{}}
+      />
       <Nested_Stack.Screen name="Thread" component={ThreadScreen} />
       <Nested_Stack.Screen name="Add Event" component={NewEventScreen} />
       <Nested_Stack.Screen
         name="Reset Password"
         component={ResetPasswordScreen}
+      />
+      <Nested_Stack.Screen
+        name="View Profile"
+        component={ViewProfileScreen}
+        options={{
+          headerMode: 'screen',
+          headerTitle: () => (
+            <Image source={require('./assets/images/CM_logo02_header.png')} />
+          ),
+        }}
       />
     </Nested_Stack.Navigator>
   );
@@ -194,42 +203,15 @@ function AppContainer() {
     <NavigationContainer theme={MyTheme}>
       <Stack.Navigator
         screenOptions={{
-          headerTitleAlign: 'center',
           headerShown: false,
         }}>
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="User Type"
-          component={UserTypeScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen name="Thread" component={ThreadScreen} />
-        <Stack.Screen
-          name="Security Code"
-          component={PastorSecCodeScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Pastor SignUp"
-          component={PastorSignUpScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="User SignUp"
-          component={UserSignUpScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Forgot Password"
-          component={ForgotPasswordScreen}
-          options={{headerShown: false}}
-        />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="User Type" component={UserTypeScreen} />
+        <Stack.Screen name="Security Code" component={PastorSecCodeScreen} />
+        <Stack.Screen name="Pastor SignUp" component={PastorSignUpScreen} />
+        <Stack.Screen name="User SignUp" component={UserSignUpScreen} />
+        <Stack.Screen name="Forgot Password" component={ForgotPasswordScreen} />
         <Stack.Screen name="Home" component={Main_Screen} />
-        <Stack.Screen name="View Profile" component={ViewProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

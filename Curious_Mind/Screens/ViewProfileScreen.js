@@ -1,14 +1,9 @@
 import React, {Component} from 'react';
-import {Button} from 'react-native-vector-icons/FontAwesome';
-import {getAuth, deleteUser} from 'firebase/auth';
-import {getDatabase, ref, onValue, remove, update} from 'firebase/database';
+import {getDatabase, ref, onValue} from 'firebase/database';
 import {
   View,
   Text,
-  TextInput,
   LayoutAnimation,
-  TouchableOpacity,
-  Alert,
   RefreshControl,
   ScrollView,
 } from 'react-native';
@@ -17,7 +12,6 @@ import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scrol
 import {styles} from '../assets/styles/styles';
 
 export default class ViewProfileScreen extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -74,7 +68,6 @@ export default class ViewProfileScreen extends Component {
 
       this.setState({Loading: false});
     });
-    
   }
 
   async refreshScreen() {
@@ -100,108 +93,124 @@ export default class ViewProfileScreen extends Component {
             contentContainerStyle={[styles.container, styles.marginTop25]}
             scrollEnabled={true}
             extraHeight={100}>
-            <View style={styles.backButtonContainer}>
-                <Button
-                    style={styles.backButton}
-                    color="black"
-                    name="arrow-left"
-                    onPress={() => this.props.navigation.goBack()}
-                />
-            </View>
-            { !this.state.Loading ? (
+            {!this.state.Loading ? (
               <>
-              <View style={styles.profileTopView}>
-                <View style={[styles.column, styles.justifyCenter, styles.flex1]}>
-                  <Text style={styles.profileTitle}>
-                    {this.state.fName} {this.state.lName}
-                </Text>
-                <View style={styles.rowSpaceAround}>
-                  <Text style={[styles.profileCounters, styles.flex1, styles.italic]}>
-                    Posts{'\n'}written
-                  </Text>
-                  <Text style={[styles.profileCounters, styles.flex1,styles.italic]}>
-                    Posts{'\n'}commented on
-                  </Text>
-                  <Text style={[styles.profileCounters, styles.flex1, styles.italic]}>
-                    {'\n'}Score
-                  </Text>
-                </View>
-                {/*numbers line */}
-                <View style={[styles.rowSpaceAround, styles.marginTop15]}>
-                  <Text style={[styles.profileCounters, styles.flex1]}>
-                    {this.state.postNum}
-                  </Text>
-                  <Text style={[styles.profileCounters, styles.flex1]}>
-                    {this.state.commentNum}
-                  </Text>
-                  <Text style={[styles.profileCounters, styles.flex1]}>
-                    {this.state.score}
-                  </Text>
-                </View>
-              </View>
-              </View>
-              <View style={styles.flex4}>
-                {/*about me section*/}
-                <Text style={styles.profileInfoTitle}>About {this.state.fName} {this.state.lname}</Text>
-                <Text
-                  style={[
-                    styles.fontSize18,
-                    styles.marginTop25,
-                    styles.paddHorizontal20,
-                  ]}>
-                  {this.state.aboutMe}
-                </Text>
-                {/*username line*/}
-                <View
-                  style={[
-                    styles.row,
-                    styles.paddHorizontal20,
-                    styles.marginTop15,
-                    styles.aligItemsCenter,
-                  ]}>
-                    <Text style={styles.profileInfoTitle}>Username:</Text>
-                    <Text style={[styles.fontSize18, styles.marginHorizontal15]}>
-                        {this.state.username}
+                <View style={styles.profileTopView}>
+                  <View
+                    style={[styles.column, styles.justifyCenter, styles.flex1]}>
+                    <Text style={styles.profileTitle}>
+                      {this.state.fName} {this.state.lName}
                     </Text>
-                </View>
-                {this.state.pastorUser && (
-                    <View>
-                        {/* Preach line */}
-                        <View
-                            style={[
-                                styles.row,
-                                styles.paddHorizontal20,
-                                styles.marginTop15,
-                                styles.aligItemsCenter,
-                            ]}>
-                            <Text style={styles.profileInfoTitle}>Preach:</Text>
-                            <Text
-                                style={[styles.fontSize18, styles.marginHorizontal15]}>
-                                {this.state.preach}
-                            </Text>
-                        </View>
-                        {/* seminary line */}
-                        <View
-                            style={[
-                                styles.row,
-                                styles.paddHorizontal20,
-                                styles.marginTop15,
-                                styles.aligItemsCenter,
-                            ]}>
-                            <Text style={styles.profileInfoTitle}>Seminary:</Text>
-                            <Text
-                                style={[styles.fontSize18, styles.marginHorizontal15]}>
-                                {this.state.seminary}
-                            </Text>
-                        </View>
+                    <View style={styles.rowSpaceAround}>
+                      <Text
+                        style={[
+                          styles.profileCounters,
+                          styles.flex1,
+                          styles.italic,
+                        ]}>
+                        Posts{'\n'}written
+                      </Text>
+                      <Text
+                        style={[
+                          styles.profileCounters,
+                          styles.flex1,
+                          styles.italic,
+                        ]}>
+                        Posts{'\n'}commented on
+                      </Text>
+                      <Text
+                        style={[
+                          styles.profileCounters,
+                          styles.flex1,
+                          styles.italic,
+                        ]}>
+                        {'\n'}Score
+                      </Text>
                     </View>
-                )}
-                            </View></>
-            ):(
+                    {/*numbers line */}
+                    <View style={[styles.rowSpaceAround, styles.marginTop15]}>
+                      <Text style={[styles.profileCounters, styles.flex1]}>
+                        {this.state.postNum}
+                      </Text>
+                      <Text style={[styles.profileCounters, styles.flex1]}>
+                        {this.state.commentNum}
+                      </Text>
+                      <Text style={[styles.profileCounters, styles.flex1]}>
+                        {this.state.score}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.flex4}>
+                  {/*about me section*/}
+                  <Text style={styles.profileInfoTitle}>
+                    About {this.state.fName} {this.state.lname}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.fontSize18,
+                      styles.marginTop25,
+                      styles.paddHorizontal20,
+                    ]}>
+                    {this.state.aboutMe}
+                  </Text>
+                  {/*username line*/}
+                  <View
+                    style={[
+                      styles.row,
+                      styles.paddHorizontal20,
+                      styles.marginTop15,
+                      styles.aligItemsCenter,
+                    ]}>
+                    <Text style={styles.profileInfoTitle}>Username:</Text>
+                    <Text
+                      style={[styles.fontSize18, styles.marginHorizontal15]}>
+                      {this.state.username}
+                    </Text>
+                  </View>
+                  {this.state.pastorUser && (
+                    <View>
+                      {/* Preach line */}
+                      <View
+                        style={[
+                          styles.row,
+                          styles.paddHorizontal20,
+                          styles.marginTop15,
+                          styles.aligItemsCenter,
+                        ]}>
+                        <Text style={styles.profileInfoTitle}>Preach:</Text>
+                        <Text
+                          style={[
+                            styles.fontSize18,
+                            styles.marginHorizontal15,
+                          ]}>
+                          {this.state.preach}
+                        </Text>
+                      </View>
+                      {/* seminary line */}
+                      <View
+                        style={[
+                          styles.row,
+                          styles.paddHorizontal20,
+                          styles.marginTop15,
+                          styles.aligItemsCenter,
+                        ]}>
+                        <Text style={styles.profileInfoTitle}>Seminary:</Text>
+                        <Text
+                          style={[
+                            styles.fontSize18,
+                            styles.marginHorizontal15,
+                          ]}>
+                          {this.state.seminary}
+                        </Text>
+                      </View>
+                    </View>
+                  )}
+                </View>
+              </>
+            ) : (
               <Text style={styles.generalText}>Loading ...</Text>
-            )
-            }
-            
+            )}
           </KeyboardAwareScrollView>
         </ScrollView>
       </View>

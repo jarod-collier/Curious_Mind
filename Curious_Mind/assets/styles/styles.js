@@ -57,8 +57,7 @@ export const styles = StyleSheet.create({
   },
   backButton: {
     backgroundColor: '#f7f2f1',
-    width: 50,
-    // marginLeft: 5
+    paddingLeft: 10,
   },
   backButtonContainer: {
     alignSelf: 'flex-start',
