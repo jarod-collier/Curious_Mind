@@ -143,17 +143,24 @@ export default class ViewProfileScreen extends Component {
                 </View>
                 <View style={styles.flex4}>
                   {/*about me section*/}
-                  <Text style={styles.profileInfoTitle}>
-                    About {this.state.fName} {this.state.lname}
-                  </Text>
-                  <Text
+                  <View
                     style={[
-                      styles.fontSize18,
-                      styles.marginTop25,
                       styles.paddHorizontal20,
+                      styles.marginTop15,
+                      styles.aligItemsStart,
                     ]}>
-                    {this.state.aboutMe}
-                  </Text>
+                    <Text style={styles.profileInfoTitle}>
+                      About {this.state.fName} {this.state.lname}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.fontSize18,
+                        styles.marginTop10,
+                        styles.paddHorizontal20,
+                      ]}>
+                      {this.state.aboutMe}
+                    </Text>
+                  </View>
                   {/*username line*/}
                   <View
                     style={[

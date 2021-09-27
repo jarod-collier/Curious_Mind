@@ -140,7 +140,7 @@ function Main_Screen({navigation}) {
   );
 }
 const Nested_Stack = createStackNavigator();
-function Nested_Main() {
+function Nested_Main({navigation}) {
   return (
     <Nested_Stack.Navigator
       screenOptions={{
@@ -153,8 +153,9 @@ function Nested_Main() {
             style={styles.backButton}
             color="black"
             name="arrow-left"
-            onPress={() => {}}
+            onPress={() => navigation.goBack()}
           />
+          // <MaterialCommunityIcons name="arrow-left" color="black" size={30} />
         ),
         headerBackTitle: '',
       }}>
