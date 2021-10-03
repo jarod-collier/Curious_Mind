@@ -215,3 +215,51 @@ export const prepareEventsFromDB = async (snapshot, uid) => {
   });
   return eventItems.reverse();
 };
+
+export const prepareThreadScreen = async (snapshot, uid, postID) => {
+  let commentItems = [];
+  let postItems = [];
+  var alreadyLikedpost = 'black';
+  var alreadyReportedpost = 'black';
+
+  snapshot.child('comments').forEach(comment => {
+    var alreadyReportedcomment = 'black';
+
+    if (comment.val().reportedBy.includes(uid)) {
+      alreadyReportedcomment = 'red';
+    }
+
+    commentItems.push({
+      key: comment.key,
+      comment: comment.val().comment,
+      date: comment.val().date,
+      username: comment.val().username,
+      ReportColor: alreadyReportedcomment,
+      ReportCount: comment.val().reports,
+    });
+  });
+
+  if (snapshot.val().likedBy.includes(uid)) {
+    alreadyLikedpost = 'blue';
+  }
+
+  if (snapshot.val().reportedBy.includes(uid)) {
+    alreadyReportedpost = 'orange';
+  }
+
+  postItems.push({
+    key: postID,
+    question: snapshot.val().question,
+    username: snapshot.val().username,
+    date: snapshot.val().date,
+    desc: snapshot.val().desc,
+    likes: snapshot.val().likes,
+    reports: snapshot.val().reports,
+    anon: snapshot.val().Anon,
+    pastorOnly: snapshot.val().PastorOnly,
+    likeColor: alreadyLikedpost,
+    reportColor: alreadyReportedpost,
+  });
+  let posterUsername = snapshot.val().username;
+  return {postItems, commentItems, posterUsername};
+};

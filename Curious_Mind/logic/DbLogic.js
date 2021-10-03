@@ -234,58 +234,6 @@ export const reportPost = async postID => {
   });
 };
 
-export const loadThreadPostFromDB = async postID => {
-  let uid = auth.currentUser.uid;
-  let postItems = [];
-  let commentItems = [];
-  let posterUsername;
-  await get(child(ref(db), `posts/${postID}`)).then(snapshot => {
-    var alreadyLikedpost = '#cac5c4';
-    var alreadyReportedpost = '#cac5c4';
-
-    snapshot.child('comments').forEach(comment => {
-      var alreadyReportedcomment = '#cac5c4';
-
-      if (comment.val().reportedBy.includes(uid)) {
-        alreadyReportedcomment = '#cac5c4';
-      }
-
-      commentItems.push({
-        key: comment.key,
-        comment: comment.val().comment,
-        date: comment.val().date,
-        username: comment.val().username,
-        ReportColor: alreadyReportedcomment,
-        ReportCount: comment.val().reports,
-      });
-    });
-
-    if (snapshot.val().likedBy.includes(uid)) {
-      alreadyLikedpost = '#588dea';
-    }
-
-    if (snapshot.val().reportedBy.includes(uid)) {
-      alreadyReportedpost = '#f3b725';
-    }
-
-    postItems.push({
-      key: postID,
-      question: snapshot.val().question,
-      username: snapshot.val().username,
-      date: snapshot.val().date,
-      desc: snapshot.val().desc,
-      likes: snapshot.val().likes,
-      reports: snapshot.val().reports,
-      anon: snapshot.val().Anon,
-      pastorOnly: snapshot.val().PastorOnly,
-      likeColor: alreadyLikedpost,
-      reportColor: alreadyReportedpost,
-    });
-    posterUsername = snapshot.val().username;
-  });
-  return {postItems, commentItems, posterUsername};
-};
-
 export const createPost = async postObj => {
   let uid = auth.currentUser.uid;
   const userInfoRef = ref(db, 'userInfo/' + uid);

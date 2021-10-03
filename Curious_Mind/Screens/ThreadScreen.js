@@ -11,12 +11,16 @@ import {
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
 import {ScrollView} from 'react-native-gesture-handler';
+import {canComment, addCommentToPost} from '../logic/DbLogic';
+import {db} from '../logic/DbLogic';
 import {
-  canComment,
-  loadThreadPostFromDB,
-  addCommentToPost,
-} from '../logic/DbLogic';
-import {loadPostCards, loadCommentCards} from '../logic/helpers';
+  loadPostCards,
+  prepareThreadScreen,
+  loadCommentCards,
+} from '../logic/helpers';
+import {onValue, ref} from 'firebase/database';
+import {getAuth} from 'firebase/auth';
+
 export default class ThreadScreen extends Component {
   constructor(props) {
     super(props);
@@ -41,17 +45,20 @@ export default class ThreadScreen extends Component {
   }
 
   async readFromDB(postID) {
+    let uid = getAuth().currentUser.uid;
     this.setState({Loading: true});
-    await loadThreadPostFromDB(postID).then(async post => {
-      this.state.userCanComment = canComment(post.posterUsername);
-      await loadPostCards(post.postItems, false, this.props.navigation).then(
-        postCard => (this.state.display = postCard),
-      );
-      await loadCommentCards(post.postItems, post.commentItems).then(
-        commentCards => (this.state.comments = commentCards),
-      );
+    onValue(ref(db, 'posts/' + postID), async snapshot => {
+      await prepareThreadScreen(snapshot, uid, postID).then(async post => {
+        this.state.userCanComment = canComment(post.posterUsername);
+        await loadPostCards(post.postItems, false, this.props.navigation).then(
+          postCard => (this.state.display = postCard),
+        );
+        await loadCommentCards(post.postItems, post.commentItems).then(
+          commentCards => (this.state.comments = commentCards),
+        );
+      });
+      this.setState({Loading: false});
     });
-    this.setState({Loading: false});
   }
 
   render() {
