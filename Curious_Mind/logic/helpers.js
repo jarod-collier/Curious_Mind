@@ -171,3 +171,33 @@ export const addToCalendar = (title, date, time, location, notes) => {
   };
   AddCalendarEvent.presentEventCreatingDialog(eventConfig);
 };
+
+export const preparePostsFromDB = async (snapshot, uid) => {
+  let postItems = [];
+  snapshot.forEach(e => {
+    var alreadyLikedpost = '#cac5c4';
+    var alreadyReportedpost = '#cac5c4';
+    if (e.val().likedBy.includes(uid)) {
+      alreadyLikedpost = '#588dea';
+    }
+
+    if (e.val().reportedBy.includes(uid)) {
+      alreadyReportedpost = '#f3b725';
+    }
+
+    postItems.push({
+      key: e.key,
+      username: e.val().username,
+      date: e.val().date,
+      question: e.val().question,
+      likes: e.val().likes,
+      desc: e.val().desc,
+      reports: e.val().reports,
+      anon: e.val().Anon,
+      pastorOnly: e.val().PastorOnly,
+      likeColor: alreadyLikedpost,
+      reportColor: alreadyReportedpost,
+    });
+  });
+  return postItems.reverse();
+};

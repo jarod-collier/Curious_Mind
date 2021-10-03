@@ -21,8 +21,8 @@ import {
 } from 'firebase/database';
 import {Alert} from 'react-native';
 
-const db = getDatabase();
-const auth = getAuth();
+export const db = getDatabase();
+export const auth = getAuth();
 
 export const logInUser = async (email, password) => {
   // signInWithEmailAndPassword(auth, email, password)
@@ -232,39 +232,6 @@ export const reportPost = async postID => {
       }
     });
   });
-};
-
-export const loadPostsFromDB = async () => {
-  let uid = auth.currentUser.uid;
-  let postItems = [];
-  await get(child(ref(db), 'posts/')).then(snapshot => {
-    snapshot.forEach(e => {
-      var alreadyLikedpost = '#cac5c4';
-      var alreadyReportedpost = '#cac5c4';
-      if (e.val().likedBy.includes(uid)) {
-        alreadyLikedpost = '#588dea';
-      }
-
-      if (e.val().reportedBy.includes(uid)) {
-        alreadyReportedpost = '#f3b725';
-      }
-
-      postItems.push({
-        key: e.key,
-        username: e.val().username,
-        date: e.val().date,
-        question: e.val().question,
-        likes: e.val().likes,
-        desc: e.val().desc,
-        reports: e.val().reports,
-        anon: e.val().Anon,
-        pastorOnly: e.val().PastorOnly,
-        likeColor: alreadyLikedpost,
-        reportColor: alreadyReportedpost,
-      });
-    });
-  });
-  return postItems.reverse();
 };
 
 export const loadThreadPostFromDB = async postID => {

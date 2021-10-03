@@ -9,8 +9,10 @@ import {
   LayoutAnimation,
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
-import {loadPostsFromDB} from '../logic/DbLogic';
-import {loadPostCards} from '../logic/helpers';
+import {db} from '../logic/DbLogic';
+import {loadPostCards, preparePostsFromDB} from '../logic/helpers';
+import {onValue, ref} from 'firebase/database';
+import {getAuth} from 'firebase/auth';
 export default class MainFeedScreen extends Component {
   constructor(props) {
     super(props);
@@ -25,13 +27,17 @@ export default class MainFeedScreen extends Component {
   }
 
   async readFromDB() {
+    let uid = getAuth().currentUser.uid;
     this.setState({Loading: true});
-    await loadPostsFromDB().then(postsFromDB =>
-      loadPostCards(postsFromDB, true, this.props.navigation).then(
-        posts => (this.state.display = posts),
-      ),
-    );
-    this.setState({Loading: false});
+
+    onValue(ref(db, 'posts/'), async snapshot => {
+      await preparePostsFromDB(snapshot, uid).then(postsFromDB =>
+        loadPostCards(postsFromDB, true, this.props.navigation).then(
+          posts => (this.state.display = posts),
+        ),
+      );
+      this.setState({Loading: false});
+    });
   }
 
   render() {
