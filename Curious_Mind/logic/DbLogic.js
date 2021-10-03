@@ -683,36 +683,3 @@ export const updateAboutMe = async aboutmeText => {
   //update the value.
   await update(ref(db), updates);
 };
-
-export const getUserInfo = async ({uid = auth.currentUser.uid}) => {
-  // let uid = auth.currentUser.uid;
-  let userObj = {};
-  await get(child(ref(db), `userInfo/${uid}`)).then(snapshot => {
-    snapshot.val().userType === 'pastor'
-      ? (userObj = {
-          fName: snapshot.val().First,
-          lName: snapshot.val().Last,
-          email: snapshot.val().Email,
-          username: snapshot.val().Username,
-          commentNum: snapshot.val().commentNum,
-          postNum: snapshot.val().postNum,
-          score: snapshot.val().postNum * 2 + snapshot.val().commentNum,
-          aboutMe: snapshot.val().AddintionalInfo,
-          pastorUser: true,
-          preach: snapshot.val().Preach,
-          seminary: snapshot.val().Seminary,
-          pastorCode: snapshot.val().pastorCode,
-        })
-      : (userObj = {
-          fName: snapshot.val().First,
-          lName: snapshot.val().Last,
-          email: snapshot.val().Email,
-          username: snapshot.val().Username,
-          commentNum: snapshot.val().commentNum,
-          postNum: snapshot.val().postNum,
-          score: snapshot.val().postNum * 2 + snapshot.val().commentNum,
-          aboutMe: snapshot.val().AddintionalInfo,
-        });
-  });
-  return userObj;
-};

@@ -29,7 +29,7 @@ export default class EventScreen extends Component {
 
   async componentDidMount() {
     this.state.canAdd = canAddEvent();
-    await this.readFromDB(this.props.navigation);
+    await this.readFromDB();
   }
 
   async readFromDB() {

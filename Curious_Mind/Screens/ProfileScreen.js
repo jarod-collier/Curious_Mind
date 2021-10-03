@@ -11,7 +11,9 @@ import {
 } from 'react-native';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {styles} from '../assets/styles/styles';
-import {delUser, updateAboutMe, getUserInfo} from '../logic/DbLogic';
+import {delUser, updateAboutMe, db} from '../logic/DbLogic';
+import {getAuth} from 'firebase/auth';
+import {ref, onValue} from 'firebase/database';
 
 export default class ProfileScreen extends Component {
   constructor(props) {
@@ -38,23 +40,25 @@ export default class ProfileScreen extends Component {
     await this.getUserProfile();
   }
   async getUserProfile() {
-    await getUserInfo().then(userObj => {
-      this.state.username = userObj.username;
-      this.state.email = userObj.email;
-      this.state.aboutMe = userObj.aboutMe;
-      this.state.fName = userObj.fName;
-      this.state.lName = userObj.lName;
-      this.state.commentNum = userObj.commentNum;
-      this.state.postNum = userObj.postNum;
-      this.state.score = userObj.score;
-      if (userObj.pastorUser) {
+    let uid = getAuth().currentUser.uid;
+    this.setState({Loading: true});
+    onValue(ref(db, 'userInfo/' + uid), snapshot => {
+      this.state.fName = snapshot.val().First;
+      this.state.lName = snapshot.val().Last;
+      this.state.email = snapshot.val().Email;
+      this.state.username = snapshot.val().Username;
+      this.state.commentNum = snapshot.val().commentNum;
+      this.state.postNum = snapshot.val().postNum;
+      this.state.score = this.state.postNum * 2 + this.state.commentNum;
+      this.state.aboutMe = snapshot.val().AddintionalInfo;
+      if (snapshot.val().userType === 'pastor') {
         this.state.pastorUser = true;
-        this.state.preach = userObj.preach;
-        this.state.seminary = userObj.seminary;
-        this.state.pastorCode = userObj.pastorCode;
+        this.state.preach = snapshot.val().Preach;
+        this.state.seminary = snapshot.val().Seminary;
+        this.state.pastorCode = snapshot.val().pastorCode;
       }
+      this.setState({Loading: false});
     });
-    this.setState({Loading: false});
   }
 
   render() {
