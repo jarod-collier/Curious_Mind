@@ -29,7 +29,6 @@ export default class MainFeedScreen extends Component {
   async readFromDB() {
     let uid = getAuth().currentUser.uid;
     this.setState({Loading: true});
-
     onValue(ref(db, 'posts/'), async snapshot => {
       await preparePostsFromDB(snapshot, uid).then(postsFromDB =>
         loadPostCards(postsFromDB, true, this.props.navigation).then(

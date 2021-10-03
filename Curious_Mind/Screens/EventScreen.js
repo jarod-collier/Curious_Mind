@@ -11,8 +11,10 @@ import {
   LayoutAnimation,
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
-import {loadEventCards} from '../logic/helpers';
-import {loadEventsFromDB, canAddEvent} from '../logic/DbLogic';
+import {loadEventCards, prepareEventsFromDB} from '../logic/helpers';
+import {canAddEvent, db} from '../logic/DbLogic';
+import {onValue, ref} from 'firebase/database';
+import {getAuth} from 'firebase/auth';
 
 export default class EventScreen extends Component {
   constructor(props) {
@@ -31,13 +33,16 @@ export default class EventScreen extends Component {
   }
 
   async readFromDB() {
+    let uid = getAuth().currentUser.uid;
     this.setState({Loading: true});
-    await loadEventsFromDB().then(events =>
-      loadEventCards(events).then(
-        eventCards => (this.state.display = eventCards),
-      ),
-    );
-    this.setState({Loading: false});
+    onValue(ref(db, 'events/'), async snapshot => {
+      await prepareEventsFromDB(snapshot, uid).then(events =>
+        loadEventCards(events).then(
+          eventCards => (this.state.display = eventCards),
+        ),
+      );
+      this.setState({Loading: false});
+    });
   }
 
   render() {

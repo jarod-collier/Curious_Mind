@@ -201,3 +201,17 @@ export const preparePostsFromDB = async (snapshot, uid) => {
   });
   return postItems.reverse();
 };
+
+export const prepareEventsFromDB = async (snapshot, uid) => {
+  let eventItems = [];
+  snapshot.forEach(child => {
+    eventItems.push({
+      title: child.val().title,
+      desc: child.val().desc,
+      date: child.val().date,
+      time: child.val().time,
+      location: child.val().location,
+    });
+  });
+  return eventItems.reverse();
+};

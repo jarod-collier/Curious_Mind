@@ -359,22 +359,6 @@ export const observePostFromDB = () => {
   });
 };
 
-export const loadEventsFromDB = async () => {
-  let eventItems = [];
-  await get(child(ref(db), 'events/')).then(snapshot => {
-    snapshot.forEach(event => {
-      eventItems.push({
-        title: event.val().title,
-        desc: event.val().desc,
-        date: event.val().date,
-        time: event.val().time,
-        location: event.val().location,
-      });
-    });
-  });
-  return eventItems.reverse();
-};
-
 export const createEvent = async eventObj => {
   let uid = auth.currentUser.uid;
   set(ref(db, 'events/' + uid + eventObj.Title), {
