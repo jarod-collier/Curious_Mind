@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   LayoutAnimation,
+  Platform,
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
 import {createEvent} from '../logic/DbLogic';
@@ -24,8 +25,6 @@ export default class NewEventScreen extends Component {
       chosenTime: '',
       date: new Date(),
       time: new Date(),
-      showDate: false,
-      showTime: false,
     };
     this.clearTitle = React.createRef();
     this.clearDescription = React.createRef();
@@ -33,32 +32,22 @@ export default class NewEventScreen extends Component {
   }
 
   onChangeDate = (event, selectedDate) => {
-    if (event.type === 'set') {
-      let currentDate = selectedDate || this.state.date;
-      this.state.chosenDate = currentDate.toString().substring(0, 16);
-      this.setState({showDate: false});
-      this.setState({date: currentDate});
-    } else {
-      this.setState({showDate: false});
-    }
+    let currentDate = selectedDate || this.state.date;
+    this.state.chosenDate = currentDate.toString().substring(0, 16);
+    this.setState({date: currentDate});
   };
 
   onChangeTime = (event, selectedTime) => {
-    if (event.type === 'set') {
-      const currentTime = selectedTime || this.state.time;
-      let hours24 = currentTime.getHours();
-      let mins = currentTime.getMinutes();
-      if (mins < 10) {
-        mins = '0' + mins;
-      }
-      let period = hours24 > 12 ? 'PM' : 'AM';
-      let hours12 = (currentTime.getHours() + 24) % 12 || 12;
-      this.state.chosenTime = '' + hours12 + ':' + mins + ' ' + period;
-      this.setState({showTime: false});
-      this.setState({time: currentTime});
-    } else {
-      this.setState({showTime: false});
+    const currentTime = selectedTime || this.state.time;
+    let hours24 = currentTime.getHours();
+    let mins = currentTime.getMinutes();
+    if (mins < 10) {
+      mins = '0' + mins;
     }
+    let period = hours24 > 12 ? 'PM' : 'AM';
+    let hours12 = (currentTime.getHours() + 24) % 12 || 12;
+    this.state.chosenTime = '' + hours12 + ':' + mins + ' ' + period;
+    this.setState({time: currentTime});
   };
 
   render() {
@@ -120,30 +109,13 @@ export default class NewEventScreen extends Component {
                 ]}>
                 Date:
               </Text>
-              <Text
-                style={[
-                  styles.marginTop15,
-                  styles.fontSize20,
-                  styles.marginHorizontal15,
-                ]}>
-                {this.state.chosenDate}
-              </Text>
-              {this.state.showDate ? (
-                <DateTimePicker
-                  style={[styles.width120, styles.marginTop15]}
-                  value={this.state.date}
-                  mode={'date'}
-                  onChange={this.onChangeDate}
-                />
-              ) : (
-                <TouchableOpacity
-                  style={[styles.actionButtons, styles.marginTop15]}
-                  onPress={() => {
-                    this.setState({showDate: !this.state.showDate});
-                  }}>
-                  <Text style={styles.fontSize16}>Set Date</Text>
-                </TouchableOpacity>
-              )}
+              <DateTimePicker
+                style={[styles.width120, styles.marginTop15]}
+                value={this.state.date}
+                display={Platform.OS === 'ios' ? 'compact' : 'calendar'}
+                mode={'date'}
+                onChange={this.onChangeDate}
+              />
             </View>
             <View style={[styles.row, styles.aligItemsCenter]}>
               <Text
@@ -154,30 +126,13 @@ export default class NewEventScreen extends Component {
                 ]}>
                 Time:
               </Text>
-              <Text
-                style={[
-                  styles.marginTop15,
-                  styles.fontSize20,
-                  styles.marginHorizontal15,
-                ]}>
-                {this.state.chosenTime}
-              </Text>
-              {this.state.showTime ? (
-                <DateTimePicker
-                  style={[styles.width120, styles.marginTop15]}
-                  value={this.state.time}
-                  mode={'time'}
-                  onChange={this.onChangeTime}
-                />
-              ) : (
-                <TouchableOpacity
-                  style={[styles.actionButtons, styles.marginTop15]}
-                  onPress={() => {
-                    this.setState({showTime: !this.state.showTime});
-                  }}>
-                  <Text style={styles.fontSize16}>Set Time</Text>
-                </TouchableOpacity>
-              )}
+              <DateTimePicker
+                style={[styles.width120, styles.marginTop15]}
+                value={this.state.time}
+                mode={'time'}
+                display={Platform.OS === 'ios' ? 'compact' : 'clock'}
+                onChange={this.onChangeTime}
+              />
             </View>
             <Text
               style={[

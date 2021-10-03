@@ -7,7 +7,6 @@ import {Card} from 'react-native-shadow-cards';
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
 
 export const loadPostCards = async (posts, MainFeedView, navigation) => {
-  console.log(MainFeedView);
   return posts.map(postData => {
     return (
       <View key={postData.key}>
@@ -76,7 +75,9 @@ export const loadPostCards = async (posts, MainFeedView, navigation) => {
 export const loadEventCards = async (events, navigation) => {
   return events.map(eventData => {
     return (
-      <View key={eventData.title} style={styles.defaultBackground}>
+      <View
+        key={eventData.title}
+        style={[styles.defaultBackground, styles.marginBottom15]}>
         <Card style={styles.defualtCardStyles}>
           <Text style={styles.cardTitle}>{eventData.title}</Text>
           <Text style={styles.cardDesc}>{eventData.desc}</Text>

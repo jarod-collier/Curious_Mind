@@ -223,6 +223,9 @@ export const styles = StyleSheet.create({
   marginBottom30: {
     marginBottom: 30,
   },
+  marginBottom15: {
+    marginBottom: 15,
+  },
   defualtCardStyles: {
     padding: 15,
     elevation: 3,
