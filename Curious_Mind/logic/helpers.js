@@ -6,6 +6,26 @@ import React from 'react';
 import {Card} from 'react-native-shadow-cards';
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
 
+// Using strings to filter common words for readability and maintability
+// I tried to make it so each row is similar (but then I found a huge list of possible words)
+// The spacing before/after a word is used to make sure we don't match parts of a larger word
+// I am putting this up here so that we can use it on various places where a user inputs text.
+// We'll probably want to at some point add regex to account for symbols in words: f$ck
+const wordsToFilter = [
+  "fuck", "fuc", "fuk", "f u c k", "fukc", "fvck", "fxck",
+  "damn it", "damnit", "dammit", 
+  "shit", 
+  "bitch",
+  "nigger", "nigga", "chink", "gringo", " kike ", " spick ", " spic ", 
+  "cunt", "pussy", "dick", "penis", "vagina", "anal", "areola", "areole", "cock", 
+  " ass ", " asshole", "tits", "tit", "boob", "blow job", "blowjob", "bukkake", " clit",
+  "bastard", " cum ", "cumming", "slut", "dildo", "douche",
+  "dumbass", "ejaculate", "faggot", " fag ", "fellatio", "handjob", "horny", "hump",
+  "jackass", "jerkoff", " jizz ", "kinky", "masterbat", "masturbat", "orgasm", "orgies", "orgy",
+  "phallic", " pee ", " piss ", " pissed ", "pubic", "retard", "rimjob", "semen", "skank",
+  "sperm", "stfu", "tampon", " urine ", " urinal ",  
+]
+
 export const loadPostCards = async (posts, MainFeedView, navigation) => {
   return posts.map(postData => {
     return (
@@ -275,4 +295,17 @@ export const prepareThreadScreen = async (snapshot, uid, postID) => {
   });
   let posterUsername = snapshot.val().username;
   return {postItems, commentItems, posterUsername};
+};
+
+export const cleanUsersPost = async (userInput) => {
+
+  let cleanedUserInput = userInput;
+
+  wordsToFilter.forEach(badWord => {
+    // case insenstive global replace
+    let regEx = new RegExp(badWord, "ig");
+    cleanedUserInput = cleanedUserInput.replace(regEx, "*".repeat(badWord.length));
+  });
+
+  return cleanedUserInput;
 };

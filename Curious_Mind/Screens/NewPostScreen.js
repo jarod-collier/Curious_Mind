@@ -13,6 +13,7 @@ import {
 import {styles} from '../assets/styles/styles';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {createPost, updateUserPostCount} from '../logic/DbLogic';
+import {cleanUsersPost} from '../logic/helpers';
 
 export default class ResetPasswordScreen extends Component {
   constructor(props) {
@@ -124,6 +125,8 @@ export default class ResetPasswordScreen extends Component {
               <TouchableOpacity
                 style={[styles.Buttons, styles.alignSelfCenter]}
                 onPress={async () => {
+                  this.state.Question = await cleanUsersPost(this.state.Question);
+                  this.state.Description = await cleanUsersPost(this.state.Description);
                   await createPost(this.state);
                   await updateUserPostCount();
                   this.setState({

@@ -18,6 +18,7 @@ import {
   loadPostCards,
   prepareThreadScreen,
   loadCommentCards,
+  cleanUsersPost,
 } from '../logic/helpers';
 import {onValue, ref} from 'firebase/database';
 import {getAuth} from 'firebase/auth';
@@ -102,6 +103,7 @@ export default class ThreadScreen extends Component {
                 <TouchableOpacity
                   style={styles.Buttons}
                   onPress={async () => {
+                    this.state.comment = await cleanUsersPost(this.state.comment);
                     await addCommentToPost(
                       this.state.postID,
                       this.state.comment,

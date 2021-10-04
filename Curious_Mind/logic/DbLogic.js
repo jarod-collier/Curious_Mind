@@ -232,7 +232,8 @@ export const reportPost = async postID => {
 export const createPost = async postObj => {
   let uid = auth.currentUser.uid;
   await get(child(ref(db), `userInfo/${uid}`)).then(async snapshot => {
-    await set(ref(db, `posts/${uid}${postObj.Question}`), {
+    let firebaseApprovedQuestion = postObj.Question.replace(/\./g, "").replace(/\#/g, "").replace(/\$/g, "").replace(/\[/g, "").replace(/\]/g, "");
+    await set(ref(db, `posts/${uid}${firebaseApprovedQuestion}`), {
       username: snapshot.val().Username,
       date: new Date().toLocaleDateString(),
       question: postObj.Question,
