@@ -15,7 +15,6 @@ import {
   set,
   get,
   child,
-  onValue,
   update,
   remove,
 } from 'firebase/database';
@@ -175,82 +174,76 @@ export const likePost = async postID => {
 
 export const reportPost = async postID => {
   const uid = auth.currentUser.uid;
-  const userInfoRef = ref(db, 'userInfo/' + auth.currentUser.uid);
   let reportedBy = [];
   let reportCount;
   let incAmount = 1;
   let pastorReportWeight = 5;
   const reportPostRef = ref(db, 'posts/' + postID);
 
-  onValue(userInfoRef, userInfo_snapshot => {
-    if (userInfo_snapshot.val().userType === 'pastor') {
-      incAmount = pastorReportWeight;
-    }
-
-    //firebase error here
-    onValue(reportPostRef, report_snapshot => {
-      reportedBy = report_snapshot.val().reportedBy;
-      reportCount = report_snapshot.val().reports;
-
-      if (!reportedBy.includes(uid)) {
-        Alert.alert(
-          'Report Post',
-          'Are you sure you want to report this post?',
-          [
-            {text: 'Cancel', onPress: () => {}},
-            {
-              text: 'REPORT',
-              onPress: async () => {
-                if (reportCount + incAmount >= pastorReportWeight) {
-                  remove(reportPostRef);
-                  // this.refreshScreen();
-                  Alert.alert(
-                    'Post Removed',
-                    'The report count exceeded the limit. This post will be deleted now.',
-                  );
-                } else {
-                  reportedBy.push(uid);
-
-                  const report_updates = {};
-                  report_updates['posts/' + postID + '/reportedBy'] =
-                    reportedBy;
-                  report_updates['posts/' + postID + '/reports'] =
-                    reportCount + incAmount;
-                  update(ref(db), report_updates);
-
-                  // this.refreshScreen();
-                  Alert.alert('This post was reported.\nThank you.');
-                }
-              },
-              style: {color: 'red'},
-            },
-          ],
-          {cancelable: true},
-        );
-      } else {
-        Alert.alert('You already reported this post.');
+  await get(child(ref(db), `userInfo/${auth.currentUser.uid}`)).then(
+    async userInfo_snapshot => {
+      if (userInfo_snapshot.val().userType === 'pastor') {
+        incAmount = pastorReportWeight;
       }
-    });
-  });
+
+      await get(child(ref(db), `posts/${postID}`)).then(report_snapshot => {
+        reportedBy = report_snapshot.val().reportedBy;
+        reportCount = report_snapshot.val().reports;
+
+        if (!reportedBy.includes(uid)) {
+          Alert.alert(
+            'Report Post',
+            'Are you sure you want to report this post?',
+            [
+              {text: 'Cancel', onPress: () => {}},
+              {
+                text: 'REPORT',
+                onPress: async () => {
+                  if (reportCount + incAmount >= pastorReportWeight) {
+                    remove(reportPostRef);
+                    Alert.alert(
+                      'Post Removed',
+                      'The report count exceeded the limit. This post will be deleted now.',
+                    );
+                  } else {
+                    reportedBy.push(uid);
+                    const report_updates = {};
+                    report_updates['posts/' + postID + '/reportedBy'] =
+                      reportedBy;
+                    report_updates['posts/' + postID + '/reports'] =
+                      reportCount + incAmount;
+                    update(ref(db), report_updates);
+                    Alert.alert('This post was reported.\nThank you.');
+                  }
+                },
+                style: {color: 'red'},
+              },
+            ],
+            {cancelable: true},
+          );
+        } else {
+          Alert.alert('You already reported this post.');
+        }
+      });
+    },
+  );
 };
 
 export const createPost = async postObj => {
   let uid = auth.currentUser.uid;
-  const userInfoRef = ref(db, 'userInfo/' + uid);
-  // Get the current value
-  onValue(userInfoRef, snapshot => {
-    set(ref(db, 'posts/' + uid + postObj.Question), {
-      /** CAN WE REMOVE THOSE EMPTY STRINGS AT THE START? */
-      username: '' + snapshot.val().Username,
-      date: '' + new Date().toLocaleDateString(),
-      question: '' + postObj.Question,
-      desc: '' + postObj.Description,
+  await get(child(ref(db), `userInfo/${uid}`)).then(async snapshot => {
+    await set(ref(db, `posts/${uid}${postObj.Question}`), {
+      username: snapshot.val().Username,
+      date: new Date().toLocaleDateString(),
+      question: postObj.Question,
+      desc: postObj.Description,
       likes: 0,
       likedBy: [''],
       reports: 0,
       reportedBy: [''],
       Anon: postObj.Anon,
       PastorOnly: postObj.pastorOnly,
+      userType: snapshot.val().userType,
     }).catch(error => {
       Alert.alert('error ', error);
     });
@@ -268,48 +261,15 @@ export const updateUserPostCount = async () => {
   });
 
   const updates = {};
-  updates['userInfo/' + uid + '/postNum'] = numberOfPosts + 1;
+  updates[`userInfo/${uid}/postNum`] = numberOfPosts + 1;
 
   //update the value.
   update(ref(db), updates);
 };
 
-//providers should solve this issue of updating
-export const observePostFromDB = () => {
-  let uid = auth.currentUser.uid;
-  let postItems = [];
-  onValue(ref(db, 'posts/'), snapshot => {
-    snapshot.forEach(ss => {
-      var alreadyLikedpost = 'black';
-      var alreadyReportedpost = 'black';
-      if (ss.val().likedBy.includes(uid)) {
-        alreadyLikedpost = 'blue';
-      }
-
-      if (ss.val().reportedBy.includes(uid)) {
-        alreadyReportedpost = 'orange';
-      }
-
-      postItems.push({
-        key: ss.key,
-        username: ss.val().username,
-        date: ss.val().date,
-        question: ss.val().question,
-        likes: ss.val().likes,
-        desc: ss.val().desc,
-        reports: ss.val().reports,
-        anon: ss.val().Anon,
-        pastorOnly: ss.val().PastorOnly,
-        likeColor: alreadyLikedpost,
-        reportColor: alreadyReportedpost,
-      });
-    });
-  });
-};
-
 export const createEvent = async eventObj => {
   let uid = auth.currentUser.uid;
-  set(ref(db, 'events/' + uid + eventObj.Title), {
+  set(ref(db, `events/${uid}eventObj.Title`), {
     title: eventObj.Title,
     desc: eventObj.Description,
     date: eventObj.chosenDate,
@@ -350,19 +310,21 @@ export const addCommentToPost = async (postID, comment) => {
   let uid = auth.currentUser.uid;
   let commentNum;
   let comment_id;
-  console.log(comment);
+  let user_type;
 
   await get(child(ref(db), `userInfo/${uid}`)).then(snapshot => {
     username = snapshot.val().Username;
     commentNum = snapshot.val().commentNum;
+    user_type = snapshot.val().userType;
     let unique_id = Math.random().toString(16).substring(2, 12);
-    comment_id = uid + '_' + unique_id;
+    comment_id = `${uid}_${unique_id}`;
   });
-  await set(ref(db, 'posts/' + postID + '/comments/' + comment_id), {
+  await set(ref(db, `posts/${postID}/comments/${comment_id}`), {
     comment: comment,
     username: username,
-    date: '' + new Date().toLocaleDateString(),
+    date: new Date().toLocaleDateString(),
     reportedBy: [''],
+    userType: user_type,
     reports: 0,
     key: comment_id,
   }).catch(error => {
@@ -375,7 +337,7 @@ export const addCommentToPost = async (postID, comment) => {
 
 export const updateUserCommentCount = async (uid, commentNum) => {
   const updates = {};
-  updates['userInfo/' + uid + '/commentNum'] = commentNum + 1;
+  updates[`userInfo/${uid}/commentNum`] = commentNum + 1;
   update(ref(db), updates);
 };
 
@@ -415,8 +377,8 @@ export const reportComment = async (postID, commentId) => {
                 reportedBy.push(uid);
 
                 const report_updates = {};
-                report_updates[commentPath + '/reportedBy'] = reportedBy;
-                report_updates[commentPath + '/reports'] =
+                report_updates[`${commentPath}/reportedBy`] = reportedBy;
+                report_updates[`${commentPath}/reports`] =
                   reportCount + incAmount;
                 update(ref(db), report_updates);
 
@@ -579,7 +541,6 @@ export const checkUsername = async username => {
   await get(child(ref(db), 'userInfo/')).then(snapshot => {
     snapshot.forEach(user => {
       if (user.val().Username === username) {
-        console.log('found it');
         Alert.alert(
           'Username Error',
           'The username "' +
@@ -603,7 +564,7 @@ export const delUser = navigation => {
         text: 'DELETE',
         onPress: async () => {
           let uid = auth.currentUser.uid;
-          const userInfoRef = ref(db, 'userInfo/' + uid);
+          const userInfoRef = ref(db, `userInfo/${uid}`);
           remove(userInfoRef);
 
           this.makeDelay(500);
@@ -627,7 +588,7 @@ export const delUser = navigation => {
 export const updateAboutMe = async aboutmeText => {
   let uid = auth.currentUser.uid;
   const updates = {};
-  updates['userInfo/' + uid + '/AddintionalInfo'] = aboutmeText;
+  updates[`userInfo/${uid}/AddintionalInfo`] = aboutmeText;
   //update the value.
   await update(ref(db), updates);
 };

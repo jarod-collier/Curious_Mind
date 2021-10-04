@@ -1,0 +1,11 @@
+- fix back navigation issue with ProfileScreen and ResetPasswordScreen
+- test ALL firebase calls (DbLogic file)
+- refactor resetPassword function in DbLogic to helper functions (only keep the DB calls)
+- sendForgotPasswordEmail in DbLogic needs to be done better and tested
+- handleSignUp in DbLogic needs to be refactored into helper functions
+- input validations all over the app (and check that an event/post can't be created without certain inputs)
+- fix the error when creating a post (can't perform react state update)
+- search for users
+- filter posts
+- reporting a post from the thread screen generats an error
+- postID & comment ID should'nt have the title in them

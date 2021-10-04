@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
+  View,
   RefreshControl,
   LayoutAnimation,
 } from 'react-native';
@@ -67,22 +68,20 @@ export default class ThreadScreen extends Component {
       <SafeAreaView style={styles.safeAreaStyle}>
         <ScrollView>
           <KeyboardAwareScrollView
-            contentContainerStyle={[styles.container, styles.aligItemsCenter]}
+            contentContainerStyle={[styles.container]}
             refreshControl={
               <RefreshControl
                 refreshing={this.state.Loading}
                 /**THIS IS NOT REFRESHING */
                 onRefresh={async () => {
-                  this.setState({Loading: true});
                   await this.readFromDB(this.state.postID);
-                  this.setState({Loading: false});
                 }}
               />
             }>
             {this.state.display}
             {this.state.comments}
             {this.state.userCanComment && (
-              <>
+              <View style={styles.aligItemsCenter}>
                 <TextInput
                   style={[
                     styles.multiline,
@@ -112,7 +111,7 @@ export default class ThreadScreen extends Component {
                   }}>
                   <Text style={styles.customBtnText}>Post</Text>
                 </TouchableOpacity>
-              </>
+              </View>
             )}
           </KeyboardAwareScrollView>
         </ScrollView>

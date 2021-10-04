@@ -247,6 +247,13 @@ export const styles = StyleSheet.create({
     opacity: 0.5,
     marginLeft: -10,
   },
+  pastorTag: {
+    paddingHorizontal: 8,
+    marginVertical: 5,
+    backgroundColor: '#f06464',
+    borderRadius: 15,
+    justifyContent: 'center',
+  },
   italic: {
     fontStyle: 'italic',
   },

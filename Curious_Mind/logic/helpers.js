@@ -17,7 +17,6 @@ export const loadPostCards = async (posts, MainFeedView, navigation) => {
             <Text style={styles.cardTitle}>{postData.question}</Text>
             <Text style={styles.cardDesc}>{postData.desc}</Text>
             <View style={styles.cardDateAndBy}>
-              <Text>Posted{!postData.anon ? ' by: ' : ' '}</Text>
               {!postData.anon && (
                 <Text
                   style={styles.blueText}
@@ -26,7 +25,7 @@ export const loadPostCards = async (posts, MainFeedView, navigation) => {
                       uid: '' + postData.key.substring(0, 28),
                     })
                   }>
-                  {postData.username}
+                  @{postData.username}
                 </Text>
               )}
               <Text> on {postData.date}</Text>
@@ -46,9 +45,7 @@ export const loadPostCards = async (posts, MainFeedView, navigation) => {
                 style={styles.whiteBackground}
                 color={postData.likeColor}
                 name="thumbs-up"
-                onPress={() =>
-                  likePost(postData.key).then(() => this.refreshScreen)
-                }
+                onPress={() => likePost(postData.key)}
               />
               {postData.likes > 0 && (
                 <Text style={styles.iconBadge}>{postData.likes}</Text>
@@ -57,12 +54,15 @@ export const loadPostCards = async (posts, MainFeedView, navigation) => {
                 style={styles.whiteBackground}
                 color={postData.reportColor}
                 name="exclamation-triangle"
-                onPress={() =>
-                  reportPost(postData.key).then(() => this.refreshScreen())
-                }
+                onPress={async () => reportPost(postData.key)}
               />
               {postData.reports > 0 && (
                 <Text style={styles.iconBadge}>{postData.reports}</Text>
+              )}
+              {postData.userType === 'pastor' && (
+                <View style={styles.pastorTag}>
+                  <Text>Pastor</Text>
+                </View>
               )}
             </View>
           </Card>
@@ -115,10 +115,14 @@ export const loadCommentCards = async (postItems, commentItems) => {
     return (
       <View
         key={commentData.key}
-        style={[styles.defaultBackground, styles.marginTop15]}>
+        style={[
+          styles.defaultBackground,
+          styles.marginTop15,
+          styles.alignSelfCenter,
+        ]}>
         <Card style={styles.defualtCardStyles}>
           <Text style={styles.cardTitle}>{commentData.comment}</Text>
-          <View style={styles.cardDateAndBy}>
+          <View style={[styles.cardDateAndBy, styles.marginTop10]}>
             <Text
               style={styles.blueText}
               onPress={() =>
@@ -126,7 +130,7 @@ export const loadCommentCards = async (postItems, commentItems) => {
                   uid: '' + commentData.key.substring(0, 28),
                 })
               }>
-              By: {commentData.username}
+              @{commentData.username}
             </Text>
             <Text> on {commentData.date}</Text>
           </View>
@@ -141,6 +145,11 @@ export const loadCommentCards = async (postItems, commentItems) => {
             />
             {commentData.ReportCount > 0 && (
               <Text style={styles.iconBadge}>{commentData.ReportCount}</Text>
+            )}
+            {commentData.userType === 'pastor' && (
+              <View style={styles.pastorTag}>
+                <Text>Pastor</Text>
+              </View>
             )}
           </View>
         </Card>
@@ -198,6 +207,7 @@ export const preparePostsFromDB = async (snapshot, uid) => {
       pastorOnly: e.val().PastorOnly,
       likeColor: alreadyLikedpost,
       reportColor: alreadyReportedpost,
+      userType: e.val().userType,
     });
   });
   return postItems.reverse();
@@ -237,6 +247,7 @@ export const prepareThreadScreen = async (snapshot, uid, postID) => {
       username: comment.val().username,
       ReportColor: alreadyReportedcomment,
       ReportCount: comment.val().reports,
+      userType: comment.val().userType,
     });
   });
 
@@ -260,6 +271,7 @@ export const prepareThreadScreen = async (snapshot, uid, postID) => {
     pastorOnly: snapshot.val().PastorOnly,
     likeColor: alreadyLikedpost,
     reportColor: alreadyReportedpost,
+    userType: snapshot.val().userType,
   });
   let posterUsername = snapshot.val().username;
   return {postItems, commentItems, posterUsername};
