@@ -17,6 +17,7 @@ import {
   child,
   update,
   remove,
+  onValue,
 } from 'firebase/database';
 import {Alert} from 'react-native';
 
@@ -25,11 +26,8 @@ export const auth = getAuth();
 
 export const logInUser = async (email, password) => {
   // signInWithEmailAndPassword(auth, email, password)
-  await signInWithEmailAndPassword(
-    auth,
-    'collierj@mail.gvsu.edu',
-    'Admin703',
-  ).catch(error => {
+  await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin703', ).catch(error => {
+  // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703', ).catch(error => {
     const errorCode = error.code;
     const errorMessage = error.message;
 
@@ -150,6 +148,7 @@ export const resetPassword = async (stateObj, navigation) => {
 };
 
 export const likePost = async postID => {
+  console.log("inside like post");
   const uid = auth.currentUser.uid;
   let likedBy = [];
   let likesCount;
@@ -172,7 +171,8 @@ export const likePost = async postID => {
   }
 };
 
-export const reportPost = async postID => {
+export const reportPost = async (postID, MainFeedView, navigation) => {
+  console.log("inside report post. Postid: " + postID);
   const uid = auth.currentUser.uid;
   let reportedBy = [];
   let reportCount;
@@ -180,15 +180,21 @@ export const reportPost = async postID => {
   let pastorReportWeight = 5;
   const reportPostRef = ref(db, 'posts/' + postID);
 
-  await get(child(ref(db), `userInfo/${auth.currentUser.uid}`)).then(
-    async userInfo_snapshot => {
+  onValue(ref(db, `userInfo/${uid}`), userInfo_snapshot => {
+    if (userInfo_snapshot.exists()){
       if (userInfo_snapshot.val().userType === 'pastor') {
         incAmount = pastorReportWeight;
       }
+    }
 
-      await get(child(ref(db), `posts/${postID}`)).then(report_snapshot => {
+    onValue(reportPostRef, report_snapshot => {
+      console.log("report snapshot: " + JSON.stringify(report_snapshot, undefined, 2));
+      if (report_snapshot.exists()) {
+        console.log("report snapshot exists");
         reportedBy = report_snapshot.val().reportedBy;
         reportCount = report_snapshot.val().reports;
+
+        console.log("reported by: " + reportedBy);
 
         if (!reportedBy.includes(uid)) {
           Alert.alert(
@@ -200,7 +206,14 @@ export const reportPost = async postID => {
                 text: 'REPORT',
                 onPress: async () => {
                   if (reportCount + incAmount >= pastorReportWeight) {
-                    remove(reportPostRef);
+                    remove(reportPostRef).then(() => {
+                      if (!MainFeedView) {
+                        navigation.reset({
+                          index: 0,
+                          routes: [{name: 'Home'}],
+                        });
+                      }
+                    });
                     Alert.alert(
                       'Post Removed',
                       'The report count exceeded the limit. This post will be deleted now.',
@@ -224,9 +237,9 @@ export const reportPost = async postID => {
         } else {
           Alert.alert('You already reported this post.');
         }
-      });
-    },
-  );
+      }
+    },);
+  },);
 };
 
 export const createPost = async postObj => {

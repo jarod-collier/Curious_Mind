@@ -42,7 +42,6 @@ export default class ThreadScreen extends Component {
     this.state.postID = this.props.route.params.ID;
     await this.readFromDB(this.state.postID);
 
-    this.focused = false;
     this.clearComment = React.createRef();
   }
 
@@ -51,13 +50,15 @@ export default class ThreadScreen extends Component {
     this.setState({Loading: true});
     onValue(ref(db, 'posts/' + postID), async snapshot => {
       await prepareThreadScreen(snapshot, uid, postID).then(async post => {
-        this.state.userCanComment = canComment(post.posterUsername);
-        await loadPostCards(post.postItems, false, this.props.navigation).then(
-          postCard => (this.state.display = postCard),
-        );
-        await loadCommentCards(post.postItems, post.commentItems).then(
-          commentCards => (this.state.comments = commentCards),
-        );
+        if (post.postItems.length > 0) {
+          this.state.userCanComment = canComment(post.posterUsername);
+          await loadPostCards(post.postItems, false, this.props.navigation).then(
+            postCard => (this.state.display = postCard),
+          );
+          await loadCommentCards(post.postItems, post.commentItems).then(
+            commentCards => (this.state.comments = commentCards),
+          );
+        }
       });
       this.setState({Loading: false});
     });
@@ -67,56 +68,56 @@ export default class ThreadScreen extends Component {
     LayoutAnimation.easeInEaseOut();
     return (
       <SafeAreaView style={styles.safeAreaStyle}>
-        <ScrollView>
-          <KeyboardAwareScrollView
-            contentContainerStyle={[styles.container]}
+        <KeyboardAwareScrollView>
+          <ScrollView
             refreshControl={
               <RefreshControl
                 refreshing={this.state.Loading}
-                /**THIS IS NOT REFRESHING */
                 onRefresh={async () => {
                   await this.readFromDB(this.state.postID);
                 }}
               />
             }>
-            {this.state.display}
-            {this.state.comments}
-            {this.state.userCanComment && (
-              <View style={styles.aligItemsCenter}>
-                <TextInput
-                  style={[
-                    styles.multiline,
-                    styles.width300,
-                    styles.marginTop15,
-                  ]}
-                  multiline={true}
-                  numberOfLines={10}
-                  placeholder="Add new comment here"
-                  placeholderTextColor="grey"
-                  returnKeyType="done"
-                  blurOnSubmit={true}
-                  onChangeText={e => {
-                    this.setState({comment: e});
-                  }}
-                  ref={this.clearComment}
-                />
-                <TouchableOpacity
-                  style={styles.Buttons}
-                  onPress={async () => {
-                    this.state.comment = await cleanUsersPost(this.state.comment);
-                    await addCommentToPost(
-                      this.state.postID,
-                      this.state.comment,
-                    );
-                    // this.refreshScreen(this.state.postID);
-                    this.clearComment.current.clear();
-                  }}>
-                  <Text style={styles.customBtnText}>Post</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </KeyboardAwareScrollView>
-        </ScrollView>
+            <View style={styles.container} >
+              {this.state.display}
+              {this.state.comments}
+              {this.state.userCanComment && (
+                <View style={styles.aligItemsCenter}>
+                  <TextInput
+                    style={[
+                      styles.multiline,
+                      styles.width300,
+                      styles.marginTop15,
+                    ]}
+                    multiline={true}
+                    numberOfLines={10}
+                    placeholder="Add new comment here"
+                    placeholderTextColor="grey"
+                    returnKeyType="done"
+                    blurOnSubmit={true}
+                    onChangeText={e => {
+                      this.setState({comment: e});
+                    }}
+                    ref={this.clearComment}
+                  />
+                  <TouchableOpacity
+                    style={styles.Buttons}
+                    onPress={async () => {
+                      this.state.comment = await cleanUsersPost(this.state.comment);
+                      await addCommentToPost(
+                        this.state.postID,
+                        this.state.comment,
+                      );
+                      // this.refreshScreen(this.state.postID);
+                      this.clearComment.current.clear();
+                    }}>
+                    <Text style={styles.customBtnText}>Post</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          </ScrollView>
+        </KeyboardAwareScrollView>
       </SafeAreaView>
     );
   }

@@ -74,7 +74,7 @@ export const loadPostCards = async (posts, MainFeedView, navigation) => {
                 style={styles.whiteBackground}
                 color={postData.reportColor}
                 name="exclamation-triangle"
-                onPress={async () => reportPost(postData.key)}
+                onPress={async () => await reportPost(postData.key, MainFeedView, navigation)}
               />
               {postData.reports > 0 && (
                 <Text style={styles.iconBadge}>{postData.reports}</Text>
@@ -131,6 +131,7 @@ export const loadEventCards = async (events, navigation) => {
 };
 
 export const loadCommentCards = async (postItems, commentItems) => {
+  console.log("inside loading comment cards");
   return commentItems.map(commentData => {
     return (
       <View
@@ -203,6 +204,7 @@ export const addToCalendar = (title, date, time, location, notes) => {
 };
 
 export const preparePostsFromDB = async (snapshot, uid) => {
+  console.log("inside prepare posts from db");
   let postItems = [];
   snapshot.forEach(e => {
     var alreadyLikedpost = '#cac5c4';
@@ -248,52 +250,56 @@ export const prepareEventsFromDB = async (snapshot, uid) => {
 };
 
 export const prepareThreadScreen = async (snapshot, uid, postID) => {
+  console.log("inside prepare thread screan: " + postID);
   let commentItems = [];
   let postItems = [];
   var alreadyLikedpost = 'black';
   var alreadyReportedpost = 'black';
+  let posterUsername = "";
 
-  snapshot.child('comments').forEach(comment => {
-    var alreadyReportedcomment = 'black';
-
-    if (comment.val().reportedBy.includes(uid)) {
-      alreadyReportedcomment = 'red';
-    }
-
-    commentItems.push({
-      key: comment.key,
-      comment: comment.val().comment,
-      date: comment.val().date,
-      username: comment.val().username,
-      ReportColor: alreadyReportedcomment,
-      ReportCount: comment.val().reports,
-      userType: comment.val().userType,
+  if (snapshot.exists()){
+    snapshot.child('comments').forEach(comment => {
+      var alreadyReportedcomment = 'black';
+  
+      if (comment.val().reportedBy.includes(uid)) {
+        alreadyReportedcomment = 'red';
+      }
+  
+      commentItems.push({
+        key: comment.key,
+        comment: comment.val().comment,
+        date: comment.val().date,
+        username: comment.val().username,
+        ReportColor: alreadyReportedcomment,
+        ReportCount: comment.val().reports,
+        userType: comment.val().userType,
+      });
     });
-  });
-
-  if (snapshot.val().likedBy.includes(uid)) {
-    alreadyLikedpost = 'blue';
+  
+    if (snapshot.val().likedBy.includes(uid)) {
+      alreadyLikedpost = 'blue';
+    }
+  
+    if (snapshot.val().reportedBy.includes(uid)) {
+      alreadyReportedpost = 'orange';
+    }
+  
+    postItems.push({
+      key: postID,
+      question: snapshot.val().question,
+      username: snapshot.val().username,
+      date: snapshot.val().date,
+      desc: snapshot.val().desc,
+      likes: snapshot.val().likes,
+      reports: snapshot.val().reports,
+      anon: snapshot.val().Anon,
+      pastorOnly: snapshot.val().PastorOnly,
+      likeColor: alreadyLikedpost,
+      reportColor: alreadyReportedpost,
+      userType: snapshot.val().userType,
+    });
+    posterUsername = snapshot.val().username;
   }
-
-  if (snapshot.val().reportedBy.includes(uid)) {
-    alreadyReportedpost = 'orange';
-  }
-
-  postItems.push({
-    key: postID,
-    question: snapshot.val().question,
-    username: snapshot.val().username,
-    date: snapshot.val().date,
-    desc: snapshot.val().desc,
-    likes: snapshot.val().likes,
-    reports: snapshot.val().reports,
-    anon: snapshot.val().Anon,
-    pastorOnly: snapshot.val().PastorOnly,
-    likeColor: alreadyLikedpost,
-    reportColor: alreadyReportedpost,
-    userType: snapshot.val().userType,
-  });
-  let posterUsername = snapshot.val().username;
   return {postItems, commentItems, posterUsername};
 };
 

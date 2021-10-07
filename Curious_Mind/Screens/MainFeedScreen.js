@@ -23,10 +23,12 @@ export default class MainFeedScreen extends Component {
   }
 
   async componentDidMount() {
+    console.log("componnt maind feed")
     await this.readFromDB();
   }
 
   async readFromDB() {
+    console.log("reading posts inside the main feed screen");
     let uid = getAuth().currentUser.uid;
     this.setState({Loading: true});
     onValue(ref(db, 'posts/'), async snapshot => {
