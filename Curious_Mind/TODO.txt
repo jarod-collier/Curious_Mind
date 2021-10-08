@@ -7,7 +7,6 @@
 - search for users
 - filter posts
 - Add regex to filters 
-- fix distance between "pastor" tag and report number
 - logo is left justified on android
 - new post options screen are all left justified
 - reporting a post from the thread screen and having it get deleted, then making a new post results in:

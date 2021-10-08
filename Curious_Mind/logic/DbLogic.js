@@ -26,8 +26,12 @@ export const auth = getAuth();
 
 export const logInUser = async (email, password) => {
   // signInWithEmailAndPassword(auth, email, password)
-  await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin703', ).catch(error => {
-  // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703', ).catch(error => {
+  await signInWithEmailAndPassword(
+    auth,
+    'collierj@mail.gvsu.edu',
+    'Admin703',
+  ).catch(error => {
+    // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703', ).catch(error => {
     const errorCode = error.code;
     const errorMessage = error.message;
 
@@ -148,7 +152,6 @@ export const resetPassword = async (stateObj, navigation) => {
 };
 
 export const likePost = async postID => {
-  console.log("inside like post");
   const uid = auth.currentUser.uid;
   let likedBy = [];
   let likesCount;
@@ -172,7 +175,6 @@ export const likePost = async postID => {
 };
 
 export const reportPost = async (postID, MainFeedView, navigation) => {
-  console.log("inside report post. Postid: " + postID);
   const uid = auth.currentUser.uid;
   let reportedBy = [];
   let reportCount;
@@ -181,21 +183,17 @@ export const reportPost = async (postID, MainFeedView, navigation) => {
   const reportPostRef = ref(db, 'posts/' + postID);
 
   onValue(ref(db, `userInfo/${uid}`), userInfo_snapshot => {
-    if (userInfo_snapshot.exists()){
+    if (userInfo_snapshot.exists()) {
       if (userInfo_snapshot.val().userType === 'pastor') {
         incAmount = pastorReportWeight;
       }
     }
 
     onValue(reportPostRef, report_snapshot => {
-      console.log("report snapshot: " + JSON.stringify(report_snapshot, undefined, 2));
+      console.log('onValue reportPost');
       if (report_snapshot.exists()) {
-        console.log("report snapshot exists");
         reportedBy = report_snapshot.val().reportedBy;
         reportCount = report_snapshot.val().reports;
-
-        console.log("reported by: " + reportedBy);
-
         if (!reportedBy.includes(uid)) {
           Alert.alert(
             'Report Post',
@@ -238,14 +236,18 @@ export const reportPost = async (postID, MainFeedView, navigation) => {
           Alert.alert('You already reported this post.');
         }
       }
-    },);
-  },);
+    });
+  });
 };
 
 export const createPost = async postObj => {
   let uid = auth.currentUser.uid;
   await get(child(ref(db), `userInfo/${uid}`)).then(async snapshot => {
-    let firebaseApprovedQuestion = postObj.Question.replace(/\./g, "").replace(/\#/g, "").replace(/\$/g, "").replace(/\[/g, "").replace(/\]/g, "");
+    let firebaseApprovedQuestion = postObj.Question.replace(/\./g, '')
+      .replace(/\#/g, '')
+      .replace(/\$/g, '')
+      .replace(/\[/g, '')
+      .replace(/\]/g, '');
     await set(ref(db, `posts/${uid}${firebaseApprovedQuestion}`), {
       username: snapshot.val().Username,
       date: new Date().toLocaleDateString(),

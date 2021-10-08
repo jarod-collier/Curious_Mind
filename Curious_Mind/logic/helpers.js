@@ -12,19 +12,81 @@ import * as AddCalendarEvent from 'react-native-add-calendar-event';
 // I am putting this up here so that we can use it on various places where a user inputs text.
 // We'll probably want to at some point add regex to account for symbols in words: f$ck
 const wordsToFilter = [
-  "fuck", "fuc", "fuk", "f u c k", "fukc", "fvck", "fxck",
-  "damn it", "damnit", "dammit", 
-  "shit", 
-  "bitch",
-  "nigger", "nigga", "chink", "gringo", " kike ", " spick ", " spic ", 
-  "cunt", "pussy", "dick", "penis", "vagina", "anal", "areola", "areole", "cock", 
-  " ass ", " asshole", "tits", "tit", "boob", "blow job", "blowjob", "bukkake", " clit",
-  "bastard", " cum ", "cumming", "slut", "dildo", "douche",
-  "dumbass", "ejaculate", "faggot", " fag ", "fellatio", "handjob", "horny", "hump",
-  "jackass", "jerkoff", " jizz ", "kinky", "masterbat", "masturbat", "orgasm", "orgies", "orgy",
-  "phallic", " pee ", " piss ", " pissed ", "pubic", "retard", "rimjob", "semen", "skank",
-  "sperm", "stfu", "tampon", " urine ", " urinal ",  
-]
+  'fuck',
+  'fuc',
+  'fuk',
+  'f u c k',
+  'fukc',
+  'fvck',
+  'fxck',
+  'damn it',
+  'damnit',
+  'dammit',
+  'shit',
+  'bitch',
+  'nigger',
+  'nigga',
+  'chink',
+  'gringo',
+  ' kike ',
+  ' spick ',
+  ' spic ',
+  'cunt',
+  'pussy',
+  'dick',
+  'penis',
+  'vagina',
+  'anal',
+  'areola',
+  'areole',
+  'cock',
+  ' ass ',
+  ' asshole',
+  'tits',
+  'tit',
+  'boob',
+  'blow job',
+  'blowjob',
+  'bukkake',
+  ' clit',
+  'bastard',
+  ' cum ',
+  'cumming',
+  'slut',
+  'dildo',
+  'douche',
+  'dumbass',
+  'ejaculate',
+  'faggot',
+  ' fag ',
+  'fellatio',
+  'handjob',
+  'horny',
+  'hump',
+  'jackass',
+  'jerkoff',
+  ' jizz ',
+  'kinky',
+  'masterbat',
+  'masturbat',
+  'orgasm',
+  'orgies',
+  'orgy',
+  'phallic',
+  ' pee ',
+  ' piss ',
+  ' pissed ',
+  'pubic',
+  'retard',
+  'rimjob',
+  'semen',
+  'skank',
+  'sperm',
+  'stfu',
+  'tampon',
+  ' urine ',
+  ' urinal ',
+];
 
 export const loadPostCards = async (posts, MainFeedView, navigation) => {
   return posts.map(postData => {
@@ -50,40 +112,46 @@ export const loadPostCards = async (posts, MainFeedView, navigation) => {
               )}
               <Text> on {postData.date}</Text>
             </View>
-            <View style={styles.row}>
-              {MainFeedView && (
+            <View style={styles.rowSpaceBetween}>
+              <View style={styles.row}>
+                {MainFeedView && (
+                  <Button
+                    style={styles.whiteBackground}
+                    color="#cac5c4"
+                    name="comment"
+                    onPress={() =>
+                      navigation.navigate('Thread', {ID: postData.key})
+                    }
+                  />
+                )}
                 <Button
                   style={styles.whiteBackground}
-                  color="#cac5c4"
-                  name="comment"
-                  onPress={() =>
-                    navigation.navigate('Thread', {ID: postData.key})
+                  color={postData.likeColor}
+                  name="thumbs-up"
+                  onPress={() => likePost(postData.key)}
+                />
+                {postData.likes > 0 && (
+                  <Text style={styles.iconBadge}>{postData.likes}</Text>
+                )}
+                <Button
+                  style={styles.whiteBackground}
+                  color={postData.reportColor}
+                  name="exclamation-triangle"
+                  onPress={async () =>
+                    await reportPost(postData.key, MainFeedView, navigation)
                   }
                 />
-              )}
-              <Button
-                style={styles.whiteBackground}
-                color={postData.likeColor}
-                name="thumbs-up"
-                onPress={() => likePost(postData.key)}
-              />
-              {postData.likes > 0 && (
-                <Text style={styles.iconBadge}>{postData.likes}</Text>
-              )}
-              <Button
-                style={styles.whiteBackground}
-                color={postData.reportColor}
-                name="exclamation-triangle"
-                onPress={async () => await reportPost(postData.key, MainFeedView, navigation)}
-              />
-              {postData.reports > 0 && (
-                <Text style={styles.iconBadge}>{postData.reports}</Text>
-              )}
-              {postData.userType === 'pastor' && (
-                <View style={styles.pastorTag}>
-                  <Text>Pastor</Text>
-                </View>
-              )}
+                {postData.reports > 0 && (
+                  <Text style={styles.iconBadge}>{postData.reports}</Text>
+                )}
+              </View>
+              <View style={styles.justifyCenter}>
+                {postData.userType === 'pastor' && (
+                  <View style={styles.pastorTag}>
+                    <Text>Pastor</Text>
+                  </View>
+                )}
+              </View>
             </View>
           </Card>
         </Button>
@@ -131,7 +199,7 @@ export const loadEventCards = async (events, navigation) => {
 };
 
 export const loadCommentCards = async (postItems, commentItems) => {
-  console.log("inside loading comment cards");
+  console.log('inside loading comment cards');
   return commentItems.map(commentData => {
     return (
       <View
@@ -155,7 +223,7 @@ export const loadCommentCards = async (postItems, commentItems) => {
             </Text>
             <Text> on {commentData.date}</Text>
           </View>
-          <View style={styles.row}>
+          <View style={styles.rowSpaceBetween}>
             <Button
               style={styles.whiteBackground}
               color={commentData.ReportColor}
@@ -164,14 +232,16 @@ export const loadCommentCards = async (postItems, commentItems) => {
                 reportComment(postItems[0].key, commentData.key)
               }
             />
-            {commentData.ReportCount > 0 && (
-              <Text style={styles.iconBadge}>{commentData.ReportCount}</Text>
-            )}
-            {commentData.userType === 'pastor' && (
-              <View style={styles.pastorTag}>
-                <Text>Pastor</Text>
-              </View>
-            )}
+            <View style={styles.justifyCenter}>
+              {commentData.ReportCount > 0 && (
+                <Text style={styles.iconBadge}>{commentData.ReportCount}</Text>
+              )}
+              {commentData.userType === 'pastor' && (
+                <View style={styles.pastorTag}>
+                  <Text>Pastor</Text>
+                </View>
+              )}
+            </View>
           </View>
         </Card>
       </View>
@@ -204,7 +274,7 @@ export const addToCalendar = (title, date, time, location, notes) => {
 };
 
 export const preparePostsFromDB = async (snapshot, uid) => {
-  console.log("inside prepare posts from db");
+  console.log('inside prepare posts from db');
   let postItems = [];
   snapshot.forEach(e => {
     var alreadyLikedpost = '#cac5c4';
@@ -250,21 +320,21 @@ export const prepareEventsFromDB = async (snapshot, uid) => {
 };
 
 export const prepareThreadScreen = async (snapshot, uid, postID) => {
-  console.log("inside prepare thread screan: " + postID);
+  console.log('inside prepare thread screan: ' + postID);
   let commentItems = [];
   let postItems = [];
   var alreadyLikedpost = 'black';
   var alreadyReportedpost = 'black';
-  let posterUsername = "";
+  let posterUsername = '';
 
-  if (snapshot.exists()){
+  if (snapshot.exists()) {
     snapshot.child('comments').forEach(comment => {
       var alreadyReportedcomment = 'black';
-  
+
       if (comment.val().reportedBy.includes(uid)) {
         alreadyReportedcomment = 'red';
       }
-  
+
       commentItems.push({
         key: comment.key,
         comment: comment.val().comment,
@@ -275,15 +345,15 @@ export const prepareThreadScreen = async (snapshot, uid, postID) => {
         userType: comment.val().userType,
       });
     });
-  
+
     if (snapshot.val().likedBy.includes(uid)) {
       alreadyLikedpost = 'blue';
     }
-  
+
     if (snapshot.val().reportedBy.includes(uid)) {
       alreadyReportedpost = 'orange';
     }
-  
+
     postItems.push({
       key: postID,
       question: snapshot.val().question,
@@ -303,14 +373,16 @@ export const prepareThreadScreen = async (snapshot, uid, postID) => {
   return {postItems, commentItems, posterUsername};
 };
 
-export const cleanUsersPost = async (userInput) => {
-
+export const cleanUsersPost = async userInput => {
   let cleanedUserInput = userInput;
 
   wordsToFilter.forEach(badWord => {
     // case insenstive global replace
-    let regEx = new RegExp(badWord, "ig");
-    cleanedUserInput = cleanedUserInput.replace(regEx, "*".repeat(badWord.length));
+    let regEx = new RegExp(badWord, 'ig');
+    cleanedUserInput = cleanedUserInput.replace(
+      regEx,
+      '*'.repeat(badWord.length),
+    );
   });
 
   return cleanedUserInput;

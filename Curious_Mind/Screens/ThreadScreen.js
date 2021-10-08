@@ -39,6 +39,7 @@ export default class ThreadScreen extends Component {
   }
 
   async componentDidMount() {
+    console.log('component DidMount Thread');
     this.state.postID = this.props.route.params.ID;
     await this.readFromDB(this.state.postID);
 
@@ -47,20 +48,28 @@ export default class ThreadScreen extends Component {
 
   async readFromDB(postID) {
     let uid = getAuth().currentUser.uid;
-    this.setState({Loading: true});
+    if (!this.state.Loading) {
+      this.setState({Loading: true});
+    }
     onValue(ref(db, 'posts/' + postID), async snapshot => {
+      console.log('onValue Thread');
       await prepareThreadScreen(snapshot, uid, postID).then(async post => {
         if (post.postItems.length > 0) {
           this.state.userCanComment = canComment(post.posterUsername);
-          await loadPostCards(post.postItems, false, this.props.navigation).then(
-            postCard => (this.state.display = postCard),
-          );
-          await loadCommentCards(post.postItems, post.commentItems).then(
-            commentCards => (this.state.comments = commentCards),
-          );
+          await loadPostCards(
+            post.postItems,
+            false,
+            this.props.navigation,
+          ).then(postCard => (this.state.display = postCard));
+          await loadCommentCards(post.postItems, post.commentItems)
+            .then(commentCards => (this.state.comments = commentCards))
+            .then(() => {
+              this.setState({Loading: false});
+            });
+        } else {
+          this.setState({Loading: false});
         }
       });
-      this.setState({Loading: false});
     });
   }
 
@@ -78,7 +87,7 @@ export default class ThreadScreen extends Component {
                 }}
               />
             }>
-            <View style={styles.container} >
+            <View style={styles.container}>
               {this.state.display}
               {this.state.comments}
               {this.state.userCanComment && (
@@ -103,7 +112,9 @@ export default class ThreadScreen extends Component {
                   <TouchableOpacity
                     style={styles.Buttons}
                     onPress={async () => {
-                      this.state.comment = await cleanUsersPost(this.state.comment);
+                      this.state.comment = await cleanUsersPost(
+                        this.state.comment,
+                      );
                       await addCommentToPost(
                         this.state.postID,
                         this.state.comment,

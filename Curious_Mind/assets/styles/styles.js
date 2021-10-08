@@ -220,6 +220,10 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
+  rowSpaceBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   marginBottom30: {
     marginBottom: 30,
   },
@@ -249,7 +253,7 @@ export const styles = StyleSheet.create({
   },
   pastorTag: {
     paddingHorizontal: 8,
-    marginVertical: 5,
+    height: 20,
     backgroundColor: '#f06464',
     borderRadius: 15,
     justifyContent: 'center',
@@ -316,6 +320,20 @@ export const styles = StyleSheet.create({
   profileInfoTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  searchBarContainer: {
+    backgroundColor: '#f7f2f1',
+    borderTopColor: '#f7f2f1',
+    borderBottomColor: '#f7f2f1',
+    marginHorizontal: 15,
+  },
+  searchBarInput: {
+    backgroundColor: 'white',
+    borderRadius: 15,
+    paddingLeft: 5,
+  },
+  searchBarInputContainer: {
+    backgroundColor: '#ded9d8',
   },
   logoutText: {
     color: 'black',

@@ -125,8 +125,12 @@ export default class ResetPasswordScreen extends Component {
               <TouchableOpacity
                 style={[styles.Buttons, styles.alignSelfCenter]}
                 onPress={async () => {
-                  this.state.Question = await cleanUsersPost(this.state.Question);
-                  this.state.Description = await cleanUsersPost(this.state.Description);
+                  await cleanUsersPost(this.state.Question).then(
+                    val => (this.state.Question = val),
+                  );
+                  await cleanUsersPost(this.state.Description).then(
+                    val => (this.state.Description = val),
+                  );
                   await createPost(this.state);
                   await updateUserPostCount();
                   this.setState({
