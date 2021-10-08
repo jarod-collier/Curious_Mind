@@ -42,6 +42,7 @@ function Main_Screen({navigation}) {
         headerTitle: () => (
           <Image source={require('./assets/images/CM_logo02_header.png')} />
         ),
+        headerTitleAlign: 'center',
         tabBarstyle: [
           {
             display: 'flex',
@@ -156,6 +157,7 @@ function Nested_Main({navigation}) {
           />
         ),
         headerBackTitle: '',
+        headerTitleAlign: 'center'
       }}>
       <Nested_Stack.Screen name="Main Feed" component={MainFeedScreen} />
       <Nested_Stack.Screen name="Thread" component={ThreadScreen} />
