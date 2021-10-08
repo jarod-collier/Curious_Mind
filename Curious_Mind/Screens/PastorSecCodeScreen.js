@@ -20,6 +20,7 @@ export default class PastorSecCodeScreen extends Component {
     super(props);
     this.state = {
       Code: '',
+      buttonDisabled: true,
     };
     this.clearCode = React.createRef();
   }
@@ -61,16 +62,31 @@ export default class PastorSecCodeScreen extends Component {
               placeholder="Enter Code Here"
               placeholderTextColor="black"
               onChangeText={e => {
+                e.replace(/ /g, '') === ''
+                  ? (this.state.buttonDisabled = true)
+                  : (this.state.buttonDisabled = false);
                 this.setState({Code: e});
               }}
               ref={this.clearCode}
             />
             <TouchableOpacity
-              style={styles.Buttons}
+              style={[
+                this.state.buttonDisabled
+                  ? styles.disabledButtons
+                  : styles.Buttons,
+              ]}
+              disabled={this.state.buttonDisabled}
               onPress={() =>
                 validatePastorCode(this.state.Code, this.props.navigation)
               }>
-              <Text style={styles.customBtnText}>Confirm</Text>
+              <Text
+                style={[
+                  this.state.buttonDisabled
+                    ? styles.disabledBtnText
+                    : styles.customBtnText,
+                ]}>
+                Confirm
+              </Text>
             </TouchableOpacity>
           </KeyboardAwareScrollView>
         </ScrollView>

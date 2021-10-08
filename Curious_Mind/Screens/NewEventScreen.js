@@ -21,10 +21,9 @@ export default class NewEventScreen extends Component {
       Title: '',
       Description: '',
       location: '',
-      chosenDate: '',
-      chosenTime: '',
       date: new Date(),
       time: new Date(),
+      buttonDisabled: true,
     };
     this.clearTitle = React.createRef();
     this.clearDescription = React.createRef();
@@ -33,22 +32,26 @@ export default class NewEventScreen extends Component {
 
   onChangeDate = (event, selectedDate) => {
     let currentDate = selectedDate || this.state.date;
-    this.state.chosenDate = currentDate.toString().substring(0, 16);
     this.setState({date: currentDate});
   };
 
   onChangeTime = (event, selectedTime) => {
     const currentTime = selectedTime || this.state.time;
-    let hours24 = currentTime.getHours();
-    let mins = currentTime.getMinutes();
-    if (mins < 10) {
-      mins = '0' + mins;
-    }
-    let period = hours24 > 12 ? 'PM' : 'AM';
-    let hours12 = (currentTime.getHours() + 24) % 12 || 12;
-    this.state.chosenTime = '' + hours12 + ':' + mins + ' ' + period;
     this.setState({time: currentTime});
   };
+
+  shouldButtonBeDisbled() {
+    if (
+      this.state.Title.replace(/ /g, '') !== '' &&
+      this.state.location.replace(/ /g, '') !== ''
+    ) {
+      this.state.buttonDisabled = false;
+      return false;
+    } else {
+      this.state.buttonDisabled = true;
+      return true;
+    }
+  }
 
   render() {
     LayoutAnimation.easeInEaseOut();
@@ -57,7 +60,11 @@ export default class NewEventScreen extends Component {
         <ScrollView>
           <KeyboardAwareScrollView
             resetScrollToCoords={{x: 0, y: 0}}
-            contentContainerStyle={[styles.container, styles.marginHorizontal15, styles.marginBottom15]}
+            contentContainerStyle={[
+              styles.container,
+              styles.marginHorizontal15,
+              styles.marginBottom15,
+            ]}
             scrollEnabled={true}
             extraHeight={100}
             keyboardShouldPersistTaps="handled">
@@ -152,13 +159,26 @@ export default class NewEventScreen extends Component {
               ref={this.clearLocation}
             />
             <TouchableOpacity
-              style={[styles.Buttons, styles.alignSelfCenter]}
+              disabled={this.shouldButtonBeDisbled}
+              style={[
+                this.state.buttonDisabled
+                  ? styles.disabledButtons
+                  : styles.Buttons,
+                styles.alignSelfCenter,
+              ]}
               onPress={() => {
                 createEvent(this.state).then(() =>
                   this.props.navigation.navigate('Events'),
                 );
               }}>
-              <Text style={styles.customBtnText}>Add Event</Text>
+              <Text
+                style={
+                  this.state.buttonDisabled
+                    ? styles.disabledBtnText
+                    : styles.customBtnText
+                }>
+                Add Event
+              </Text>
             </TouchableOpacity>
           </KeyboardAwareScrollView>
         </ScrollView>

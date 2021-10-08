@@ -25,12 +25,28 @@ export default class UserSignUpScreen extends Component {
       Password1: '',
       Password2: '',
       Email: '',
+      buttonDisabled: true,
     };
     this.clearFirstName = React.createRef();
     this.clearLastName = React.createRef();
     this.clearUsername = React.createRef();
     this.clearPassword = React.createRef();
     this.clearEmail = React.createRef();
+  }
+
+  shouldButtonBeDisabled() {
+    if (
+      this.state.Username.replace(/ /g, '') !== '' &&
+      this.state.Password1.replace(/ /g, '') !== '' &&
+      this.state.Password2.replace(/ /g, '') !== '' &&
+      this.state.Email.replace(/ /g, '') !== ''
+    ) {
+      this.state.buttonDisabled = false;
+      return false;
+    } else {
+      this.state.buttonDisabled = true;
+      return true;
+    }
   }
 
   //needs a loading widget while creating account
@@ -124,11 +140,23 @@ export default class UserSignUpScreen extends Component {
             />
             <View style={[styles.marginBottom30, styles.marginTop35]}>
               <TouchableOpacity
-                style={styles.Buttons}
+                disabled={this.shouldButtonBeDisabled}
+                style={
+                  this.state.buttonDisabled
+                    ? styles.disabledButtons
+                    : styles.Buttons
+                }
                 onPress={() =>
                   handleSignUp(true, this.state, this.props.navigation)
                 }>
-                <Text style={styles.customBtnText}>Sign Up</Text>
+                <Text
+                  style={[
+                    this.state.buttonDisabled
+                      ? styles.disabledBtnText
+                      : styles.customBtnText,
+                  ]}>
+                  Sign Up
+                </Text>
               </TouchableOpacity>
             </View>
           </KeyboardAwareScrollView>

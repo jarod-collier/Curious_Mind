@@ -10,6 +10,9 @@ V1.0
 - sort posts, timestap needs to be added to posts
 - Disable all buttons if input is empty and change their style to reflect that
 - Remove text from reset password screen once finished. Too tired to do now :D
+- allow pastors that created the event to delete it
+- loading widget while creating accoutns/posts/events
+- checking security code isn't working
 
 
 V2.0

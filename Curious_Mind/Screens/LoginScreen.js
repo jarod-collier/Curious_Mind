@@ -20,6 +20,7 @@ export default class LoginScreen extends Component {
       Email: '',
       Password: '',
       Loading: false,
+      loginDisabled: true,
     };
     this.clearEmail = React.createRef();
     this.clearPassword = React.createRef();
@@ -52,6 +53,10 @@ export default class LoginScreen extends Component {
               keyboardType="email-address"
               placeholderTextColor="grey"
               onChangeText={e => {
+                e.replace(/ /g, '') === '' ||
+                this.state.Password.replace(/ /g, '') === ''
+                  ? (this.state.loginDisabled = true)
+                  : (this.state.loginDisabled = false);
                 this.setState({Email: e});
               }}
               ref={this.clearEmail}
@@ -62,23 +67,38 @@ export default class LoginScreen extends Component {
               placeholderTextColor="grey"
               secureTextEntry={true}
               onChangeText={e => {
+                e.replace(/ /g, '') === '' ||
+                this.state.Email.replace(/ /g, '') === ''
+                  ? (this.state.loginDisabled = true)
+                  : (this.state.loginDisabled = false);
                 this.setState({Password: e});
               }}
               ref={this.clearPassword}
             />
             <TouchableOpacity
-              style={styles.Buttons}
+              style={[
+                this.state.loginDisabled
+                  ? styles.disabledButtons
+                  : styles.Buttons,
+              ]}
+              disabled={this.state.loginDisabled}
               onPress={async () =>
-                logInUser(this.state.Email, this.state.Password).then(() => {
+                logInUser(
+                  this.state.Email,
+                  this.state.Password,
+                  this.props.navigation,
+                ).then(() => {
                   this.setState({Email: '', Password: ''});
-                  //navigate to Main screen
-                  this.props.navigation.reset({
-                    index: 0,
-                    routes: [{name: 'Home'}],
-                  });
                 })
               }>
-              <Text style={styles.customBtnText}>Log In</Text>
+              <Text
+                style={[
+                  this.state.loginDisabled
+                    ? styles.disabledBtnText
+                    : styles.customBtnText,
+                ]}>
+                Log In
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.Buttons}

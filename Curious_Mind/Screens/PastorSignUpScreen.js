@@ -20,11 +20,13 @@ export default class PastorSignUpScreen extends Component {
       FirstName: '',
       LastName: '',
       Username: '',
-      Password: '',
+      Password1: '',
+      Password2: '',
       Email: '',
       preach: '',
       seminary: '',
       addintionalInfo: '',
+      buttonDisabled: true,
     };
     this.clearFirstName = React.createRef();
     this.clearLastName = React.createRef();
@@ -36,7 +38,24 @@ export default class PastorSignUpScreen extends Component {
     this.clearAdditionalInfo = React.createRef();
   }
 
+  shouldButtonBeDisabled() {
+    console.log('checking');
+    if (
+      this.state.Username.replace(/ /g, '') !== '' &&
+      this.state.Password1.replace(/ /g, '') !== '' &&
+      this.state.Password2.replace(/ /g, '') !== '' &&
+      this.state.Email.replace(/ /g, '') !== ''
+    ) {
+      this.state.buttonDisabled = false;
+      return false;
+    } else {
+      this.state.buttonDisabled = true;
+      return true;
+    }
+  }
+
   render() {
+    console.log('rebuild');
     LayoutAnimation.easeInEaseOut();
     return (
       <SafeAreaView style={styles.safeAreaStyle}>
@@ -109,7 +128,18 @@ export default class PastorSignUpScreen extends Component {
               placeholderTextColor="black"
               blurOnSubmit={true}
               onChangeText={e => {
-                this.setState({Password: e});
+                this.setState({Password1: e});
+              }}
+              ref={this.clearPassword}
+            />
+            <TextInput
+              style={[styles.inputBox, styles.width300]}
+              placeholder="Confirm Password*"
+              secureTextEntry={true}
+              placeholderTextColor="black"
+              blurOnSubmit={true}
+              onChangeText={e => {
+                this.setState({Password2: e});
               }}
               ref={this.clearPassword}
             />
@@ -148,11 +178,23 @@ export default class PastorSignUpScreen extends Component {
             />
             <View style={[styles.marginBottom30, styles.marginTop35]}>
               <TouchableOpacity
-                style={styles.Buttons}
+                disabled={this.shouldButtonBeDisabled}
+                style={[
+                  this.state.buttonDisabled
+                    ? styles.disabledButtons
+                    : styles.Buttons,
+                ]}
                 onPress={() =>
                   handleSignUp(false, this.state, this.props.navigation)
                 }>
-                <Text style={styles.customBtnText}>Sign Up</Text>
+                <Text
+                  style={[
+                    this.state.buttonDisabled
+                      ? styles.disabledBtnText
+                      : styles.customBtnText,
+                  ]}>
+                  Sign Up
+                </Text>
               </TouchableOpacity>
             </View>
           </KeyboardAwareScrollView>

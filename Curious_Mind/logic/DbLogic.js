@@ -18,45 +18,52 @@ import {
   update,
   remove,
   onValue,
-  push
+  push,
 } from 'firebase/database';
 import {Alert} from 'react-native';
-import {checkPasswordCredentials} from './helpers'
+import {checkPasswordCredentials} from './helpers';
 
 export const db = getDatabase();
 export const auth = getAuth();
 
 // doesn't work with real username and password and empty values
-export const logInUser = async (email, password) => {
+export const logInUser = async (email, password, navigation) => {
   // await signInWithEmailAndPassword(auth, email, password).catch(error => {
-  await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin703').catch(error => {
-    // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703', ).catch(error => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
+  await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin731')
+    .then(() => {
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Home'}],
+      });
+    })
+    .catch(error => {
+      // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703', ).catch(error => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
 
-    console.log('error code:');
-    console.log(errorCode);
-    //user doesn't exist
-    if (errorCode === 'auth/user-not-found') {
-      Alert.alert('Incorrect username or password. \nPlease try again');
-    } else if (errorCode === 'auth/invalid-email') {
-      Alert.alert(
-        'Invalid email',
-        'Please enter a correct email. You entered: "' + email + '"',
-      );
-    } else if (errorCode === 'auth/wrong-password') {
-      Alert.alert(
-        'Invalid Entry',
-        "Invalid email-password combination. If you're seeing this error, " +
-          'it is likely that the password entered does not match the email you provided, but the email does exist in ' +
-          ' our database.\n\nPlease try again.',
-      );
-    } else if (password === '') {
-      Alert.alert('Please enter a password.');
-    } else {
-      Alert.alert(errorCode + ': ' + errorMessage);
-    }
-  });
+      console.log('error code:');
+      console.log(errorCode);
+      //user doesn't exist
+      if (errorCode === 'auth/user-not-found') {
+        Alert.alert('Incorrect username or password. \nPlease try again');
+      } else if (errorCode === 'auth/invalid-email') {
+        Alert.alert(
+          'Invalid email',
+          'Please enter a correct email. You entered: "' + email + '"',
+        );
+      } else if (errorCode === 'auth/wrong-password') {
+        Alert.alert(
+          'Invalid Entry',
+          "Invalid email-password combination. If you're seeing this error, " +
+            'it is likely that the password entered does not match the email you provided, but the email does exist in ' +
+            ' our database.\n\nPlease try again.',
+        );
+      } else if (password === '') {
+        Alert.alert('Please enter a password.');
+      } else {
+        Alert.alert(errorCode + ': ' + errorMessage);
+      }
+    });
 };
 
 // still working on it -------needs testing
@@ -65,51 +72,65 @@ export const resetPassword = async (stateObj, navigation) => {
   let max_attempts_to_reset_password = 5;
 
   // Get the user's sign in credentials
-  let credential = EmailAuthProvider.credential(user.email, stateObj.oldPassword);
+  let credential = EmailAuthProvider.credential(
+    user.email,
+    stateObj.oldPassword,
+  );
 
   reauthenticateWithCredential(user, credential)
-  .then(() => {
-    if (checkPasswordCredentials(stateObj)) {
-      updatePassword(user, stateObj.newPassword1)
-      .then(() => {
-        Alert.alert('Your password has been reset');
-        navigation.navigate('Profile');
+    .then(() => {
+      if (checkPasswordCredentials(stateObj)) {
+        updatePassword(user, stateObj.newPassword1)
+          .then(() => {
+            Alert.alert('Your password has been reset');
+            navigation.navigate('Profile');
 
-        // reset credential and re-authenticate user session
-        credential = EmailAuthProvider.credential(user.email, stateObj.newPassword1);
-        reauthenticateWithCredential(user, credential)
-        .then(() => {
-          console.log('user reauthenticated with new password');
-        })
-        .catch(error => {
-          console.log(
-            'could not reauthenticate after change of password',
-          );
-        });
-      })
-      // an error occured updating the password
-      .catch(error => {
-        console.log('could not update password: ' + error.message);
-      });
-    }
-  })
-  // error authenticating user with their old password
-  .catch(error => {
-    stateObj.errorCounter++;
-    if (stateObj.errorCounter < max_attempts_to_reset_password) {
-      Alert.alert('The old password you entered is incorrect.', `You have ${max_attempts_to_reset_password - stateObj.errorCounter} attempts left`);
-    } else {
-      Alert.alert('You have attempted to reset your password too many times.', 'You will be signed out now.');
-      signOut(auth)
-      .then(
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Login'}],
-        }),
-      )
-      .catch(errorSignout => Alert.alert(errorSignout.message));
+            // reset credential and re-authenticate user session
+            credential = EmailAuthProvider.credential(
+              user.email,
+              stateObj.newPassword1,
+            );
+            reauthenticateWithCredential(user, credential)
+              .then(() => {
+                console.log('user reauthenticated with new password');
+              })
+              .catch(error => {
+                console.log(
+                  'could not reauthenticate after change of password',
+                );
+              });
+          })
+          // an error occured updating the password
+          .catch(error => {
+            console.log('could not update password: ' + error.message);
+          });
       }
-  });
+    })
+    // error authenticating user with their old password
+    .catch(error => {
+      stateObj.errorCounter++;
+      if (stateObj.errorCounter < max_attempts_to_reset_password) {
+        Alert.alert(
+          'The old password you entered is incorrect.',
+          `You have ${
+            max_attempts_to_reset_password - stateObj.errorCounter
+          } attempts left`,
+        );
+      } else {
+        Alert.alert(
+          'You have attempted to reset your password too many times.',
+          'You will be signed out now.',
+        );
+        signOut(auth)
+          .then(
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'Login'}],
+            }),
+          )
+          .catch(errorSignout => Alert.alert(errorSignout.message));
+      }
+    });
   return stateObj.errorCounter;
 };
 
@@ -396,7 +417,7 @@ export const sendForgotPasswordEmail = async (navigation, email) => {
 
 export const validatePastorCode = async (code, navigation) => {
   let found = false;
-  get(child(ref(db), 'userInfo/')).then(snapshot => {
+  await get(child(ref(db), 'userInfo/')).then(snapshot => {
     snapshot.forEach(user => {
       if (user.val().userType === 'pastor') {
         if (user.val().pastorCode === code) {

@@ -19,6 +19,7 @@ export default class ForgotPasswordScreen extends Component {
     super(props);
     this.state = {
       Email: '',
+      buttonDisabled: true,
     };
   }
 
@@ -56,18 +57,33 @@ export default class ForgotPasswordScreen extends Component {
               placeholder="Enter your email"
               placeholderTextColor="grey"
               returnKeyType="done"
-              onChangeText={e => this.setState({Email: e})}
+              onChangeText={e => {
+                e.replace(/ /g, '') === ''
+                  ? (this.state.buttonDisabled = true)
+                  : (this.state.buttonDisabled = false);
+                this.setState({Email: e});
+              }}
             />
             <TouchableOpacity
+              disabled={this.state.buttonDisabled}
               style={[
-                styles.Buttons,
+                this.state.buttonDisabled
+                  ? styles.disabledButtons
+                  : styles.Buttons,
                 styles.marginBottom30,
                 styles.marginTop35,
               ]}
               onPress={() =>
                 sendForgotPasswordEmail(this.props.navigation, this.state.Email)
               }>
-              <Text style={styles.customBtnText}>Send Email</Text>
+              <Text
+                style={[
+                  this.state.buttonDisabled
+                    ? styles.disabledBtnText
+                    : styles.customBtnText,
+                ]}>
+                Send Email
+              </Text>
             </TouchableOpacity>
           </KeyboardAwareScrollView>
         </ScrollView>

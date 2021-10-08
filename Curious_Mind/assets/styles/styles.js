@@ -144,6 +144,21 @@ export const styles = StyleSheet.create({
     height: 40,
     marginVertical: 10,
   },
+  disabledButtons: {
+    shadowColor: 'rgba(0,0,0, .4)', // IOS
+    shadowOffset: {height: 3, width: 3}, // IOS
+    shadowOpacity: 1, // IOS
+    shadowRadius: 1, //IOS
+    elevation: 4, // Android
+    borderWidth: 1,
+    backgroundColor: '#ded9d8',
+    justifyContent: 'center',
+    borderColor: '#ded9d8',
+    borderRadius: 25,
+    width: 300,
+    height: 40,
+    marginVertical: 10,
+  },
   logoutButtons: {
     shadowColor: 'rgba(0,0,0, .4)', // IOS
     shadowOffset: {height: 2, width: 2}, // IOS
@@ -166,6 +181,12 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '400',
     color: 'white',
+    textAlign: 'center',
+  },
+  disabledBtnText: {
+    fontSize: 20,
+    fontWeight: '400',
+    color: 'black',
     textAlign: 'center',
   },
   generalText: {

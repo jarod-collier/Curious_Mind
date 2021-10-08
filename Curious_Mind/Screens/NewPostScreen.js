@@ -14,7 +14,6 @@ import {styles} from '../assets/styles/styles';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {createPost, updateUserPostCount} from '../logic/DbLogic';
 import {cleanUsersPost} from '../logic/helpers';
-import { thisExpression } from '@babel/types';
 
 export default class ResetPasswordScreen extends Component {
   constructor(props) {
@@ -62,7 +61,9 @@ export default class ResetPasswordScreen extends Component {
                 value={this.state.Question}
                 placeholderTextColor="black"
                 onChangeText={e => {
-                  (e === '') ? this.state.ButtonDisabled = true : this.state.ButtonDisabled = false;
+                  e.replace(/ /g, '') === ''
+                    ? (this.state.ButtonDisabled = true)
+                    : (this.state.ButtonDisabled = false);
                   this.setState({Question: e});
                 }}
                 ref={this.clearQuestion}
@@ -125,7 +126,12 @@ export default class ResetPasswordScreen extends Component {
                 </Text>
               </View>
               <TouchableOpacity
-                style={[styles.Buttons, styles.alignSelfCenter, this.state.ButtonDisabled ? {backgroundColor: '#ded9d8'} : null]}
+                style={[
+                  styles.alignSelfCenter,
+                  this.state.ButtonDisabled
+                    ? styles.disabledButtons
+                    : styles.Buttons,
+                ]}
                 disabled={this.state.ButtonDisabled}
                 onPress={async () => {
                   await cleanUsersPost(this.state.Question).then(
@@ -145,7 +151,14 @@ export default class ResetPasswordScreen extends Component {
                   });
                   this.props.navigation.navigate('Home Tab');
                 }}>
-                <Text style={styles.customBtnText}>Post</Text>
+                <Text
+                  style={[
+                    this.state.ButtonDisabled
+                      ? styles.disabledBtnText
+                      : styles.customBtnText,
+                  ]}>
+                  Post
+                </Text>
               </TouchableOpacity>
             </View>
           </KeyboardAwareScrollView>
