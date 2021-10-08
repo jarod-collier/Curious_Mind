@@ -23,6 +23,9 @@ export default class ResetPasswordScreen extends Component {
       newPassword1: '',
       newPassword2: '',
       errorCounter: 0,
+      OldPasswordEmpty: true,
+      NewPassword1Empty: true,
+      NewPassword2Empty: true,
     };
   }
 
@@ -50,6 +53,7 @@ export default class ResetPasswordScreen extends Component {
                 placeholderTextColor="black"
                 secureTextEntry={true}
                 onChangeText={e => {
+                  (e === '') ? this.state.OldPasswordEmpty = true : this.state.OldPasswordEmpty = false;
                   this.setState({oldPassword: e});
                 }}
               />
@@ -59,6 +63,7 @@ export default class ResetPasswordScreen extends Component {
                 placeholderTextColor="black"
                 secureTextEntry={true}
                 onChangeText={e => {
+                  (e === '') ? this.state.NewPassword1Empty = true : this.state.NewPassword1Empty = false;
                   this.setState({newPassword1: e});
                 }}
               />
@@ -68,6 +73,7 @@ export default class ResetPasswordScreen extends Component {
                 placeholderTextColor="black"
                 secureTextEntry={true}
                 onChangeText={e => {
+                  (e === '') ? this.state.NewPassword2Empty = true : this.state.NewPassword2Empty = false;
                   this.setState({newPassword2: e});
                 }}
               />
@@ -76,12 +82,24 @@ export default class ResetPasswordScreen extends Component {
                   styles.Buttons,
                   styles.marginBottom30,
                   styles.marginTop35,
+                  styles.alignSelfCenter,
+                  (this.state.OldPasswordEmpty || this.state.NewPassword2Empty || this.state.NewPassword2Empty) ? {backgroundColor: '#ded9d8'} : null
                 ]}
+                disabled={this.state.OldPasswordEmpty || this.state.NewPassword2Empty || this.state.NewPassword2Empty}
                 onPress={async () => {
                   Keyboard.dismiss;
                   resetPassword(this.state, this.props.navigation).then(
                     counter => (this.state.errorCounter = counter),
                   );
+                  this.setState({
+                    oldPassword: '',
+                    newPassword1: '',
+                    newPassword2: '',
+                    errorCounter: 0,
+                    OldPasswordEmpty: true,
+                    NewPassword1Empty: true,
+                    NewPassword2Empty: true,
+                  });
                 }}>
                 <Text style={styles.customBtnText}>Reset Password</Text>
               </TouchableOpacity>

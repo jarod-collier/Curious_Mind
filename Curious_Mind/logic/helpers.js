@@ -5,6 +5,7 @@ import {likePost, reportPost, reportComment} from './DbLogic';
 import React from 'react';
 import {Card} from 'react-native-shadow-cards';
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
+import {Alert} from 'react-native';
 
 // Using strings to filter common words for readability and maintability
 // I tried to make it so each row is similar (but then I found a huge list of possible words)
@@ -387,3 +388,26 @@ export const cleanUsersPost = async userInput => {
 
   return cleanedUserInput;
 };
+
+export const checkPasswordCredentials = async stateObj => {
+  
+  console.log("inside check password");
+  let password1 = stateObj.newPassword1;
+  let password2 = stateObj.newPassword2;
+  let min_password_length = 6;
+  let valid_password = false
+
+  if (password1 < min_password_length || password2 < min_password_length) {
+    Alert.alert(`New password needs to be at least ${min_password_length} characters long`);
+  }
+  else if (password1 !== password2) {
+    Alert.alert("Your passwords do not match. Please try again.")
+  }
+  else {
+    valid_password = true;
+  }
+  console.log("valid password: " + valid_password);
+  return valid_password;
+};
+
+

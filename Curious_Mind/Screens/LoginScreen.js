@@ -37,6 +37,7 @@ export default class LoginScreen extends Component {
               styles.container,
               styles.aligItemsCenter,
               styles.marginTop35,
+              styles.marginBottom15,
             ]}
             scrollEnabled={true}
             enableOnAndroid={true}

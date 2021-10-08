@@ -1,6 +1,5 @@
 V1.0
 - test ALL firebase calls (DbLogic file)
-- refactor resetPassword function in DbLogic to helper functions (only keep the DB calls)
 - handleSignUp in DbLogic needs to be refactored into helper functions
 - input validations all over the app (and check that an event/post can't be created without certain inputs)
 - filter posts (words)
@@ -10,6 +9,7 @@ V1.0
 - Hide events if current date > event date
 - sort posts, timestap needs to be added to posts
 - Disable all buttons if input is empty and change their style to reflect that
+- Remove text from reset password screen once finished. Too tired to do now :D
 
 
 V2.0

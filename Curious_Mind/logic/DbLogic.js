@@ -21,13 +21,15 @@ import {
   push
 } from 'firebase/database';
 import {Alert} from 'react-native';
+import {checkPasswordCredentials} from './helpers'
 
 export const db = getDatabase();
 export const auth = getAuth();
 
+// doesn't work with real username and password and empty values
 export const logInUser = async (email, password) => {
-  await signInWithEmailAndPassword(auth, email, password).catch(error => {
-  // await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin703').catch(error => {
+  // await signInWithEmailAndPassword(auth, email, password).catch(error => {
+  await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin703').catch(error => {
     // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703', ).catch(error => {
     const errorCode = error.code;
     const errorMessage = error.message;
@@ -60,91 +62,54 @@ export const logInUser = async (email, password) => {
 // still working on it -------needs testing
 export const resetPassword = async (stateObj, navigation) => {
   const user = auth.currentUser;
+  let max_attempts_to_reset_password = 5;
 
-  if (this.state.oldPassword != null) {
-    // Get the user's sign in credentials
-    let credential = EmailAuthProvider.credential(
-      user.email,
-      stateObj.oldPassword,
-    );
+  // Get the user's sign in credentials
+  let credential = EmailAuthProvider.credential(user.email, stateObj.oldPassword);
 
-    reauthenticateWithCredential(user, credential)
+  reauthenticateWithCredential(user, credential)
+  .then(() => {
+    if (checkPasswordCredentials(stateObj)) {
+      updatePassword(user, stateObj.newPassword1)
       .then(() => {
-        /**************THIS SHOULD BE MOVED TO THE HELPERS */
+        Alert.alert('Your password has been reset');
+        navigation.navigate('Profile');
 
-        //user re-authenticated
-        if (stateObj.newPassword1 !== '' && stateObj.newPassword2 !== '') {
-          //passwords exist
-          if (
-            stateObj.newPassword1.length >= 6 &&
-            stateObj.newPassword2.length >= 6
-          ) {
-            //password longer than 6 characters
-            if (stateObj.newPassword1 === stateObj.newPassword2) {
-              //passwords match
-              updatePassword(user, stateObj.newPassword1)
-                .then(() => {
-                  Alert.alert('Your password has been reset');
-                  navigation.navigate('Profile');
-                  //reset credential and re-authenticate user session
-                  credential = EmailAuthProvider.credential(
-                    user.email,
-                    stateObj.newPassword1,
-                  );
-                  reauthenticateWithCredential(user, credential)
-                    .then(() => {
-                      console.log('user reauthenticated with new password');
-                    })
-                    .catch(error => {
-                      console.log(
-                        'could not reauthenticate after change of password',
-                      );
-                    });
-                })
-                .catch(error => {
-                  // an error occured
-                  console.log('could not update password: ' + error.message);
-                });
-            } else {
-              //passwords dont match
-              Alert.alert("New passwords don't match");
-            }
-          } else {
-            //new passwords less than 6 characters
-            Alert.alert('New password needs to be at least 6 characters long');
-          }
-        } else {
-          //empty new password
-          Alert.alert('Please fill all fields');
-        }
+        // reset credential and re-authenticate user session
+        credential = EmailAuthProvider.credential(user.email, stateObj.newPassword1);
+        reauthenticateWithCredential(user, credential)
+        .then(() => {
+          console.log('user reauthenticated with new password');
+        })
+        .catch(error => {
+          console.log(
+            'could not reauthenticate after change of password',
+          );
+        });
       })
+      // an error occured updating the password
       .catch(error => {
-        //error authenticating
-        Alert.alert('' + error);
-        stateObj.errorCounter++;
-        if (stateObj.errorCounter < 5) {
-          Alert.alert(
-            'Old password is incorrect\nYou have ' +
-              (5 - stateObj.errorCounter) +
-              ' attempts left',
-          );
-        } else {
-          Alert.alert(
-            'You have exceeded the trail limit.\nYou will be signed out now.',
-          );
-          signOut()
-            .then(
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'Login'}],
-              }),
-            )
-            .catch(errorSignout => Alert.alert(errorSignout.message));
-        }
+        console.log('could not update password: ' + error.message);
       });
-  } else {
-    Alert.alert('Please Enter old password');
-  }
+    }
+  })
+  // error authenticating user with their old password
+  .catch(error => {
+    stateObj.errorCounter++;
+    if (stateObj.errorCounter < max_attempts_to_reset_password) {
+      Alert.alert('The old password you entered is incorrect.', `You have ${max_attempts_to_reset_password - stateObj.errorCounter} attempts left`);
+    } else {
+      Alert.alert('You have attempted to reset your password too many times.', 'You will be signed out now.');
+      signOut(auth)
+      .then(
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Login'}],
+        }),
+      )
+      .catch(errorSignout => Alert.alert(errorSignout.message));
+      }
+  });
   return stateObj.errorCounter;
 };
 
