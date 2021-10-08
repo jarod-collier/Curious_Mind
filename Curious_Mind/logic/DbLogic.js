@@ -8,7 +8,6 @@ import {
   updatePassword,
   createUserWithEmailAndPassword,
   deleteUser,
-  fetchSignInMethodsForEmail,
 } from 'firebase/auth';
 import {
   getDatabase,
@@ -245,7 +244,7 @@ export const createPost = async postObj => {
   let uid = auth.currentUser.uid;
   await get(child(ref(db), `userInfo/${uid}`)).then(async snapshot => {
     let firebaseApprovedQuestion = postObj.Question.replace(/\./g, '')
-      .replace(/\#/g, '')
+      .replace(/#/g, '')
       .replace(/\$/g, '')
       .replace(/\[/g, '')
       .replace(/\]/g, '');

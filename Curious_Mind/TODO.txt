@@ -1,10 +1,14 @@
+V1.0
 - fix back navigation issue with ProfileScreen and ResetPasswordScreen
 - test ALL firebase calls (DbLogic file)
 - refactor resetPassword function in DbLogic to helper functions (only keep the DB calls)
 - handleSignUp in DbLogic needs to be refactored into helper functions
 - input validations all over the app (and check that an event/post can't be created without certain inputs)
-- search for users
-- filter posts
+- filter posts (words)
 - Add regex to filters 
 - logo is left justified on android
 - new post options screen are all left justified
+
+V2.0
+- search for users
+
