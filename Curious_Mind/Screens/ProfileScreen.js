@@ -76,7 +76,7 @@ export default class ProfileScreen extends Component {
           }>
           <KeyboardAwareScrollView
             resetScrollToCoords={{x: 0, y: 0}}
-            contentContainerStyle={[styles.container, styles.marginTop25]}
+            contentContainerStyle={[styles.container, styles.marginTop25, styles.marginBottom15]}
             scrollEnabled={true}
             extraHeight={100}>
             {!this.state.Loading ? (

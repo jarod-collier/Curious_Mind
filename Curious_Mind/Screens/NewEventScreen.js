@@ -57,7 +57,7 @@ export default class NewEventScreen extends Component {
         <ScrollView>
           <KeyboardAwareScrollView
             resetScrollToCoords={{x: 0, y: 0}}
-            contentContainerStyle={styles.container}
+            contentContainerStyle={[styles.container, styles.marginHorizontal15, styles.marginBottom15]}
             scrollEnabled={true}
             extraHeight={100}
             keyboardShouldPersistTaps="handled">

@@ -14,17 +14,18 @@ import {styles} from '../assets/styles/styles';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {createPost, updateUserPostCount} from '../logic/DbLogic';
 import {cleanUsersPost} from '../logic/helpers';
+import { thisExpression } from '@babel/types';
 
 export default class ResetPasswordScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      checked: {},
       Question: '',
       Description: '',
       Anon: false,
       pastorOnly: false,
       username: '',
+      ButtonDisabled: true,
     };
     this.clearQuestion = React.createRef();
     this.clearDescription = React.createRef();
@@ -39,7 +40,7 @@ export default class ResetPasswordScreen extends Component {
             resetScrollToCoords={{x: 0, y: 0}}
             contentContainerStyle={[
               styles.container,
-              styles.aligItemsStart,
+              // styles.aligItemsStart,
               styles.marginHorizontal15,
             ]}
             scrollEnabled={true}
@@ -56,11 +57,12 @@ export default class ResetPasswordScreen extends Component {
                 Your Question
               </Text>
               <TextInput
-                style={[styles.inputBox, styles.width320, styles.justifyStart]}
+                style={[styles.inputBox]}
                 placeholder="Type your question here"
                 value={this.state.Question}
                 placeholderTextColor="black"
                 onChangeText={e => {
+                  (e === '') ? this.state.ButtonDisabled = true : this.state.ButtonDisabled = false;
                   this.setState({Question: e});
                 }}
                 ref={this.clearQuestion}
@@ -123,7 +125,8 @@ export default class ResetPasswordScreen extends Component {
                 </Text>
               </View>
               <TouchableOpacity
-                style={[styles.Buttons, styles.alignSelfCenter]}
+                style={[styles.Buttons, styles.alignSelfCenter, this.state.ButtonDisabled ? {backgroundColor: '#ded9d8'} : null]}
+                disabled={this.state.ButtonDisabled}
                 onPress={async () => {
                   await cleanUsersPost(this.state.Question).then(
                     val => (this.state.Question = val),
@@ -138,6 +141,7 @@ export default class ResetPasswordScreen extends Component {
                     Description: '',
                     Anon: false,
                     pastorOnly: false,
+                    ButtonDisabled: true,
                   });
                   this.props.navigation.navigate('Home Tab');
                 }}>

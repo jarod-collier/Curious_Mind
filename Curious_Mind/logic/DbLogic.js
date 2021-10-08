@@ -18,6 +18,7 @@ import {
   update,
   remove,
   onValue,
+  push
 } from 'firebase/database';
 import {Alert} from 'react-native';
 
@@ -25,12 +26,8 @@ export const db = getDatabase();
 export const auth = getAuth();
 
 export const logInUser = async (email, password) => {
-  // signInWithEmailAndPassword(auth, email, password)
-  await signInWithEmailAndPassword(
-    auth,
-    'collierj@mail.gvsu.edu',
-    'Admin703',
-  ).catch(error => {
+  await signInWithEmailAndPassword(auth, email, password).catch(error => {
+  // await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin703').catch(error => {
     // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703', ).catch(error => {
     const errorCode = error.code;
     const errorMessage = error.message;
@@ -248,7 +245,7 @@ export const createPost = async postObj => {
       .replace(/\$/g, '')
       .replace(/\[/g, '')
       .replace(/\]/g, '');
-    await set(ref(db, `posts/${uid}${firebaseApprovedQuestion}`), {
+    await set(push(ref(db, `posts/`)), {
       username: snapshot.val().Username,
       date: new Date().toLocaleDateString(),
       question: postObj.Question,
