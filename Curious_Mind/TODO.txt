@@ -11,8 +11,7 @@ V1.0
 - Disable all buttons if input is empty and change their style to reflect that
 - Remove text from reset password screen once finished. Too tired to do now :D
 - allow pastors that created the event to delete it
-- loading widget while creating accoutns/posts/events
-- checking security code isn't working
+- loading widget while creating accoutns/posts/events/checking pastor code
 
 
 V2.0
