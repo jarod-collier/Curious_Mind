@@ -8,6 +8,7 @@ import {
   updatePassword,
   createUserWithEmailAndPassword,
   deleteUser,
+  fetchSignInMethodsForEmail,
 } from 'firebase/auth';
 import {
   getDatabase,
@@ -412,36 +413,24 @@ export const reportComment = async (postID, commentId) => {
   });
 };
 
-//NEEDS TESTING
-export const sendForgotPasswordEmail = navigation => {
-  let allUserEmails = []; //WHY IS THIS HERE?
-  get(child(ref(db), 'userInfo/')).then(snapshot => {
-    snapshot.forEach(element => {
-      allUserEmails.push(element.val().Email);
-    });
-
-    if (allUserEmails.includes(this.state.Email)) {
-      sendPasswordResetEmail(auth, this.state.Email)
-        .then(() => {
-          // Password reset email sent!
-          Alert.alert(
-            'Reset Password',
-            'Your password has been reset.\nPlease check your email to finish the process',
-            [{text: 'OK', onPress: () => navigation.goBack()}],
-            {cancelable: false},
-          );
-        })
-        .catch(error => {
-          const errorMessage = error.message;
-          console.log('error sending reset password email: ' + errorMessage);
-        });
-    } else {
+export const sendForgotPasswordEmail = async (navigation, email) => {
+  sendPasswordResetEmail(auth, email)
+    .then(() => {
+      // Password reset email sent!
       Alert.alert(
-        'Incorrect Email',
-        `The email you provided is: "${this.state.Email}". This does not exist in our database. Please try a different email.`,
+        'Reset Password',
+        'Your password has been reset.\nPlease check your email to finish the process',
+        [{text: 'OK', onPress: () => navigation.goBack()}],
+        {cancelable: false},
       );
-    }
-  });
+    })
+    .catch(error => {
+      if (error.code === 'auth/user-not-found') {
+        Alert.alert("User doesn't exist", [{text: 'OK'}], {cancelable: false});
+      } else if (error.code === 'auth/invalid-email') {
+        Alert.alert('Invalid email', [{text: 'OK'}], {cancelable: false});
+      }
+    });
 };
 
 export const validatePastorCode = async (code, navigation) => {

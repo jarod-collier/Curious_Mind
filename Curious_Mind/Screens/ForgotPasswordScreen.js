@@ -64,7 +64,9 @@ export default class ForgotPasswordScreen extends Component {
                 styles.marginBottom30,
                 styles.marginTop35,
               ]}
-              onPress={() => sendForgotPasswordEmail(this.props.navigation)}>
+              onPress={() =>
+                sendForgotPasswordEmail(this.props.navigation, this.state.Email)
+              }>
               <Text style={styles.customBtnText}>Send Email</Text>
             </TouchableOpacity>
           </KeyboardAwareScrollView>
