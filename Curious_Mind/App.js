@@ -161,10 +161,33 @@ function Nested_Main({navigation}) {
       }}>
       <Nested_Stack.Screen name="Main Feed" component={MainFeedScreen} />
       <Nested_Stack.Screen name="Thread" component={ThreadScreen} />
-      <Nested_Stack.Screen name="Add Event" component={NewEventScreen} />
+      <Nested_Stack.Screen 
+        name="Add Event" 
+        component={NewEventScreen} 
+        options={{
+          headerBackImage: () => (
+            <Button
+              style={styles.backButton}
+              color="black"
+              name="arrow-left"
+              onPress={() => navigation.navigate("Events")}
+            />
+          ),
+        }}
+      />
       <Nested_Stack.Screen
         name="Reset Password"
         component={ResetPasswordScreen}
+        options={{
+          headerBackImage: () => (
+            <Button
+              style={styles.backButton}
+              color="black"
+              name="arrow-left"
+              onPress={() => navigation.navigate("Profile")}
+            />
+          ),
+        }}
       />
       <Nested_Stack.Screen
         name="View Profile"

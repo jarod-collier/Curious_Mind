@@ -6,9 +6,7 @@ V1.0
 - input validations all over the app (and check that an event/post can't be created without certain inputs)
 - filter posts (words)
 - Add regex to filters 
-- logo is left justified on android
 - new post options screen are all left justified
 
 V2.0
 - search for users
-
