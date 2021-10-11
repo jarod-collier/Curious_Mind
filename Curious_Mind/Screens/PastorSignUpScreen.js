@@ -178,7 +178,7 @@ export default class PastorSignUpScreen extends Component {
             />
             <View style={[styles.marginBottom30, styles.marginTop35]}>
               <TouchableOpacity
-                disabled={this.shouldButtonBeDisabled}
+                disabled={this.shouldButtonBeDisabled()}
                 style={[
                   this.state.buttonDisabled
                     ? styles.disabledButtons

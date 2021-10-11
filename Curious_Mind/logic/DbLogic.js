@@ -28,8 +28,9 @@ export const auth = getAuth();
 
 // doesn't work with real username and password and empty values
 export const logInUser = async (email, password, navigation) => {
-  // await signInWithEmailAndPassword(auth, email, password).catch(error => {
+  // await signInWithEmailAndPassword(auth, email, password)
   await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin731')
+  // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User731', )
     .then(() => {
       navigation.reset({
         index: 0,
@@ -37,7 +38,6 @@ export const logInUser = async (email, password, navigation) => {
       });
     })
     .catch(error => {
-      // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703', ).catch(error => {
       const errorCode = error.code;
       const errorMessage = error.message;
 
@@ -80,25 +80,25 @@ export const resetPassword = async (stateObj, navigation) => {
   reauthenticateWithCredential(user, credential)
     .then(() => {
       if (checkPasswordCredentials(stateObj)) {
-        updatePassword(user, stateObj.newPassword1)
+        updatePassword(user, stateObj.Password1)
           .then(() => {
-            Alert.alert('Your password has been reset');
-            navigation.navigate('Profile');
-
             // reset credential and re-authenticate user session
             credential = EmailAuthProvider.credential(
               user.email,
-              stateObj.newPassword1,
+              stateObj.Password1,
             );
             reauthenticateWithCredential(user, credential)
-              .then(() => {
-                console.log('user reauthenticated with new password');
-              })
-              .catch(error => {
-                console.log(
-                  'could not reauthenticate after change of password',
-                );
-              });
+            .then(() => {
+              console.log('user reauthenticated with new password');
+              Alert.alert('Your password has been reset');
+              navigation.navigate('Profile');
+  
+            })
+            .catch(error => {
+              console.log(
+                'could not reauthenticate after change of password',
+              );
+            });
           })
           // an error occured updating the password
           .catch(error => {
@@ -226,11 +226,6 @@ export const reportPost = async (postID, MainFeedView, navigation) => {
 export const createPost = async postObj => {
   let uid = auth.currentUser.uid;
   await get(child(ref(db), `userInfo/${uid}`)).then(async snapshot => {
-    let firebaseApprovedQuestion = postObj.Question.replace(/\./g, '')
-      .replace(/#/g, '')
-      .replace(/\$/g, '')
-      .replace(/\[/g, '')
-      .replace(/\]/g, '');
     await set(push(ref(db, `posts/`)), {
       username: snapshot.val().Username,
       date: new Date().toLocaleDateString(),
@@ -268,7 +263,7 @@ export const updateUserPostCount = async () => {
 
 export const createEvent = async eventObj => {
   let uid = auth.currentUser.uid;
-  set(ref(db, `events/${uid}eventObj.Title`), {
+  set(ref(db, `events/${uid}_${eventObj.Title}`), {
     title: eventObj.Title,
     desc: eventObj.Description,
     date: eventObj.chosenDate,
@@ -303,35 +298,25 @@ export const canComment = async posterUser => {
   return userCan;
 };
 
-//this is not posting comments
 export const addCommentToPost = async (postID, comment) => {
-  var username;
   let uid = auth.currentUser.uid;
-  let commentNum;
-  let comment_id;
-  let user_type;
+  let unique_id = Math.random().toString(16).substring(2, 12);
 
-  await get(child(ref(db), `userInfo/${uid}`)).then(snapshot => {
-    username = snapshot.val().Username;
-    commentNum = snapshot.val().commentNum;
-    user_type = snapshot.val().userType;
-    let unique_id = Math.random().toString(16).substring(2, 12);
-    comment_id = `${uid}_${unique_id}`;
+  await get(child(ref(db), `userInfo/${uid}`)).then(async snapshot => {
+    await set(push(ref(db, `posts/${postID}/comments`)), {
+      comment: comment,
+      username: snapshot.val().Username,
+      date: new Date().toLocaleDateString(),
+      reportedBy: [''],
+      userType: snapshot.val().userType,
+      reports: 0,
+      key: `${uid}_${unique_id}`,
+    }).catch(error => {
+      Alert.alert('error ', error);
+    });
+    await updateUserCommentCount(uid, snapshot.val().commentNum);
+    Alert.alert('Comment added successfully.');
   });
-  await set(ref(db, `posts/${postID}/comments/${comment_id}`), {
-    comment: comment,
-    username: username,
-    date: new Date().toLocaleDateString(),
-    reportedBy: [''],
-    userType: user_type,
-    reports: 0,
-    key: comment_id,
-  }).catch(error => {
-    Alert.alert('error ', error);
-  });
-
-  await updateUserCommentCount(uid, commentNum);
-  Alert.alert('Comment added successfully.');
 };
 
 export const updateUserCommentCount = async (uid, commentNum) => {
@@ -437,95 +422,72 @@ export const validatePastorCode = async (code, navigation) => {
 
 //firebase error here
 export const handleSignUp = async (normalUser, signupObject, navigation) => {
-  const validUserName = await checkUsername(signupObject.Username);
-  if (validUserName) {
-    let UserId;
+  if (await checkUsername(signupObject.Username)) {
 
-    //THIS SHOULD BE IN THE HELPER
     // Password are not empty
-    if (signupObject.Password1 !== '' && signupObject.Password2 !== '') {
-      // Passwords match
-      if (signupObject.Password1 === signupObject.Password2) {
-        // Passwords are greater than length 6
-        if (
-          signupObject.Password1.length >= 6 &&
-          signupObject.Password2.length >= 6
-        ) {
-          createUserWithEmailAndPassword(
-            auth,
-            signupObject.Email,
-            signupObject.Password1,
-          )
-            .then(userCredential => {
-              // Signed in
-              console.log('successfully created user account');
-              UserId = userCredential.user.uid;
-            })
-            .catch(error => {
-              console.log('failure creating account');
-              const errorMessage = error.message;
-              console.log('error message: ' + errorMessage);
-            })
-            .then(() => {
-              normalUser
-                ? set(ref(db, 'userInfo/' + UserId), {
-                    First: '' + signupObject.FirstName,
-                    Last: '' + signupObject.LastName,
-                    Username: '' + signupObject.Username,
-                    uid: UserId,
-                    postNum: 0,
-                    commentNum: 0,
-                    AddintionalInfo: '',
-                    score: 0,
-                    userType: 'user',
-                    Email: signupObject.Email,
-                  })
-                : set(ref(db, 'userInfo/' + UserId), {
-                    First: '' + signupObject.FirstName,
-                    Last: '' + signupObject.LastName,
-                    Username: '' + signupObject.Username,
-                    Email: '' + signupObject.Email,
-                    Preach: '' + signupObject.preach,
-                    Seminary: '' + signupObject.seminary,
-                    AddintionalInfo: '' + signupObject.addintionalInfo,
-                    pastorCode:
-                      '' +
-                      (Math.random().toString(16).substring(2, 6) +
-                        Math.random().toString(16).substring(2, 6)),
-                    uid: UserId,
-                    commentNum: 0,
-                    postNum: 0,
-                    score: 0,
-                    userType: 'pastor',
-                  });
-            })
-            .catch(error => {
-              console.log('failure setting data');
-            })
-            .then(() =>
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'Home'}],
-              }),
-            );
-        } else {
-          //new passwords less than 6 characters
-          Alert.alert('New password needs to be at least 6 characters long');
+    if (await checkPasswordCredentials(signupObject)) {
+      await createUserWithEmailAndPassword(
+        auth,
+        signupObject.Email,
+        signupObject.Password1,
+      )
+      .then(userCredential => {
+        // Signed in
+        let UserId = userCredential.user.uid;
+        let signUpRef = ref(db, 'userInfo/' + UserId);
+        let userType = normalUser ? 'user' : 'pastor';
+        console.log("user type: " + userType);
+        set(signUpRef, {
+          First: '' + signupObject.FirstName,
+          Last: '' + signupObject.LastName,
+          Username: '' + signupObject.Username,
+          uid: UserId,
+          postNum: 0,
+          commentNum: 0,
+          score: 0,
+          Email: signupObject.Email,
+          userType: userType,
+        });
+        if (!normalUser) {
+          set(signUpRef, {
+            AddintionalInfo: '' + signupObject.addintionalInfo,
+            pastorCode:
+              '' +
+              (Math.random().toString(16).substring(2, 6) +
+              Math.random().toString(16).substring(2, 6)),
+            Preach: signupObject.preach,
+            Seminary: signupObject.seminary
+          });
         }
-      } else {
-        //passwords dont match
-        Alert.alert("New passwords don't match");
-      }
-    } else {
-      //empty new password
-      Alert.alert('Please fill all fields');
-    }
+      })
+      .then(() =>
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Home'}],
+        }),
+      )
+      .catch(error => {
+        const errorCode = error.code;
+        if (errorCode === 'auth/invalid-email') {
+          Alert.alert(
+            'Invalid email',
+            `Please enter a correct email. You entered: "${signupObject.Email}"`,
+          );
+        }
+        else {
+          Alert.alert(
+            'Error',
+            'Internal app error. Please try again.'
+          )
+        } 
+      });
+    } 
   }
 };
 
 export const checkUsername = async username => {
   let valid = true;
-  await get(child(ref(db), 'userInfo/')).then(snapshot => {
+  await get(child(ref(db), 'userInfo/')).then(async snapshot => {
     snapshot.forEach(user => {
       if (user.val().Username === username) {
         Alert.alert(
@@ -534,14 +496,16 @@ export const checkUsername = async username => {
             username +
             '" is already in use. Please try a different username.',
         );
-        return false;
+        valid = false;
       }
     });
-    return valid;
+    valid = true;
   });
+  return valid;
 };
 
 export const delUser = navigation => {
+  console.log("delete user");
   Alert.alert(
     'Delete Account',
     'Are you sure you want to delete your account?',
@@ -556,14 +520,23 @@ export const delUser = navigation => {
 
           this.makeDelay(500);
           var user = auth.currentUser;
+
+          // Get the user's sign in credentials
+          // let credential = EmailAuthProvider.credential(
+          //   user.email,
+          //   stateObj.oldPassword,
+          // );
+
+          // reauthenticateWithCredential(user, credential);
+
           deleteUser(user)
-            .then(() =>
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'Login'}],
-              }),
-            )
-            .catch(error => Alert.alert(error.message));
+          .then(() =>
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'Login'}],
+            })
+          )
+          .catch(error => Alert.alert(error.message));
         },
         style: {color: 'red'},
       },

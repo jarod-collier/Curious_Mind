@@ -1,18 +1,15 @@
 V1.0
 - test ALL firebase calls (DbLogic file)
-- handleSignUp in DbLogic needs to be refactored into helper functions
 - input validations all over the app (and check that an event/post can't be created without certain inputs)
-- filter posts (words)
+- sort posts, timestap needs to be added to posts
 - Add regex to filters 
 - Android event time/date buttons auto popup
 - when adding event, then clicking home screen, add event screen stays up
 - Hide events if current date > event date
-- sort posts, timestap needs to be added to posts
-- Disable all buttons if input is empty and change their style to reflect that
-- Remove text from reset password screen once finished. Too tired to do now :D
 - allow pastors that created the event to delete it
 - loading widget while creating accoutns/posts/events/checking pastor code
-
+- DeleteUser in delUser is hitting some snapshot.val() for some reason...
+- liked a post and it printed "OnValue MainFeed" and "inside prepare posts from db" like 50+ times
 
 V2.0
 - search for users

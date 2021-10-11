@@ -20,18 +20,22 @@ export default class ResetPasswordScreen extends Component {
     super(props);
     this.state = {
       oldPassword: '',
-      newPassword1: '',
-      newPassword2: '',
+      Password1: '',
+      Password2: '',
       errorCounter: 0,
       buttonDisabled: true,
     };
+
+    this.clearOldPassword = React.createRef();
+    this.clearPassword1 = React.createRef();
+    this.clearPassword2 = React.createRef();
   }
 
   shouldButtonBeDisabled() {
     if (
       this.state.oldPassword.replace(/ /g, '') !== '' &&
-      this.state.newPassword1.replace(/ /g, '') !== '' &&
-      this.state.newPassword2.replace(/ /g, '') !== ''
+      this.state.Password1.replace(/ /g, '') !== '' &&
+      this.state.Password2.replace(/ /g, '') !== ''
     ) {
       this.state.buttonDisabled = false;
       return false;
@@ -67,6 +71,7 @@ export default class ResetPasswordScreen extends Component {
                 onChangeText={e => {
                   this.setState({oldPassword: e});
                 }}
+                ref={this.clearOldPassword}
               />
               <TextInput
                 style={[styles.inputBox, styles.width300]}
@@ -74,8 +79,9 @@ export default class ResetPasswordScreen extends Component {
                 placeholderTextColor="black"
                 secureTextEntry={true}
                 onChangeText={e => {
-                  this.setState({newPassword1: e});
+                  this.setState({Password1: e});
                 }}
+                ref={this.clearPassword1}
               />
               <TextInput
                 style={[styles.inputBox, styles.width300]}
@@ -83,8 +89,9 @@ export default class ResetPasswordScreen extends Component {
                 placeholderTextColor="black"
                 secureTextEntry={true}
                 onChangeText={e => {
-                  this.setState({newPassword2: e});
+                  this.setState({Password2: e});
                 }}
+                ref={this.clearPassword2}
               />
               <TouchableOpacity
                 disabled={this.shouldButtonBeDisabled()}
@@ -100,13 +107,20 @@ export default class ResetPasswordScreen extends Component {
                   Keyboard.dismiss;
                   resetPassword(this.state, this.props.navigation).then(
                     counter => (this.state.errorCounter = counter),
+                  )
+                  .then(
+                    this.setState({
+                      oldPassword: '',
+                      Password1: '',
+                      Password2: '',
+                      errorCounter: 0,
+                    })
                   );
-                  this.setState({
-                    oldPassword: '',
-                    newPassword1: '',
-                    newPassword2: '',
-                    errorCounter: 0,
-                  });
+
+                  // need to double check that this works for iOS as well
+                  this.clearOldPassword.current.clear();
+                  this.clearPassword1.current.clear();
+                  this.clearPassword2.current.clear();
                 }}>
                 <Text
                   style={[

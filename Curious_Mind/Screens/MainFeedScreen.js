@@ -7,13 +7,15 @@ import {
   ScrollView,
   RefreshControl,
   LayoutAnimation,
+  TouchableOpacity,
 } from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {styles} from '../assets/styles/styles';
 import {db} from '../logic/DbLogic';
-import {loadPostCards, preparePostsFromDB} from '../logic/helpers';
+import {loadPostCards, preparePostsFromDB, sortQuestions} from '../logic/helpers';
 import {onValue, ref} from 'firebase/database';
 import {getAuth} from 'firebase/auth';
+import {Alert} from 'react-native';
 export default class MainFeedScreen extends Component {
   constructor(props) {
     super(props);
@@ -23,6 +25,7 @@ export default class MainFeedScreen extends Component {
       Loading: true,
       filteredDisplay: [],
       searchQuery: '',
+      SortQuestionsBy: "Most Recent",
     };
   }
 
@@ -54,6 +57,34 @@ export default class MainFeedScreen extends Component {
     }
   };
 
+  AsyncAlert = async () => new Promise((resolve) => {
+    Alert.alert(
+      'Sort Questions',
+      'How would you like to sort the questions that you see?',
+      [
+        {
+          text: 'Most Recent', onPress: () => {
+          this.state.SortQuestionsBy = "Most Recent";
+          resolve('YES');
+  
+        }},
+        {
+          text: 'Most Liked',
+          onPress: async () => {
+            this.state.SortQuestionsBy = "Most Liked";
+            resolve('YES');
+          },
+        },
+      ],
+      {cancelable: true},
+    );
+  });
+
+  async sortQuestions() {
+    await this.AsyncAlert();    
+    await this.readFromDB();
+  }
+
   async readFromDB() {
     let uid = getAuth().currentUser.uid;
     if (!this.state.Loading) {
@@ -61,7 +92,7 @@ export default class MainFeedScreen extends Component {
     }
     onValue(ref(db, 'posts/'), async snapshot => {
       console.log('onValue MainFeed');
-      await preparePostsFromDB(snapshot, uid)
+      await preparePostsFromDB(snapshot, uid, this.state.SortQuestionsBy)
         .then(async postsFromDB => {
           this.state.posts = postsFromDB;
           await loadPostCards(postsFromDB, true, this.props.navigation).then(
@@ -98,6 +129,11 @@ export default class MainFeedScreen extends Component {
             />
           }>
           <View style={styles.container}>
+            <TouchableOpacity
+              style={[styles.Buttons, styles.alignSelfCenter]}
+              onPress={async () =>  this.sortQuestions()}>
+              <Text style={styles.customBtnText}>Sort Questions</Text>
+            </TouchableOpacity>
             {!this.state.Loading ? (
               this.state.display.length > 0 ? (
                 this.state.display

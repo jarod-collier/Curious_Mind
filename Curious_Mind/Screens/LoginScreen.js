@@ -81,7 +81,7 @@ export default class LoginScreen extends Component {
                   ? styles.disabledButtons
                   : styles.Buttons,
               ]}
-              disabled={this.state.loginDisabled}
+              // disabled={this.state.loginDisabled}
               onPress={async () =>
                 logInUser(
                   this.state.Email,

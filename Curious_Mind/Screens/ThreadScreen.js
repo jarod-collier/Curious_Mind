@@ -35,6 +35,7 @@ export default class ThreadScreen extends Component {
       posterUser: '',
       userCanComment: true,
       postID: '',
+      ButtonDisabled: true,
     };
   }
 
@@ -105,15 +106,24 @@ export default class ThreadScreen extends Component {
                     returnKeyType="done"
                     blurOnSubmit={true}
                     onChangeText={e => {
+                      e.replace(/ /g, '') === ''
+                        ? (this.state.ButtonDisabled = true)
+                        : (this.state.ButtonDisabled = false);
                       this.setState({comment: e});
                     }}
                     ref={this.clearComment}
                   />
                   <TouchableOpacity
-                    style={styles.Buttons}
+                    style={[
+                      styles.alignSelfCenter,
+                      this.state.ButtonDisabled
+                        ? styles.disabledButtons
+                        : styles.Buttons,
+                    ]}
+                    disabled={this.state.ButtonDisabled}
                     onPress={async () => {
-                      this.state.comment = await cleanUsersPost(
-                        this.state.comment,
+                      await cleanUsersPost(this.state.comment).then(
+                        val => (this.state.comment = val),
                       );
                       await addCommentToPost(
                         this.state.postID,

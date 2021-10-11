@@ -274,12 +274,16 @@ export const addToCalendar = (title, date, time, location, notes) => {
   AddCalendarEvent.presentEventCreatingDialog(eventConfig);
 };
 
-export const preparePostsFromDB = async (snapshot, uid) => {
+export const preparePostsFromDB = async (snapshot, uid, sortQuestionsBy) => {
   console.log('inside prepare posts from db');
   let postItems = [];
+  let likesForEachPost = [];
+  let alreadyLikedpost;
+  let alreadyReportedpost;
   snapshot.forEach(e => {
-    var alreadyLikedpost = '#cac5c4';
-    var alreadyReportedpost = '#cac5c4';
+
+    alreadyLikedpost = '#cac5c4';
+    alreadyReportedpost = '#cac5c4';
     if (e.val().likedBy.includes(uid)) {
       alreadyLikedpost = '#588dea';
     }
@@ -302,8 +306,59 @@ export const preparePostsFromDB = async (snapshot, uid) => {
       reportColor: alreadyReportedpost,
       userType: e.val().userType,
     });
+
+    likesForEachPost.push(e.val().likes);
   });
-  return postItems.reverse();
+
+  // There might eventually be more ways to sort questions
+  if (sortQuestionsBy === "Most Recent") {
+    postItems = postItems.reverse();
+  }
+  else if (sortQuestionsBy === "Most Liked") {
+    let valuesAdded = 0;
+    let postsSortedByMostLikes = [];
+    likesForEachPost.sort(function(a, b){return b-a});
+
+    while(valuesAdded < likesForEachPost.length) {
+      snapshot.forEach(e => {
+        if (e.val().likes === likesForEachPost[valuesAdded] && !postsSortedByMostLikes.includes(e.key)) {
+          
+          alreadyLikedpost = '#cac5c4';
+          alreadyReportedpost = '#cac5c4';
+
+          if (e.val().likedBy.includes(uid)) {
+            alreadyLikedpost = '#588dea';
+          }
+      
+          if (e.val().reportedBy.includes(uid)) {
+            alreadyReportedpost = '#f3b725';
+          }
+
+          postsSortedByMostLikes.push({
+            key: e.key,
+            username: e.val().username,
+            date: e.val().date,
+            question: e.val().question,
+            likes: e.val().likes,
+            desc: e.val().desc,
+            reports: e.val().reports,
+            anon: e.val().Anon,
+            pastorOnly: e.val().PastorOnly,
+            likeColor: alreadyLikedpost,
+            reportColor: alreadyReportedpost,
+            userType: e.val().userType,
+          });
+          valuesAdded++;
+        }
+  
+      });
+    }
+    postItems = postsSortedByMostLikes;
+    console.log("snapshot length" + likesForEachPost.length);
+
+  }
+
+  return postItems;
 };
 
 export const prepareEventsFromDB = async (snapshot, uid) => {
@@ -392,8 +447,8 @@ export const cleanUsersPost = async userInput => {
 export const checkPasswordCredentials = async stateObj => {
   
   console.log("inside check password");
-  let password1 = stateObj.newPassword1;
-  let password2 = stateObj.newPassword2;
+  let password1 = stateObj.Password1;
+  let password2 = stateObj.Password2;
   let min_password_length = 6;
   let valid_password = false
 
@@ -411,3 +466,32 @@ export const checkPasswordCredentials = async stateObj => {
 };
 
 
+// export const sortQuestions = async () => {
+
+//   console.log("inside sort questions");
+//   let sortQuestionsBy = "Most Recent";
+  
+//   Alert.alert(
+//     'Sort Questions',
+//     'How would you like to sort the questions that you see?',
+//     [
+//       {
+//         text: 'Most Recent', onPress: () => {
+//         console.log("most recent");
+//         sortQuestionsBy = "Most Recent";
+
+//       }},
+//       {
+//         text: 'Most Liked',
+//         onPress: async () => {
+//           console.log("most liked");
+//           sortQuestionsBy = "Most Liked";
+//         },
+//         style: {color: 'red'},
+//       },
+//     ],
+//     {cancelable: true},
+//   );
+
+//   return sortQuestionsBy;
+// };

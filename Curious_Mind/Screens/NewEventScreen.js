@@ -159,7 +159,7 @@ export default class NewEventScreen extends Component {
               ref={this.clearLocation}
             />
             <TouchableOpacity
-              disabled={this.shouldButtonBeDisbled}
+              disabled={this.shouldButtonBeDisbled()}
               style={[
                 this.state.buttonDisabled
                   ? styles.disabledButtons
