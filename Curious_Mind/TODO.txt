@@ -1,7 +1,7 @@
 V1.0
 - test ALL firebase calls (DbLogic file)
 - input validations all over the app (and check that an event/post can't be created without certain inputs)
-- sort posts, timestap needs to be added to posts
+- timestap needs to be added to posts
 - Add regex to filters 
 - Android event time/date buttons auto popup
 - when adding event, then clicking home screen, add event screen stays up
@@ -10,6 +10,7 @@ V1.0
 - loading widget while creating accoutns/posts/events/checking pastor code
 - DeleteUser in delUser is hitting some snapshot.val() for some reason...
 - liked a post and it printed "OnValue MainFeed" and "inside prepare posts from db" like 50+ times
+- Figure out how to style alerts for "sorts"/ style the sort buttons 
 
 V2.0
 - search for users

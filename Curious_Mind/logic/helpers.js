@@ -200,7 +200,6 @@ export const loadEventCards = async (events, navigation) => {
 };
 
 export const loadCommentCards = async (postItems, commentItems) => {
-  console.log('inside loading comment cards');
   return commentItems.map(commentData => {
     return (
       <View
@@ -311,16 +310,24 @@ export const preparePostsFromDB = async (snapshot, uid, sortQuestionsBy) => {
   });
 
   // There might eventually be more ways to sort questions
-  if (sortQuestionsBy === "Most Recent") {
+  if (sortQuestionsBy === "Oldest First") {
+    // leave the posts in the order we read them from the DB.
+  }
+  else if (sortQuestionsBy === "Most Recent") {
     postItems = postItems.reverse();
   }
   else if (sortQuestionsBy === "Most Liked") {
     let valuesAdded = 0;
     let postsSortedByMostLikes = [];
+
+    // Sort posts from highest to lowest likes
     likesForEachPost.sort(function(a, b){return b-a});
 
+    // Make sure we capture all of the posts, regardless of their original order
     while(valuesAdded < likesForEachPost.length) {
       snapshot.forEach(e => {
+
+        // Grab the posts in order of most likes, ensuring we haven't already added this post
         if (e.val().likes === likesForEachPost[valuesAdded] && !postsSortedByMostLikes.includes(e.key)) {
           
           alreadyLikedpost = '#cac5c4';
@@ -354,8 +361,6 @@ export const preparePostsFromDB = async (snapshot, uid, sortQuestionsBy) => {
       });
     }
     postItems = postsSortedByMostLikes;
-    console.log("snapshot length" + likesForEachPost.length);
-
   }
 
   return postItems;
@@ -375,17 +380,17 @@ export const prepareEventsFromDB = async (snapshot, uid) => {
   return eventItems.reverse();
 };
 
-export const prepareThreadScreen = async (snapshot, uid, postID) => {
-  console.log('inside prepare thread screan: ' + postID);
+export const prepareThreadScreen = async (snapshot, uid, postID, SortCommentsBy) => {
+  console.log('inside prepare thread screen: ' + postID);
   let commentItems = [];
   let postItems = [];
-  var alreadyLikedpost = 'black';
-  var alreadyReportedpost = 'black';
+  let alreadyLikedpost = 'black';
+  let alreadyReportedpost = 'black';
   let posterUsername = '';
 
   if (snapshot.exists()) {
     snapshot.child('comments').forEach(comment => {
-      var alreadyReportedcomment = 'black';
+      let alreadyReportedcomment = 'black';
 
       if (comment.val().reportedBy.includes(uid)) {
         alreadyReportedcomment = 'red';
@@ -401,6 +406,64 @@ export const prepareThreadScreen = async (snapshot, uid, postID) => {
         userType: comment.val().userType,
       });
     });
+
+    // There might eventually be more ways to sort comments
+    if (SortCommentsBy === "Oldest First") {
+      // leave the posts in the order we read them from the DB
+    }
+    else if (SortCommentsBy === "Most Recent") {
+      commentItems = commentItems.reverse();
+    }
+    else if (SortCommentsBy === "Pastors First") {
+      let valuesAdded = 0;
+      let commentsSortedByPastors = [];
+
+      snapshot.child('comments').forEach(comment => {
+
+        if (comment.val().userType === 'pastor') {
+
+          let alreadyReportedcomment = 'black';
+
+          if (comment.val().reportedBy.includes(uid)) {
+            alreadyReportedcomment = 'red';
+          }
+
+          commentsSortedByPastors.push({
+            key: comment.key,
+            comment: comment.val().comment,
+            date: comment.val().date,
+            username: comment.val().username,
+            ReportColor: alreadyReportedcomment,
+            ReportCount: comment.val().reports,
+            userType: comment.val().userType,
+          });
+          valuesAdded++;
+        }
+      });
+      snapshot.child('comments').forEach(comment => {
+
+        if (comment.val().userType === 'user') {
+
+          let alreadyReportedcomment = 'black';
+
+          if (comment.val().reportedBy.includes(uid)) {
+            alreadyReportedcomment = 'red';
+          }
+
+          commentsSortedByPastors.push({
+            key: comment.key,
+            comment: comment.val().comment,
+            date: comment.val().date,
+            username: comment.val().username,
+            ReportColor: alreadyReportedcomment,
+            ReportCount: comment.val().reports,
+            userType: comment.val().userType,
+          });
+          valuesAdded++;
+        }
+      });
+      commentItems = commentsSortedByPastors;
+    }
 
     if (snapshot.val().likedBy.includes(uid)) {
       alreadyLikedpost = 'blue';
@@ -464,34 +527,3 @@ export const checkPasswordCredentials = async stateObj => {
   console.log("valid password: " + valid_password);
   return valid_password;
 };
-
-
-// export const sortQuestions = async () => {
-
-//   console.log("inside sort questions");
-//   let sortQuestionsBy = "Most Recent";
-  
-//   Alert.alert(
-//     'Sort Questions',
-//     'How would you like to sort the questions that you see?',
-//     [
-//       {
-//         text: 'Most Recent', onPress: () => {
-//         console.log("most recent");
-//         sortQuestionsBy = "Most Recent";
-
-//       }},
-//       {
-//         text: 'Most Liked',
-//         onPress: async () => {
-//           console.log("most liked");
-//           sortQuestionsBy = "Most Liked";
-//         },
-//         style: {color: 'red'},
-//       },
-//     ],
-//     {cancelable: true},
-//   );
-
-//   return sortQuestionsBy;
-// };

@@ -8,14 +8,14 @@ import {
   RefreshControl,
   LayoutAnimation,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {styles} from '../assets/styles/styles';
 import {db} from '../logic/DbLogic';
-import {loadPostCards, preparePostsFromDB, sortQuestions} from '../logic/helpers';
+import {loadPostCards, preparePostsFromDB,} from '../logic/helpers';
 import {onValue, ref} from 'firebase/database';
 import {getAuth} from 'firebase/auth';
-import {Alert} from 'react-native';
 export default class MainFeedScreen extends Component {
   constructor(props) {
     super(props);
@@ -63,14 +63,19 @@ export default class MainFeedScreen extends Component {
       'How would you like to sort the questions that you see?',
       [
         {
-          text: 'Most Recent', onPress: () => {
-          this.state.SortQuestionsBy = "Most Recent";
-          resolve('YES');
-  
-        }},
+          text: 'Oldest First', onPress: () => {
+            this.state.SortQuestionsBy = "Oldest First";
+            resolve('YES');
+          }
+        },
         {
-          text: 'Most Liked',
-          onPress: async () => {
+          text: 'Most Recent', onPress: () => {
+            this.state.SortQuestionsBy = "Most Recent";
+            resolve('YES');
+          }
+        },
+        {
+          text: 'Most Liked', onPress: async () => {
             this.state.SortQuestionsBy = "Most Liked";
             resolve('YES');
           },
@@ -86,6 +91,7 @@ export default class MainFeedScreen extends Component {
   }
 
   async readFromDB() {
+    console.log("inside read from db main");
     let uid = getAuth().currentUser.uid;
     if (!this.state.Loading) {
       this.setState({Loading: true});

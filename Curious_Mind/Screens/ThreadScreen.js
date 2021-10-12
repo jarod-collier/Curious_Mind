@@ -9,11 +9,11 @@ import {
   View,
   RefreshControl,
   LayoutAnimation,
+  Alert,
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
 import {ScrollView} from 'react-native-gesture-handler';
-import {canComment, addCommentToPost} from '../logic/DbLogic';
-import {db} from '../logic/DbLogic';
+import {canComment, addCommentToPost, db} from '../logic/DbLogic';
 import {
   loadPostCards,
   prepareThreadScreen,
@@ -36,6 +36,7 @@ export default class ThreadScreen extends Component {
       userCanComment: true,
       postID: '',
       ButtonDisabled: true,
+      SortCommentsBy: "Oldest First",
     };
   }
 
@@ -47,6 +48,40 @@ export default class ThreadScreen extends Component {
     this.clearComment = React.createRef();
   }
 
+
+  AsyncAlert = async () => new Promise((resolve) => {
+    Alert.alert(
+      'Sort Questions',
+      'How would you like to sort the comments that you see?',
+      [
+        {
+          text: 'Oldest First', onPress: async () => {
+            this.state.SortCommentsBy = "Oldest First";
+            resolve('YES');
+          },
+        },
+        {
+          text: 'Most Recent', onPress: () => {
+            this.state.SortCommentsBy = "Most Recent";
+            resolve('YES');
+          }
+        },
+        {
+          text: 'Pastors First', onPress: async () => {
+            this.state.SortCommentsBy = "Pastors First";
+            resolve('YES');
+          },
+        },
+      ],
+      {cancelable: true},
+    );
+  });
+
+  async sortComments() {
+    await this.AsyncAlert();    
+    await this.readFromDB(this.state.postID);
+  }
+
   async readFromDB(postID) {
     let uid = getAuth().currentUser.uid;
     if (!this.state.Loading) {
@@ -54,7 +89,8 @@ export default class ThreadScreen extends Component {
     }
     onValue(ref(db, 'posts/' + postID), async snapshot => {
       console.log('onValue Thread');
-      await prepareThreadScreen(snapshot, uid, postID).then(async post => {
+      await prepareThreadScreen(snapshot, uid, postID, this.state.SortCommentsBy)
+      .then(async post => {
         if (post.postItems.length > 0) {
           this.state.userCanComment = canComment(post.posterUsername);
           await loadPostCards(
@@ -90,6 +126,11 @@ export default class ThreadScreen extends Component {
             }>
             <View style={styles.container}>
               {this.state.display}
+              <TouchableOpacity
+                style={[styles.Buttons, styles.alignSelfCenter]}
+                onPress={async () =>  this.sortComments()}>
+                <Text style={styles.customBtnText}>Sort Comments</Text>
+              </TouchableOpacity>
               {this.state.comments}
               {this.state.userCanComment && (
                 <View style={styles.aligItemsCenter}>
