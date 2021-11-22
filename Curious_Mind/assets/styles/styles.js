@@ -82,6 +82,9 @@ export const styles = StyleSheet.create({
   marginHorizontal15: {
     marginHorizontal: 15,
   },
+  marginHorizontal10: {
+    marginHorizontal: 10,
+  },
   width300: {
     width: 300,
   },
@@ -311,6 +314,21 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     width: 90,
     paddingVertical: 5,
+  },
+  widthMonth: {
+    width: 60,
+  },
+  widthDay: {
+    width: 40,
+  },
+  widthYear: {
+    width: 50,
+  },
+  widthHour: {
+    width: 47,
+  },
+  widthMinute: {
+    width: 67,
   },
   width120: {
     width: 120,

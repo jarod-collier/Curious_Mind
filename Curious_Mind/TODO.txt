@@ -3,7 +3,6 @@ V1.0
 - input validations all over the app (and check that an event/post can't be created without certain inputs)
 - timestap needs to be added to posts
 - Add regex to filters 
-- Android event time/date buttons auto popup
 - when adding event, then clicking home screen, add event screen stays up
 - Hide events if current date > event date
 - allow pastors that created the event to delete it
@@ -11,6 +10,7 @@ V1.0
 - DeleteUser in delUser is hitting some snapshot.val() for some reason...
 - liked a post and it printed "OnValue MainFeed" and "inside prepare posts from db" like 50+ times
 - Figure out how to style alerts for "sorts"/ style the sort buttons 
+- clicking on profile makes null
 
 V2.0
 - search for users

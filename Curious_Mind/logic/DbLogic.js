@@ -263,7 +263,7 @@ export const updateUserPostCount = async () => {
 
 export const createEvent = async eventObj => {
   let uid = auth.currentUser.uid;
-  set(ref(db, `events/${uid}_${eventObj.Title}`), {
+  await set(push(ref(db, `events/`)), {
     title: eventObj.Title,
     desc: eventObj.Description,
     date: eventObj.chosenDate,
