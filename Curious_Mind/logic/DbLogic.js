@@ -269,6 +269,7 @@ export const createEvent = async eventObj => {
     date: eventObj.chosenDate,
     time: eventObj.chosenTime,
     location: eventObj.location,
+    pastor_uid: uid,
   }).catch(error => {
     Alert.alert('error ', error);
   });

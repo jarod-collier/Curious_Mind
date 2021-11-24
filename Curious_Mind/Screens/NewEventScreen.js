@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {TextInput, ScrollView} from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {Button} from 'react-native-vector-icons/FontAwesome';
 import {
   SafeAreaView,
   View,
@@ -46,6 +45,7 @@ export default class NewEventScreen extends Component {
     this.clearYear = React.createRef();
     this.clearHour = React.createRef();
     this.clearMinute = React.createRef();
+    this.clearAMorPM= React.createRef();
   }
 
   onChangeDate = async (event, selectedDate) => {
@@ -92,6 +92,12 @@ export default class NewEventScreen extends Component {
     this.state.chosenTime = `${this.state.Hour}:${this.state.Minute} ${this.state.AM_or_PM}`;
   };
 
+  getChosenDateAndTime = async () => {
+    this.state.chosenDate = `${this.state.Month}/${this.state.Day}/${this.state.Year} ${(new Date()).toString().split(" ")[6]}`;
+    this.state.AM_or_PM = this.state.Hour > 11 ? "PM" : "AM";
+    this.setState({chosenTime: `${this.state.Hour}:${this.state.Minute} ${this.state.AM_or_PM}`});
+  };
+
   selectDate = async () => {
     this.setState({ShowDate: true}) 
   };
@@ -114,7 +120,7 @@ export default class NewEventScreen extends Component {
   }
 
   render() {
-    console.log("date: " + this.state.date);
+    console.log("date: " + this.state.chosenDate + " " + this.state.chosenTime);
     LayoutAnimation.easeInEaseOut();
     return (
       <SafeAreaView style={styles.safeAreaStyle}>
@@ -176,7 +182,7 @@ export default class NewEventScreen extends Component {
                 Date:
               </Text>
               <TextInput
-                style={[styles.inputBox, styles.widthMonth]}
+                style={[styles.eventInputBox, styles.widthMonth]}
                 placeholder="Month"
                 value={this.state.Month || null}
                 keyboardType="numeric"
@@ -191,7 +197,7 @@ export default class NewEventScreen extends Component {
                 /
               </Text>
               <TextInput
-                style={[styles.inputBox, styles.widthDay]}
+                style={[styles.eventInputBox, styles.widthDay]}
                 placeholder="Day"
                 value={this.state.Day || null}
                 keyboardType="numeric"
@@ -206,7 +212,7 @@ export default class NewEventScreen extends Component {
                 /
               </Text>
               <TextInput
-                style={[styles.inputBox, styles.widthYear]}
+                style={[styles.eventInputBox, styles.widthYear]}
                 placeholder="Year"
                 value={this.state.Year || null}
                 keyboardType="numeric"
@@ -234,7 +240,7 @@ export default class NewEventScreen extends Component {
                 Time:
               </Text>
               <TextInput
-                style={[styles.inputBox, styles.widthHour]}
+                style={[styles.eventInputBox, styles.widthHour]}
                 placeholder="Hour"
                 value={this.state.Hour || null}
                 keyboardType="numeric"
@@ -249,7 +255,7 @@ export default class NewEventScreen extends Component {
                 :
               </Text>
               <TextInput
-                style={[styles.inputBox, styles.widthMinute]}
+                style={[styles.eventInputBox, styles.widthMinute ]}
                 placeholder="Minutes"
                 value={this.state.Minute || null}
                 keyboardType="numeric"
@@ -260,10 +266,19 @@ export default class NewEventScreen extends Component {
                 }}
                 ref={this.clearMinute}
               />
-              <Text style={[styles.fontSize28,]}>
-                {this.state.AM_or_PM}
-              </Text>
-              <TouchableOpacity onPress={ this.selectTime } style={[styles.paddHorizontal15]} >
+              <TextInput
+                style={[styles.eventInputBox, styles.widthAMorPM ]}
+                placeholder="AM/PM"
+                value={this.state.AM_or_PM || null}
+                keyboardType="default"
+                placeholderTextColor="grey"
+                maxLength={2}
+                onChangeText={e => {
+                  this.setState({AM_or_PM: e});
+                }}
+                ref={this.clearAMorPM}
+              />
+              <TouchableOpacity onPress={ this.selectTime } >
                 <Image style={styles.defaultButtonColor} source={require('../assets/images/clock.png')} />
               </TouchableOpacity>
               { this.state.ShowTime && (  
@@ -301,6 +316,7 @@ export default class NewEventScreen extends Component {
                 styles.alignSelfCenter,
               ]}
               onPress={async () => {
+                await this.getChosenDateAndTime();
                 await createEvent(this.state).then(() =>
                   this.props.navigation.navigate('Events'),
                 );

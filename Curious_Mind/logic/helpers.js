@@ -375,6 +375,7 @@ export const prepareEventsFromDB = async (snapshot, uid) => {
       date: child.val().date,
       time: child.val().time,
       location: child.val().location,
+      pastor_uid: child.val().pastor_uid,
     });
   });
   return eventItems.reverse();

@@ -85,11 +85,11 @@ export default class EventScreen extends Component {
                 this.state.display
               ) : this.state.canAdd ? (
                 <Text style={styles.generalText}>
-                  No events found. Please make a new event
+                  No events found. Please make a new event.
                 </Text>
               ) : (
                 <Text style={styles.generalText}>
-                  No events found. Please check again later
+                  No events found. Please check again later.
                 </Text>
               )
             ) : (

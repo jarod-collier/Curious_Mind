@@ -1,6 +1,7 @@
 V1.0
 - test ALL firebase calls (DbLogic file)
-- input validations all over the app (and check that an event/post can't be created without certain inputs)
+- input validations for correctness all over the app 
+- add button disabling if fields aren't filled out.
 - timestap needs to be added to posts
 - Add regex to filters 
 - when adding event, then clicking home screen, add event screen stays up

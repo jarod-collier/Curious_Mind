@@ -121,6 +121,15 @@ export const styles = StyleSheet.create({
     margin: 10,
     paddingHorizontal: 10,
   },
+  eventInputBox: {
+    borderRadius: 10,
+    borderColor: 'black',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    height: 40,
+    marginVertical: 10,
+    margin: 5,
+  },
   multiline: {
     borderRadius: 15,
     borderColor: 'black',
@@ -316,19 +325,22 @@ export const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   widthMonth: {
-    width: 60,
-  },
-  widthDay: {
-    width: 40,
-  },
-  widthYear: {
     width: 50,
   },
+  widthDay: {
+    width: 33,
+  },
+  widthYear: {
+    width: 45,
+  },
   widthHour: {
-    width: 47,
+    width: 40,
   },
   widthMinute: {
-    width: 67,
+    width: 58,
+  },
+  widthAMorPM: {
+    width: 58,
   },
   width120: {
     width: 120,
