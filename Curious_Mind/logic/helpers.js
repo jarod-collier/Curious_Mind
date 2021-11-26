@@ -1,7 +1,7 @@
 import {styles} from '../assets/styles/styles';
 import {View, Text, TouchableOpacity} from 'react-native';
 import {Button} from 'react-native-vector-icons/FontAwesome';
-import {likePost, reportPost, reportComment} from './DbLogic';
+import {likePost, reportPost, reportComment, deleteEvent} from './DbLogic';
 import React from 'react';
 import {Card} from 'react-native-shadow-cards';
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
@@ -161,7 +161,7 @@ export const loadPostCards = async (posts, MainFeedView, navigation) => {
   });
 };
 
-export const loadEventCards = async (events, navigation) => {
+export const loadEventCards = async (events, showDeleteButton) => {
   return events.map(eventData => {
     return (
       <View
@@ -175,7 +175,7 @@ export const loadEventCards = async (events, navigation) => {
           <Text>Where: {eventData.location}</Text>
           <TouchableOpacity
             style={[styles.Buttons, styles.alignSelfCenter]}
-            onPress={() =>
+            onPress={async () =>
               addToCalendar(
                 eventData.title,
                 eventData.date,
@@ -193,6 +193,24 @@ export const loadEventCards = async (events, navigation) => {
               />
             </View>
           </TouchableOpacity>
+          {eventData.pastorWhoCreatedEvent && (
+            <TouchableOpacity
+              style={[
+                styles.Buttons,
+                styles.row,
+                styles.aligItemsCenter,
+                styles.alignSelfCenter,
+                styles.redBackground,
+              ]}
+              onPress={async () => await deleteEvent(eventData.key)}>
+              <Text style={styles.customBtnText}>Delete Event</Text>
+              <Button
+                style={styles.redBackground}
+                name="trash"
+                color="white"
+              />
+            </TouchableOpacity>
+          )}
         </Card>
       </View>
     );
@@ -370,12 +388,13 @@ export const prepareEventsFromDB = async (snapshot, uid) => {
   let eventItems = [];
   snapshot.forEach(child => {
     eventItems.push({
+      key: child.key,
       title: child.val().title,
       desc: child.val().desc,
       date: child.val().date,
       time: child.val().time,
       location: child.val().location,
-      pastor_uid: child.val().pastor_uid,
+      pastorWhoCreatedEvent: (child.val().pastor_uid == uid) ? true : false,
     });
   });
   return eventItems.reverse();

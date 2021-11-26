@@ -553,3 +553,24 @@ export const updateAboutMe = async aboutmeText => {
   //update the value.
   await update(ref(db), updates);
 };
+
+export const deleteEvent = async (eventKey) => {
+  Alert.alert(
+    'Delete Event',
+    'Are you sure you want to delete this event?',
+    [
+      {text: 'Cancel', onPress: () => {}},
+      {
+        text: 'DELETE',
+        onPress: async () => {
+          remove(ref(db, `events/${eventKey}`));
+          Alert.alert(
+            'Event Deleted.',
+          );
+        },
+        style: {color: 'red'},
+      },
+    ],
+    {cancelable: true},
+  );
+};
