@@ -1,20 +1,88 @@
 V1.0
 - test ALL firebase calls (DbLogic file)
 - input validations for correctness all over the app 
-- add button disabling if fields aren't filled out.
+    screens still needing validation:
+    - EventScreen
+    - ForgotPasswordScreen
+    - LoginScreen
+    - MainFeedScreen
+    - NewEventScreen
+    - NewPostScreen
+    - PastorSecCodeScreen
+    - PastorSignUpScreen
+    - ProfileScreen
+    - ResetPasswordScreen
+    - ThreadScreen
+    - UserSignUpScreen
+    - UserTypeScreen
+    - ViewProfileScreen
+- add button disabling if fields aren't filled out to each screen:
+    screens still needing a button (check to make sure they work):
+    - EventScreen
+    - ForgotPasswordScreen
+    - LoginScreen
+    - MainFeedScreen
+    - NewEventScreen
+    - NewPostScreen
+    - PastorSecCodeScreen
+    - PastorSignUpScreen
+    - ProfileScreen
+    - ResetPasswordScreen
+    - ThreadScreen
+    - UserSignUpScreen
+    - UserTypeScreen
+    - ViewProfileScreen
 - timestap needs to be added to posts
 - Add regex to filters 
 - when adding event, then clicking home screen, add event screen stays up
-- Hide events if current date > event date
-- allow pastors that created the event to delete it
-- loading widget while creating accoutns/posts/events/checking pastor code
+- Hide events if current date > event date 
+    (not sure we want to do this now that we can delete events. 
+    Pastors can just delete their own events if they don't want it up anymore.
+    It might spark conversation to keep up an old event. )
+- loading widget while creating accounts/posts/events/checking pastor code
 - DeleteUser in delUser is hitting some snapshot.val() for some reason...
 - liked a post and it printed "OnValue MainFeed" and "inside prepare posts from db" like 50+ times
 - Figure out how to style alerts for "sorts"/ style the sort buttons 
 - clicking on profile makes null
+
+*************************** BEFORE PUBLISHING ************************************************************
+Make sure each screen passes tests from Jarod and Maz and maybe someone else we can get to test it?
+Jarod's pass on each screen (remove screen from list when complete):
+    - EventScreen
+    - ForgotPasswordScreen
+    - LoginScreen
+    - MainFeedScreen
+    - NewEventScreen
+    - NewPostScreen
+    - PastorSecCodeScreen
+    - PastorSignUpScreen
+    - ProfileScreen
+    - ResetPasswordScreen
+    - ThreadScreen
+    - UserSignUpScreen
+    - UserTypeScreen
+    - ViewProfileScreen
+
+Maz's pass on each screen (remove screen from list when complete):
+    - EventScreen
+    - ForgotPasswordScreen
+    - LoginScreen
+    - MainFeedScreen
+    - NewEventScreen
+    - NewPostScreen
+    - PastorSecCodeScreen
+    - PastorSignUpScreen
+    - ProfileScreen
+    - ResetPasswordScreen
+    - ThreadScreen
+    - UserSignUpScreen
+    - UserTypeScreen
+    - ViewProfileScreen
 
 V2.0
 - search for users
 - be aware of pastors who could be trolls
 - report users, delete account, blacklist their account email
 - make sure there aren't duplicated questions
+- input blacklist for all user inputs 
+- notifications for when users post / do anything
