@@ -526,7 +526,6 @@ export const cleanUsersPost = async userInput => {
 
   return cleanedUserInput;
 };
-
 export const checkPasswordCredentials = async stateObj => {
   
   console.log("inside check password");
@@ -539,11 +538,116 @@ export const checkPasswordCredentials = async stateObj => {
     Alert.alert(`New password needs to be at least ${min_password_length} characters long`);
   }
   else if (password1 !== password2) {
-    Alert.alert("Your passwords do not match. Please try again.")
+    Alert.alert("Your passwords do not match. Please try again.");
   }
   else {
     valid_password = true;
   }
   console.log("valid password: " + valid_password);
   return valid_password;
+};
+
+export const validateEventInputs = async state => {
+
+  const JAN = 1;
+  const FEB = 2;
+  const MAR = 3;
+  const APR = 4;
+  const MAY = 5;
+  const JUN = 6;
+  const JUL = 7;
+  const AUG = 8;
+  const SEP = 9;
+  const OCT = 10;
+  const NOV = 11;
+  const DEC = 12;
+
+  let valid_inputs = false;
+  let month = parseInt(state.Month);
+  let day = parseInt(state.Day);
+  let year = parseInt(state.Year);
+  let hour = parseInt(state.Hour);
+  let minute = parseInt(state.Minute);
+  let am_or_pm = state.AM_or_PM;
+
+  if (month < 1 || month > 12){
+    Alert.alert(
+      "Incorrect Month", 
+      `Please provide a month value between 1 and 12. You provided: ${month}.` 
+    );
+  }
+  // Make sure the provided day value is positive
+  else if ( day < 1 ) {
+    Alert.alert(
+      "Incorrect Day", 
+      `Please provide a day that is greater than 0. You provided: ${day}.` 
+    );
+  }
+  // Ensure the months with 31 days are capped at 31
+  else if ( (month == JAN || month == MAR || month == MAY || month == JUL || 
+             month == AUG || month == OCT || month == DEC) && day > 31 ) 
+  {
+    Alert.alert(
+      "Incorrect Day",
+      `The provided month does not have more than 31 days in it. You entered: ${day}.`
+    );
+  }
+  // Ensure the months with 31 days are capped at 31
+  else if ( (month == APR || month == JUN || month == SEP || month == NOV) && day > 30 ) 
+  {
+    Alert.alert(
+      "Incorrect Day",
+      `The provided month does not have more than 30 days in it. You entered: ${day}.`
+    );
+  }
+  // Determine what to do with February 
+  else if ( month == FEB )
+  {
+    if ( year % 4 == 0 && day > 29) {
+      Alert.alert(
+        "Incorrect Day",
+        `When it is a Leap Year, February can not have more than 29 days. You entered: ${day}.`
+      );
+    } 
+    else if (day > 28) {
+      Alert.alert(
+        "Incorrect Day",
+        `February can not have more than 28 days in it. You entered: ${day}.`
+      );
+    }
+  }
+  // Make sure the year is at least as new as the year this app is published 
+  else if (year < 2021) {
+    Alert.alert(
+      "Incorrect Year",
+      `The provided year must be after 2021. You entered: ${year}.`
+    );
+  }
+  // Make sure the minutes are correct
+  else if (minute < 0 || minute > 59) {
+    Alert.alert(
+      "Incorrect Minutes",
+      `The provided minutes must be between 1 and 59. You entered: ${minute}`
+    );
+  }
+  // Make sure the hours are correct
+  else if (hour < 1 || hour > 12) {
+    Alert.alert(
+      "Incorrect Hours",
+      `The provided hours must be between 1 and 12. You entered: ${hour}`
+    );
+  }
+  // Get the correct time of day
+  else if (am_or_pm != "AM" && am_or_pm != "PM") {
+    Alert.alert(
+      "Incorrect time of day",
+      `You must provide "AM" or "PM". You entered: ${am_or_pm}`
+    );
+
+  }
+  // everything seems to be good
+  else {
+    valid_inputs = true;
+  }
+  return valid_inputs;
 };

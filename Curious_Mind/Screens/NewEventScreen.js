@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
 import {createEvent} from '../logic/DbLogic';
+import { validateEventInputs} from '../logic/helpers';
 
 export default class NewEventScreen extends Component {
   constructor(props) {
@@ -107,9 +108,17 @@ export default class NewEventScreen extends Component {
   };
 
   shouldButtonBeDisbled() {
+    let oneOrTwoNums = new RegExp("\\d{1,2}");
+    let fourNums = new RegExp("\\d{4}");
     if (
       this.state.Title.replace(/ /g, '') !== '' &&
-      this.state.location.replace(/ /g, '') !== ''
+      this.state.location.replace(/ /g, '') !== '' &&
+      this.state.AM_or_PM.replace(/ /g, '') !== '' &&
+      oneOrTwoNums.test(this.state.Day) &&
+      oneOrTwoNums.test(this.state.Month) &&
+      fourNums.test(this.state.Year) &&
+      oneOrTwoNums.test(this.state.Hour) &&
+      oneOrTwoNums.test(this.state.Minute) 
     ) {
       this.state.buttonDisabled = false;
       return false;
@@ -183,7 +192,7 @@ export default class NewEventScreen extends Component {
               </Text>
               <TextInput
                 style={[styles.eventInputBox, styles.widthMonth]}
-                placeholder="Month"
+                placeholder="MM"
                 value={this.state.Month || null}
                 keyboardType="numeric"
                 placeholderTextColor="grey"
@@ -198,7 +207,7 @@ export default class NewEventScreen extends Component {
               </Text>
               <TextInput
                 style={[styles.eventInputBox, styles.widthDay]}
-                placeholder="Day"
+                placeholder="DD"
                 value={this.state.Day || null}
                 keyboardType="numeric"
                 placeholderTextColor="grey"
@@ -213,7 +222,7 @@ export default class NewEventScreen extends Component {
               </Text>
               <TextInput
                 style={[styles.eventInputBox, styles.widthYear]}
-                placeholder="Year"
+                placeholder="YYYY"
                 value={this.state.Year || null}
                 keyboardType="numeric"
                 placeholderTextColor="grey"
@@ -274,7 +283,7 @@ export default class NewEventScreen extends Component {
                 placeholderTextColor="grey"
                 maxLength={2}
                 onChangeText={e => {
-                  this.setState({AM_or_PM: e});
+                  this.setState({AM_or_PM: e.toUpperCase()});
                 }}
                 ref={this.clearAMorPM}
               />
@@ -316,10 +325,13 @@ export default class NewEventScreen extends Component {
                 styles.alignSelfCenter,
               ]}
               onPress={async () => {
-                await this.getChosenDateAndTime();
-                await createEvent(this.state).then(() =>
-                  this.props.navigation.navigate('Events'),
-                );
+                let valid_inputs = await validateEventInputs(this.state);
+                if (valid_inputs) {
+                  await this.getChosenDateAndTime();
+                  await createEvent(this.state).then(async () =>
+                    await this.props.navigation.navigate('Events'),
+                  );
+                }
               }}>
               <Text
                 style={

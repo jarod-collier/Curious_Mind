@@ -2,11 +2,9 @@ V1.0
 - test ALL firebase calls (DbLogic file)
 - input validations for correctness all over the app 
     screens still needing validation:
-    - EventScreen
     - ForgotPasswordScreen
     - LoginScreen
     - MainFeedScreen
-    - NewEventScreen
     - NewPostScreen
     - PastorSecCodeScreen
     - PastorSignUpScreen

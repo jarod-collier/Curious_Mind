@@ -325,7 +325,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   widthMonth: {
-    width: 50,
+    width: 33,
   },
   widthDay: {
     width: 33,
