@@ -16,21 +16,9 @@ V1.0
     - ViewProfileScreen
 - add button disabling if fields aren't filled out to each screen:
     screens still needing a button (check to make sure they work):
-    - EventScreen
-    - ForgotPasswordScreen
     - LoginScreen
-    - MainFeedScreen
-    - NewEventScreen
-    - NewPostScreen
-    - PastorSecCodeScreen
     - PastorSignUpScreen
-    - ProfileScreen
-    - ResetPasswordScreen
-    - ThreadScreen
-    - UserSignUpScreen
-    - UserTypeScreen
     - ViewProfileScreen
-- timestap needs to be added to posts
 - Add regex to filters 
 - when adding event, then clicking home screen, add event screen stays up
 - Hide events if current date > event date 
@@ -84,3 +72,6 @@ V2.0
 - make sure there aren't duplicated questions
 - input blacklist for all user inputs 
 - notifications for when users post / do anything
+- timestap needs to be added to posts (tell the time difference like instagram.
+    In my opinion, this depends on the popularity of the app and whether there are 
+    frequent enough posts to make this worthwhile.)
