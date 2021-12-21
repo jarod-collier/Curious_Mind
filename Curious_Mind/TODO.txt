@@ -19,12 +19,13 @@ V1.0
     - LoginScreen
     - PastorSignUpScreen
     - ViewProfileScreen
-- Add regex to filters 
+- Add bad words check for all user input.
 - when adding event, then clicking home screen, add event screen stays up
 - Hide events if current date > event date 
     (not sure we want to do this now that we can delete events. 
     Pastors can just delete their own events if they don't want it up anymore.
-    It might spark conversation to keep up an old event. )
+    It might spark conversation to keep up an old event. Plus, do we want
+    church services to be "events"? I'm thinking so, but I'm happy to change that.)
 - loading widget while creating accounts/posts/events/checking pastor code
 - DeleteUser in delUser is hitting some snapshot.val() for some reason...
 - liked a post and it printed "OnValue MainFeed" and "inside prepare posts from db" like 50+ times

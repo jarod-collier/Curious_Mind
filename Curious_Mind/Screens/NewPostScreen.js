@@ -13,7 +13,7 @@ import {
 import {styles} from '../assets/styles/styles';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {createPost, updateUserPostCount} from '../logic/DbLogic';
-import {cleanUsersPost} from '../logic/helpers';
+import {cleanUsersInput} from '../logic/helpers';
 
 export default class ResetPasswordScreen extends Component {
   constructor(props) {
@@ -134,10 +134,10 @@ export default class ResetPasswordScreen extends Component {
                 ]}
                 disabled={this.state.ButtonDisabled}
                 onPress={async () => {
-                  await cleanUsersPost(this.state.Question).then(
+                  await cleanUsersInput(this.state.Question).then(
                     val => (this.state.Question = val),
                   );
-                  await cleanUsersPost(this.state.Description).then(
+                  await cleanUsersInput(this.state.Description).then(
                     val => (this.state.Description = val),
                   );
                   await createPost(this.state);

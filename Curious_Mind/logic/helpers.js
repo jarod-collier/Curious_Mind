@@ -7,86 +7,87 @@ import {Card} from 'react-native-shadow-cards';
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
 import {Alert} from 'react-native';
 
-// Using strings to filter common words for readability and maintability
-// I tried to make it so each row is similar (but then I found a huge list of possible words)
-// The spacing before/after a word is used to make sure we don't match parts of a larger word
-// I am putting this up here so that we can use it on various places where a user inputs text.
-// We'll probably want to at some point add regex to account for symbols in words: f$ck
+// List of regex strings to filter words out on. This tests to make sure that each letter
+// exists or a symbol (Ex: f$ck). Then it tests if there are repeated letters or spaces
+// after the letter. I saw someone use this to exploit another app I use and figured 
+// we should guard against this. So this will catch "f u c k" and "ffffuuuuuccccckkk".
 const wordsToFilter = [
-  'fuck',
-  'fuc',
-  'fuk',
-  'f u c k',
-  'fukc',
-  'fvck',
-  'fxck',
-  'damn it',
-  'damnit',
-  'dammit',
-  'shit',
-  'bitch',
-  'nigger',
-  'nigga',
-  'chink',
-  'gringo',
-  ' kike ',
-  ' spick ',
-  ' spic ',
-  'cunt',
-  'pussy',
-  'dick',
-  'penis',
-  'vagina',
-  'anal',
-  'areola',
-  'areole',
-  'cock',
-  ' ass ',
-  ' asshole',
-  'tits',
-  'tit',
-  'boob',
-  'blow job',
-  'blowjob',
-  'bukkake',
-  ' clit',
-  'bastard',
-  ' cum ',
-  'cumming',
-  'slut',
-  'dildo',
-  'douche',
-  'dumbass',
-  'ejaculate',
-  'faggot',
-  ' fag ',
-  'fellatio',
-  'handjob',
-  'horny',
-  'hump',
-  'jackass',
-  'jerkoff',
-  ' jizz ',
-  'kinky',
-  'masterbat',
-  'masturbat',
-  'orgasm',
-  'orgies',
-  'orgy',
-  'phallic',
-  ' pee ',
-  ' piss ',
-  ' pissed ',
-  'pubic',
-  'retard',
-  'rimjob',
-  'semen',
-  'skank',
-  'sperm',
-  'stfu',
-  'tampon',
-  ' urine ',
-  ' urinal ',
+  '(f|\\W)(f*|\\s*)(u|\\W)(u*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s)',
+  '(f|\\W)(f*|\\s*)(u|\\W)(u*|\\s*)(c|\\W)(c*|\\s*)',
+  '(f|\\W)(f*|\\s*)(u|\\W)(u*|\\s*)(k|\\W)(k*|\\s*)',
+  '(f|\\W)(f*|\\s*)( |\\W)( *|\\s*)(u|\\W)(u*|\\s*)( |\\W)( *|\\s*)(c|\\W)(c*|\\s*)( |\\W)( *|\\s*)(k|\\W)(k*|\\s*)',
+  '(f|\\W)(f*|\\s*)(u|\\W)(u*|\\s*)(k|\\W)(k*|\\s*)(c|\\W)(c*|\\s*)',
+  '(f|\\W)(f*|\\s*)(v|\\W)(v*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)',
+  '(f|\\W)(f*|\\s*)(x|\\W)(x*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)',
+  '(d|\\W)(d*|\\s*)(a|\\W)(a*|\\s*)(m|\\W)(m*|\\s*)(n|\\W)(n*|\\s*)( |\\W)( *|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
+  '(d|\\W)(d*|\\s*)(a|\\W)(a*|\\s*)(m|\\W)(m*|\\s*)(n|\\W)(n*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
+  '(d|\\W)(d*|\\s*)(a|\\W)(a*|\\s*)(m|\\W)(m*|\\s*)(m|\\W)(m*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
+  '(s|\\W)(s*|\\s*)(h|\\W)(h*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
+  '(b|\\W)(b*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)(c|\\W)(c*|\\s*)(h|\\W)(h*|\\s*)',
+  '(n|\\W)(n*|\\s*)(i|\\W)(i*|\\s*)(g|\\W)(g*|\\s*)(g|\\W)(g*|\\s*)(e|\\W)(e*|\\s*)(r|\\W)(r*|\\s*)',
+  '(n|\\W)(n*|\\s*)(i|\\W)(i*|\\s*)(g|\\W)(g*|\\s*)(g|\\W)(g*|\\s*)(a|\\W)(a*|\\s*)',
+  '(c|\\W)(c*|\\s*)(h|\\W)(h*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(k|\\W)(k*|\\s*)',
+  '(g|\\W)(g*|\\s*)(r|\\W)(r*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(g|\\W)(g*|\\s*)(o|\\W)(o*|\\s*)',
+  '( |\\W)( *|\\s*)(k|\\W)(k*|\\s*)(i|\\W)(i*|\\s*)(k|\\W)(k*|\\s*)(e|\\W)(e*|\\s*)( |\\W)( *|\\s*)',
+  '( |\\W)( *|\\s*)(s|\\W)(s*|\\s*)(p|\\W)(p*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)( |\\W)( *|\\s*)',
+  '( |\\W)( *|\\s*)(s|\\W)(s*|\\s*)(p|\\W)(p*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)( |\\W)( *|\\s*)',
+  '(c|\\W)(c*|\\s*)(u|\\W)(u*|\\s*)(n|\\W)(n*|\\s*)(t|\\W)(t*|\\s*)',
+  '(p|\\W)(p*|\\s*)(u|\\W)(u*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)(y|\\W)(y*|\\s*)',
+  '(d|\\W)(d*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)',
+  '(p|\\W)(p*|\\s*)(e|\\W)(e*|\\s*)(n|\\W)(n*|\\s*)(i|\\W)(i*|\\s*)(s|\\W)(s*|\\s*)',
+  '(v|\\W)(v*|\\s*)(a|\\W)(a*|\\s*)(g|\\W)(g*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(a|\\W)(a*|\\s*)',
+  '(a|\\W)(a*|\\s*)(n|\\W)(n*|\\s*)(a|\\W)(a*|\\s*)(l|\\W)(l*|\\s*)',
+  '(a|\\W)(a*|\\s*)(r|\\W)(r*|\\s*)(e|\\W)(e*|\\s*)(o|\\W)(o*|\\s*)(l|\\W)(l*|\\s*)(a|\\W)(a*|\\s*)',
+  '(a|\\W)(a*|\\s*)(r|\\W)(r*|\\s*)(e|\\W)(e*|\\s*)(o|\\W)(o*|\\s*)(l|\\W)(l*|\\s*)(e|\\W)(e*|\\s*)',
+  '(c|\\W)(c*|\\s*)(o|\\W)(o*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)',
+  '( |\\W)( *|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)( |\\W)( *|\\s*)',
+  '( |\\W)( *|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)(h|\\W)(h*|\\s*)(o|\\W)(o*|\\s*)(l|\\W)(l*|\\s*)(e|\\W)(e*|\\s*)',
+  '(t|\\W)(t*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)(s|\\W)(s*|\\s*)',
+  '(t|\\W)(t*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
+  '(b|\\W)(b*|\\s*)(o|\\W)(o*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
+  '(b|\\W)(b*|\\s*)(l|\\W)(l*|\\s*)(o|\\W)(o*|\\s*)(w|\\W)(w*|\\s*)( |\\W)( *|\\s*)(j|\\W)(j*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
+  '(b|\\W)(b*|\\s*)(l|\\W)(l*|\\s*)(o|\\W)(o*|\\s*)(w|\\W)(w*|\\s*)(j|\\W)(j*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
+  '(b|\\W)(b*|\\s*)(u|\\W)(u*|\\s*)(k|\\W)(k*|\\s*)(k|\\W)(k*|\\s*)(a|\\W)(a*|\\s*)(k|\\W)(k*|\\s*)(e|\\W)(e*|\\s*)',
+  '( |\\W)( *|\\s*)(c|\\W)(c*|\\s*)(l|\\W)(l*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
+  '(b|\\W)(b*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(t|\\W)(t*|\\s*)(a|\\W)(a*|\\s*)(r|\\W)(r*|\\s*)(d|\\W)(d*|\\s*)',
+  '( |\\W)( *|\\s*)(c|\\W)(c*|\\s*)(u|\\W)(u*|\\s*)(m|\\W)(m*|\\s*)( |\\W)( *|\\s*)',
+  '(c|\\W)(c*|\\s*)(u|\\W)(u*|\\s*)(m|\\W)(m*|\\s*)(m|\\W)(m*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(g|\\W)(g*|\\s*)',
+  '(s|\\W)(s*|\\s*)(l|\\W)(l*|\\s*)(u|\\W)(u*|\\s*)(t|\\W)(t*|\\s*)',
+  '(d|\\W)(d*|\\s*)(i|\\W)(i*|\\s*)(l|\\W)(l*|\\s*)(d|\\W)(d*|\\s*)(o|\\W)(o*|\\s*)',
+  '(d|\\W)(d*|\\s*)(o|\\W)(o*|\\s*)(u|\\W)(u*|\\s*)(c|\\W)(c*|\\s*)(h|\\W)(h*|\\s*)(e|\\W)(e*|\\s*)',
+  '(d|\\W)(d*|\\s*)(u|\\W)(u*|\\s*)(m|\\W)(m*|\\s*)(b|\\W)(b*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)',
+  '(e|\\W)(e*|\\s*)(j|\\W)(j*|\\s*)(a|\\W)(a*|\\s*)(c|\\W)(c*|\\s*)(u|\\W)(u*|\\s*)(l|\\W)(l*|\\s*)(a|\\W)(a*|\\s*)(t|\\W)(t*|\\s*)(e|\\W)(e*|\\s*)',
+  '(f|\\W)(f*|\\s*)(a|\\W)(a*|\\s*)(g|\\W)(g*|\\s*)(g|\\W)(g*|\\s*)(o|\\W)(o*|\\s*)(t|\\W)(t*|\\s*)',
+  '( |\\W)( *|\\s*)(f|\\W)(f*|\\s*)(a|\\W)(a*|\\s*)(g|\\W)(g*|\\s*)( |\\W)( *|\\s*)',
+  '(f|\\W)(f*|\\s*)(e|\\W)(e*|\\s*)(l|\\W)(l*|\\s*)(l|\\W)(l*|\\s*)(a|\\W)(a*|\\s*)(t|\\W)(t*|\\s*)(i|\\W)(i*|\\s*)(o|\\W)(o*|\\s*)',
+  '(h|\\W)(h*|\\s*)(a|\\W)(a*|\\s*)(n|\\W)(n*|\\s*)(d|\\W)(d*|\\s*)(j|\\W)(j*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
+  '(h|\\W)(h*|\\s*)(o|\\W)(o*|\\s*)(r|\\W)(r*|\\s*)(n|\\W)(n*|\\s*)(y|\\W)(y*|\\s*)',
+  '(h|\\W)(h*|\\s*)(u|\\W)(u*|\\s*)(m|\\W)(m*|\\s*)(p|\\W)(p*|\\s*)',
+  '(j|\\W)(j*|\\s*)(a|\\W)(a*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)',
+  '(j|\\W)(j*|\\s*)(e|\\W)(e*|\\s*)(r|\\W)(r*|\\s*)(k|\\W)(k*|\\s*)(o|\\W)(o*|\\s*)(f|\\W)(f*|\\s*)(f|\\W)(f*|\\s*)',
+  '( |\\W)( *|\\s*)(j|\\W)(j*|\\s*)(i|\\W)(i*|\\s*)(z|\\W)(z*|\\s*)(z|\\W)(z*|\\s*)( |\\W)( *|\\s*)',
+  '(k|\\W)(k*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(k|\\W)(k*|\\s*)(y|\\W)(y*|\\s*)',
+  '(m|\\W)(m*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(t|\\W)(t*|\\s*)(e|\\W)(e*|\\s*)(r|\\W)(r*|\\s*)(b|\\W)(b*|\\s*)(a|\\W)(a*|\\s*)(t|\\W)(t*|\\s*)',
+  '(m|\\W)(m*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(t|\\W)(t*|\\s*)(u|\\W)(u*|\\s*)(r|\\W)(r*|\\s*)(b|\\W)(b*|\\s*)(a|\\W)(a*|\\s*)(t|\\W)(t*|\\s*)',
+  '(o|\\W)(o*|\\s*)(r|\\W)(r*|\\s*)(g|\\W)(g*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(m|\\W)(m*|\\s*)',
+  '(o|\\W)(o*|\\s*)(r|\\W)(r*|\\s*)(g|\\W)(g*|\\s*)(i|\\W)(i*|\\s*)(e|\\W)(e*|\\s*)(s|\\W)(s*|\\s*)',
+  '(o|\\W)(o*|\\s*)(r|\\W)(r*|\\s*)(g|\\W)(g*|\\s*)(y|\\W)(y*|\\s*)',
+  '(p|\\W)(p*|\\s*)(h|\\W)(h*|\\s*)(a|\\W)(a*|\\s*)(l|\\W)(l*|\\s*)(l|\\W)(l*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)',
+  '( |\\W)( *|\\s*)(p|\\W)(p*|\\s*)(e|\\W)(e*|\\s*)(e|\\W)(e*|\\s*)( |\\W)( *|\\s*)',
+  '( |\\W)( *|\\s*)(p|\\W)(p*|\\s*)(i|\\W)(i*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)( |\\W)( *|\\s*)',
+  '( |\\W)( *|\\s*)(p|\\W)(p*|\\s*)(i|\\W)(i*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)(e|\\W)(e*|\\s*)(d|\\W)(d*|\\s*)( |\\W)( *|\\s*)',
+  '(p|\\W)(p*|\\s*)(u|\\W)(u*|\\s*)(b|\\W)(b*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)',
+  '(r|\\W)(r*|\\s*)(e|\\W)(e*|\\s*)(t|\\W)(t*|\\s*)(a|\\W)(a*|\\s*)(r|\\W)(r*|\\s*)(d|\\W)(d*|\\s*)',
+  '(r|\\W)(r*|\\s*)(i|\\W)(i*|\\s*)(m|\\W)(m*|\\s*)(j|\\W)(j*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
+  '(s|\\W)(s*|\\s*)(e|\\W)(e*|\\s*)(m|\\W)(m*|\\s*)(e|\\W)(e*|\\s*)(n|\\W)(n*|\\s*)',
+  '(s|\\W)(s*|\\s*)(k|\\W)(k*|\\s*)(a|\\W)(a*|\\s*)(n|\\W)(n*|\\s*)(k|\\W)(k*|\\s*)',
+  '(s|\\W)(s*|\\s*)(p|\\W)(p*|\\s*)(e|\\W)(e*|\\s*)(r|\\W)(r*|\\s*)(m|\\W)(m*|\\s*)',
+  '(s|\\W)(s*|\\s*)(t|\\W)(t*|\\s*)(f|\\W)(f*|\\s*)(u|\\W)(u*|\\s*)',
+  '(t|\\W)(t*|\\s*)(a|\\W)(a*|\\s*)(m|\\W)(m*|\\s*)(p|\\W)(p*|\\s*)(o|\\W)(o*|\\s*)(n|\\W)(n*|\\s*)',
+  '( |\\W)( *|\\s*)(u|\\W)(u*|\\s*)(r|\\W)(r*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(e|\\W)(e*|\\s*)( |\\W)( *|\\s*)',
+  '( |\\W)( *|\\s*)(u|\\W)(u*|\\s*)(r|\\W)(r*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(a|\\W)(a*|\\s*)(l|\\W)(l*|\\s*)( |\\W)( *|\\s*)',
+  '(l|\\W)(l*|\\s*)(m|\\W)(m*|\\s*)(a|\\W)(a*|\\s*)(o|\\W)(o*|\\s*)',
+  '(l|\\W)(l*|\\s*)(m|\\W)(m*|\\s*)(f|\\W)(f*|\\s*)(a|\\W)(a*|\\s*)(o|\\W)(o*|\\s*)',
 ];
 
 export const loadPostCards = async (posts, MainFeedView, navigation) => {
@@ -512,16 +513,27 @@ export const prepareThreadScreen = async (snapshot, uid, postID, SortCommentsBy)
   return {postItems, commentItems, posterUsername};
 };
 
-export const cleanUsersPost = async userInput => {
+export const cleanUsersInput= async userInput => {
   let cleanedUserInput = userInput;
 
   wordsToFilter.forEach(badWord => {
     // case insenstive global replace
     let regEx = new RegExp(badWord, 'ig');
-    cleanedUserInput = cleanedUserInput.replace(
-      regEx,
-      '*'.repeat(badWord.length),
-    );
+    let matches = cleanedUserInput.match(regEx);
+
+    if (matches && matches.length) {
+      // This prevents duplicate matches as we replace bad words with the '*', but
+      // we are also checking for '*'s in the regex as people can type words like
+      // 'f*ck'. To make sure we handle such cases, we still want to capture words 
+      // like 'f*ck', but not capture a string of '*'s that have already been used
+      // to replace parts of the user input. 
+      if (!/\*{2,}/.test(matches[0])) {
+        cleanedUserInput = cleanedUserInput.replace(
+          regEx,
+          '*'.repeat(matches[0].length)
+        ); 
+      }
+    }
   });
 
   return cleanedUserInput;
@@ -650,4 +662,10 @@ export const validateEventInputs = async state => {
     valid_inputs = true;
   }
   return valid_inputs;
+};
+
+export const fixRegex = async () => {
+  wordsToFilter.forEach(badWord => {
+    console.log(badWord.replace(/(.)/g, "($1|\\W)($1*|\\s*)"));
+  });
 };
