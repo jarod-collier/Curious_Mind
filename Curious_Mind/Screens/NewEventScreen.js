@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
 import {createEvent} from '../logic/DbLogic';
-import { validateEventInputs} from '../logic/helpers';
+import { validateEventInputs, cleanUsersInput} from '../logic/helpers';
 
 export default class NewEventScreen extends Component {
   constructor(props) {
@@ -105,6 +105,19 @@ export default class NewEventScreen extends Component {
 
   selectTime = async () => {
     this.setState({ShowTime: true}) 
+  };
+
+  checkEventInputForBadWords = async () => {
+    await cleanUsersInput(this.state.Title).then(
+      val => (this.state.Title = val),
+    );
+    await cleanUsersInput(this.state.Description).then(
+      val => (this.state.Description = val),
+    );
+    await cleanUsersInput(this.state.location).then(
+      // val => (this.state.location= val),
+      val => (this.setState({location: val})),
+    );
   };
 
   shouldButtonBeDisbled() {
@@ -328,6 +341,7 @@ export default class NewEventScreen extends Component {
                 let valid_inputs = await validateEventInputs(this.state);
                 if (valid_inputs) {
                   await this.getChosenDateAndTime();
+                  await this.checkEventInputForBadWords();
                   await createEvent(this.state).then(async () =>
                     await this.props.navigation.navigate('Events'),
                   );

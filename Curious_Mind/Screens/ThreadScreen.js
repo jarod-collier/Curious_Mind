@@ -18,7 +18,7 @@ import {
   loadPostCards,
   prepareThreadScreen,
   loadCommentCards,
-  cleanUsersPost,
+  cleanUsersInput,
 } from '../logic/helpers';
 import {onValue, ref} from 'firebase/database';
 import {getAuth} from 'firebase/auth';
@@ -163,7 +163,7 @@ export default class ThreadScreen extends Component {
                     ]}
                     disabled={this.state.ButtonDisabled}
                     onPress={async () => {
-                      await cleanUsersPost(this.state.comment).then(
+                      await cleanUsersInput(this.state.comment).then(
                         val => (this.state.comment = val),
                       );
                       await addCommentToPost(

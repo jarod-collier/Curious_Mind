@@ -17,9 +17,7 @@ V1.0
 - add button disabling if fields aren't filled out to each screen:
     screens still needing a button (check to make sure they work):
     - LoginScreen
-    - PastorSignUpScreen
     - ViewProfileScreen
-- Add bad words check for all user input.
 - when adding event, then clicking home screen, add event screen stays up
 - Hide events if current date > event date 
     (not sure we want to do this now that we can delete events. 

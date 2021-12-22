@@ -88,6 +88,7 @@ const wordsToFilter = [
   '( |\\W)( *|\\s*)(u|\\W)(u*|\\s*)(r|\\W)(r*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(a|\\W)(a*|\\s*)(l|\\W)(l*|\\s*)( |\\W)( *|\\s*)',
   '(l|\\W)(l*|\\s*)(m|\\W)(m*|\\s*)(a|\\W)(a*|\\s*)(o|\\W)(o*|\\s*)',
   '(l|\\W)(l*|\\s*)(m|\\W)(m*|\\s*)(f|\\W)(f*|\\s*)(a|\\W)(a*|\\s*)(o|\\W)(o*|\\s*)',
+  '(b|\\W)(b*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)(c|\\W)(c*|\\s*)(h|\\W)(h*|\\s*)',
 ];
 
 export const loadPostCards = async (posts, MainFeedView, navigation) => {
