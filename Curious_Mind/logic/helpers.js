@@ -105,10 +105,11 @@ export const loadPostCards = async (posts, MainFeedView, navigation) => {
               {!postData.anon && (
                 <Text
                   style={styles.blueText}
-                  onPress={() =>
+                  onPress={() =>{
+                    console.log("post data: " + JSON.stringify(postData, undefined, 2));
                     navigation.navigate('View Profile', {
-                      uid: '' + postData.key.substring(0, 28),
-                    })
+                      uid: postData.creatorsUID
+                    });}
                   }>
                   @{postData.username}
                 </Text>
@@ -324,6 +325,7 @@ export const preparePostsFromDB = async (snapshot, uid, sortQuestionsBy) => {
       likeColor: alreadyLikedpost,
       reportColor: alreadyReportedpost,
       userType: e.val().userType,
+      creatorsUID: e.val().creatorsUID,
     });
 
     likesForEachPost.push(e.val().likes);
@@ -374,6 +376,7 @@ export const preparePostsFromDB = async (snapshot, uid, sortQuestionsBy) => {
             likeColor: alreadyLikedpost,
             reportColor: alreadyReportedpost,
             userType: e.val().userType,
+            creatorsUID: e.val().creatorsUID,
           });
           valuesAdded++;
         }

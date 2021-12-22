@@ -1,19 +1,5 @@
 V1.0
 - test ALL firebase calls (DbLogic file)
-- input validations for correctness all over the app 
-    screens still needing validation:
-    - ForgotPasswordScreen
-    - LoginScreen
-    - MainFeedScreen
-    - NewPostScreen
-    - PastorSecCodeScreen
-    - PastorSignUpScreen
-    - ProfileScreen
-    - ResetPasswordScreen
-    - ThreadScreen
-    - UserSignUpScreen
-    - UserTypeScreen
-    - ViewProfileScreen
 - add button disabling if fields aren't filled out to each screen:
     screens still needing a button (check to make sure they work):
     - LoginScreen
@@ -28,7 +14,6 @@ V1.0
 - DeleteUser in delUser is hitting some snapshot.val() for some reason...
 - liked a post and it printed "OnValue MainFeed" and "inside prepare posts from db" like 50+ times
 - Figure out how to style alerts for "sorts"/ style the sort buttons 
-- clicking on profile makes null
 
 *************************** BEFORE PUBLISHING ************************************************************
 Make sure each screen passes tests from Jarod and Maz and maybe someone else we can get to test it?

@@ -238,6 +238,7 @@ export const createPost = async postObj => {
       Anon: postObj.Anon,
       PastorOnly: postObj.pastorOnly,
       userType: snapshot.val().userType,
+      creatorsUID: uid,
     }).catch(error => {
       Alert.alert('error ', error);
     });
