@@ -14,6 +14,7 @@ import {styles} from '../assets/styles/styles';
 import {delUser, updateAboutMe, db} from '../logic/DbLogic';
 import {getAuth} from 'firebase/auth';
 import {ref, onValue} from 'firebase/database';
+import DialogInput from 'react-native-dialog-input';
 
 export default class ProfileScreen extends Component {
   constructor(props) {
@@ -33,6 +34,7 @@ export default class ProfileScreen extends Component {
       seminary: '',
       pastorCode: '',
       editing: false,
+      showDeleteAccountTextInput: false,
     };
   }
 
@@ -43,21 +45,24 @@ export default class ProfileScreen extends Component {
     let uid = getAuth().currentUser.uid;
     this.setState({Loading: true});
     onValue(ref(db, 'userInfo/' + uid), snapshot => {
-      this.state.fName = snapshot.val().First;
-      this.state.lName = snapshot.val().Last;
-      this.state.email = snapshot.val().Email;
-      this.state.username = snapshot.val().Username;
-      this.state.commentNum = snapshot.val().commentNum;
-      this.state.postNum = snapshot.val().postNum;
-      this.state.score = this.state.postNum * 2 + this.state.commentNum;
-      this.state.aboutMe = snapshot.val().AddintionalInfo;
-      if (snapshot.val().userType === 'pastor') {
-        this.state.pastorUser = true;
-        this.state.preach = snapshot.val().Preach;
-        this.state.seminary = snapshot.val().Seminary;
-        this.state.pastorCode = snapshot.val().pastorCode;
+      if (snapshot.exists()) {
+
+        this.state.fName = snapshot.val().First;
+        this.state.lName = snapshot.val().Last;
+        this.state.email = snapshot.val().Email;
+        this.state.username = snapshot.val().Username;
+        this.state.commentNum = snapshot.val().commentNum;
+        this.state.postNum = snapshot.val().postNum;
+        this.state.score = this.state.postNum * 2 + this.state.commentNum;
+        this.state.aboutMe = snapshot.val().AddintionalInfo;
+        if (snapshot.val().userType === 'pastor') {
+          this.state.pastorUser = true;
+          this.state.preach = snapshot.val().Preach;
+          this.state.seminary = snapshot.val().Seminary;
+          this.state.pastorCode = snapshot.val().pastorCode;
+        }
+        this.setState({Loading: false});
       }
-      this.setState({Loading: false});
     });
   }
 
@@ -289,7 +294,22 @@ export default class ProfileScreen extends Component {
                       styles.alignSelfCenter,
                       styles.redBackground,
                     ]}
-                    onPress={() => delUser(this.props.navigation)}>
+                    onPress={async () => { 
+                      this.setState({showDeleteAccountTextInput: true});
+                    }}>
+                    <DialogInput 
+                      isDialogVisible={this.state.showDeleteAccountTextInput}
+                      title={"Please Provide Your Password To Delete Your Account"}
+                      message={"You need to input your password to verify your intentions to delete your account."}
+                      hintInput ={"Password"}
+                      submitInput={ async (inputText) => {{
+                        this.setState({showDeleteAccountTextInput: false});
+                        await delUser(this.props.navigation, inputText);
+                      }}}
+                      closeDialog={ () => {
+                        this.setState({showDeleteAccountTextInput: false})
+                      }}>
+                    </DialogInput>
                     <Text style={styles.customBtnText}>Delete Account</Text>
                     <Button
                       style={styles.redBackground}

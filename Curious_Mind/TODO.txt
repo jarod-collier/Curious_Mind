@@ -11,9 +11,9 @@ V1.0
     It might spark conversation to keep up an old event. Plus, do we want
     church services to be "events"? I'm thinking so, but I'm happy to change that.)
 - loading widget while creating accounts/posts/events/checking pastor code
-- DeleteUser in delUser is hitting some snapshot.val() for some reason...
 - liked a post and it printed "OnValue MainFeed" and "inside prepare posts from db" like 50+ times
 - Figure out how to style alerts for "sorts"/ style the sort buttons 
+- clicking on a post made by a user that doesn't exist anymore breaks things
 
 *************************** BEFORE PUBLISHING ************************************************************
 Make sure each screen passes tests from Jarod and Maz and maybe someone else we can get to test it?

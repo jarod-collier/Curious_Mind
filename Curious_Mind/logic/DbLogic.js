@@ -30,7 +30,7 @@ export const auth = getAuth();
 export const logInUser = async (email, password, navigation) => {
   // await signInWithEmailAndPassword(auth, email, password)
   await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin731')
-  // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User731', )
+  // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703', )
     .then(() => {
       navigation.reset({
         index: 0,
@@ -506,8 +506,7 @@ export const checkUsername = async username => {
   return valid;
 };
 
-export const delUser = navigation => {
-  console.log("delete user");
+export const delUser = async (navigation, userPassword) => {
   Alert.alert(
     'Delete Account',
     'Are you sure you want to delete your account?',
@@ -519,19 +518,18 @@ export const delUser = navigation => {
           let uid = auth.currentUser.uid;
           const userInfoRef = ref(db, `userInfo/${uid}`);
           remove(userInfoRef);
-
-          this.makeDelay(500);
+          
+          // Get the user's sign in credentials to reauthenticate
           var user = auth.currentUser;
-
-          // Get the user's sign in credentials
-          // let credential = EmailAuthProvider.credential(
-          //   user.email,
-          //   stateObj.oldPassword,
-          // );
-
-          // reauthenticateWithCredential(user, credential);
-
-          deleteUser(user)
+          let credential = EmailAuthProvider.credential(
+            user.email,
+            userPassword
+          );
+            
+          reauthenticateWithCredential(user, credential)
+          .then( () => {
+            deleteUser(user);
+          }).catch(error => Alert.alert(error.message))
           .then(() =>
             navigation.reset({
               index: 0,
