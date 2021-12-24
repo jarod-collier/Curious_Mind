@@ -41,19 +41,31 @@ export default class ViewProfileScreen extends Component {
   async getUserProfile() {
     this.setState({Loading: true});
     onValue(ref(db, 'userInfo/' + this.props.route.params.uid), snapshot => {
-      this.state.fName = snapshot.val().First;
-      this.state.lName = snapshot.val().Last;
-      this.state.username = snapshot.val().Username;
-      this.state.commentNum = snapshot.val().commentNum;
-      this.state.postNum = snapshot.val().postNum;
-      this.state.score = this.state.postNum * 2 + this.state.commentNum;
-      this.state.aboutMe = snapshot.val().AddintionalInfo;
-      if (snapshot.val().userType === 'pastor') {
-        this.state.pastorUser = true;
-        this.state.preach = snapshot.val().Preach;
-        this.state.seminary = snapshot.val().Seminary;
+      if (snapshot.exists()) {
+        this.state.fName = snapshot.val().First;
+        this.state.lName = snapshot.val().Last;
+        this.state.username = snapshot.val().Username;
+        this.state.commentNum = snapshot.val().commentNum;
+        this.state.postNum = snapshot.val().postNum;
+        this.state.score = this.state.postNum * 2 + this.state.commentNum;
+        this.state.aboutMe = snapshot.val().AddintionalInfo;
+        if (snapshot.val().userType === 'pastor') {
+          this.state.pastorUser = true;
+          this.state.preach = snapshot.val().Preach;
+          this.state.seminary = snapshot.val().Seminary;
+        }
+        this.setState({Loading: false});
       }
-      this.setState({Loading: false});
+      else {
+        this.state.fName = "User No Longer Exists";
+        this.state.lName = "";
+        this.state.username = "Unknown";
+        this.state.commentNum = "0";
+        this.state.postNum = "0";
+        this.state.score = "0"; 
+        this.state.aboutMe = "Unknown"; 
+        this.setState({Loading: false});
+      }
     });
   }
 

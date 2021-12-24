@@ -106,7 +106,6 @@ export const loadPostCards = async (posts, MainFeedView, navigation) => {
                 <Text
                   style={styles.blueText}
                   onPress={() =>{
-                    console.log("post data: " + JSON.stringify(postData, undefined, 2));
                     navigation.navigate('View Profile', {
                       uid: postData.creatorsUID
                     });}
