@@ -4,7 +4,6 @@ V1.0
     screens still needing a button (check to make sure they work):
     - LoginScreen
     - ViewProfileScreen
-- when adding event, then clicking home screen, add event screen stays up
 - loading widget while creating accounts/posts/events/checking pastor code
 - liked a post and it printed "OnValue MainFeed" and "inside prepare posts from db" like 50+ times
 - Figure out how to style alerts for "sorts"/ style the sort buttons 
@@ -48,7 +47,6 @@ V2.0
 - be aware of pastors who could be trolls
 - report users, delete account, blacklist their account email
 - make sure there aren't duplicated questions
-- input blacklist for all user inputs 
 - notifications for when users post / do anything
 - timestap needs to be added to posts (tell the time difference like instagram.
     In my opinion, this depends on the popularity of the app and whether there are 
@@ -58,3 +56,4 @@ V2.0
     Pastors can just delete their own events if they don't want it up anymore.
     It might spark conversation to keep up an old event. Plus, do we want
     church services to be "events"? I'm thinking so, but I'm happy to change that.)
+- Make recurring Events

@@ -95,8 +95,9 @@ function Main_Screen({navigation}) {
       />
       <Tab.Screen
         name="Events"
-        component={EventScreen}
+        component={Nested_Event}
         options={{
+          headerShown: false,
           tabBarIcon: ({color, focused}) =>
             focused ? (
               <MaterialCommunityIcons
@@ -115,15 +116,9 @@ function Main_Screen({navigation}) {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={Nested_Profile}
         options={{
-          headerRight: props => (
-            <TouchableOpacity
-              style={styles.logoutButtons}
-              onPress={() => signUserOut(navigation)}>
-              <Text style={styles.customBtnText}>Log Out</Text>
-            </TouchableOpacity>
-          ),
+          headerShown: false,
           tabBarIcon: ({color, focused}) =>
             focused ? (
               <MaterialCommunityIcons name="account" color={color} size={30} />
@@ -139,29 +134,66 @@ function Main_Screen({navigation}) {
     </Tab.Navigator>
   );
 }
-const Nested_Stack = createStackNavigator();
+
+const Nested_Stack_Main = createStackNavigator();
 function Nested_Main({navigation}) {
   return (
-    <Nested_Stack.Navigator
+    <Nested_Stack_Main.Navigator
       screenOptions={{
         headerShown: true,
         headerTitle: () => (
           <Image source={require('./assets/images/CM_logo02_header.png')} />
         ),
-        headerBackImage: () => (
-          <Button
-            style={styles.backButton}
-            color="black"
-            name="arrow-left"
-            onPress={() => navigation.goBack()}
-          />
-        ),
-        headerBackTitle: '',
         headerTitleAlign: 'center'
       }}>
-      <Nested_Stack.Screen name="Main Feed" component={MainFeedScreen} />
-      <Nested_Stack.Screen name="Thread" component={ThreadScreen} />
-      <Nested_Stack.Screen 
+      <Nested_Stack_Main.Screen name="Main Feed" component={MainFeedScreen} />
+      <Nested_Stack_Main.Screen 
+        name="Thread"
+        component={ThreadScreen}
+        options={{
+          headerBackImage: () => (
+            <Button
+              style={styles.backButton}
+              color="black"
+              name="arrow-left"
+              onPress={() => navigation.navigate("Main Feed")}
+            />
+          ),
+          headerBackTitle: '',
+        }}
+      />
+      <Nested_Stack_Main.Screen
+        name="View Profile"
+        component={ViewProfileScreen}
+        options={{
+          headerBackImage: () => (
+            <Button
+              style={styles.backButton}
+              color="black"
+              name="arrow-left"
+              onPress={() => navigation.navigate("Main Feed")}
+            />
+          ),
+          headerBackTitle: '',
+        }}
+      />
+    </Nested_Stack_Main.Navigator>
+  );
+}
+
+const Nested_Stack_Event = createStackNavigator();
+function Nested_Event({navigation}) {
+  return (
+    <Nested_Stack_Event.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerTitle: () => (
+          <Image source={require('./assets/images/CM_logo02_header.png')} />
+        ),
+        headerTitleAlign: 'center'
+      }}>
+      <Nested_Stack_Event.Screen name="Event Feed" component={EventScreen} />
+      <Nested_Stack_Event.Screen 
         name="Add Event" 
         component={NewEventScreen} 
         options={{
@@ -170,12 +202,40 @@ function Nested_Main({navigation}) {
               style={styles.backButton}
               color="black"
               name="arrow-left"
-              onPress={() => navigation.navigate("Events")}
+              onPress={() => navigation.navigate("Event Feed")}
             />
           ),
         }}
       />
-      <Nested_Stack.Screen
+    </Nested_Stack_Event.Navigator>
+  );
+}
+
+const Nested_Stack_Profile = createStackNavigator();
+function Nested_Profile({navigation}) {
+  return (
+    <Nested_Stack_Profile.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerTitle: () => (
+          <Image source={require('./assets/images/CM_logo02_header.png')} />
+        ),
+        headerTitleAlign: 'center'
+      }}>
+      <Nested_Stack_Profile.Screen 
+        name="Profile Screen" 
+        component={ProfileScreen} 
+        options={{
+          headerRight: props => (
+            <TouchableOpacity
+              style={styles.logoutButtons}
+              onPress={() => signUserOut(navigation)}>
+              <Text style={styles.customBtnText}>Log Out</Text>
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <Nested_Stack_Profile.Screen
         name="Reset Password"
         component={ResetPasswordScreen}
         options={{
@@ -184,22 +244,12 @@ function Nested_Main({navigation}) {
               style={styles.backButton}
               color="black"
               name="arrow-left"
-              onPress={() => navigation.navigate("Profile")}
+              onPress={() => navigation.navigate("Profile Screen")}
             />
           ),
         }}
       />
-      <Nested_Stack.Screen
-        name="View Profile"
-        component={ViewProfileScreen}
-        options={{
-          headerMode: 'screen',
-          headerTitle: () => (
-            <Image source={require('./assets/images/CM_logo02_header.png')} />
-          ),
-        }}
-      />
-    </Nested_Stack.Navigator>
+    </Nested_Stack_Profile.Navigator>
   );
 }
 
