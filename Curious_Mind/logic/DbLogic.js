@@ -26,50 +26,53 @@ import {checkPasswordCredentials} from './helpers';
 export const db = getDatabase();
 export const auth = getAuth();
 
-// doesn't work with real username and password and empty values
 export const logInUser = async (email, password, navigation) => {
   // await signInWithEmailAndPassword(auth, email, password)
   await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin731')
   // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703', )
-    .then(() => {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Home'}],
-      });
-    })
-    .catch(error => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-
-      console.log('error code:');
-      console.log(errorCode);
-      //user doesn't exist
-      if (errorCode === 'auth/user-not-found') {
-        Alert.alert('Incorrect username or password. \nPlease try again');
-      } else if (errorCode === 'auth/invalid-email') {
-        Alert.alert(
-          'Invalid email',
-          'Please enter a correct email. You entered: "' + email + '"',
-        );
-      } else if (errorCode === 'auth/wrong-password') {
-        Alert.alert(
-          'Invalid Entry',
-          "Invalid email-password combination. If you're seeing this error, " +
-            'it is likely that the password entered does not match the email you provided, but the email does exist in ' +
-            ' our database.\n\nPlease try again.',
-        );
-      } else if (password === '') {
-        Alert.alert('Please enter a password.');
-      } else {
-        Alert.alert(errorCode + ': ' + errorMessage);
-      }
+  .then(() => {
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Home'}],
     });
+  })
+  .catch(error => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+
+    console.log('error code:');
+    console.log(errorCode);
+
+    //user doesn't exist
+    if (errorCode === 'auth/user-not-found') {
+      Alert.alert('Incorrect username or password. \nPlease try again');
+    } else if (errorCode === 'auth/invalid-email') {
+      Alert.alert(
+        'Invalid email',
+        `Please enter a correct email. You entered: "${email}"`,
+      );
+    } else if (errorCode === 'auth/wrong-password') {
+      Alert.alert(
+        'Invalid Entry',
+        "Invalid email-password combination. If you're seeing this error, " +
+          'it is likely that the password entered does not match the email you provided, but the email does exist in ' +
+          ' our database.\n\nPlease try again.',
+      );
+    } else if (password === '') {
+      Alert.alert('Please enter a password.');
+    } else {
+      Alert.alert(
+        'Error',
+        `Internal app error: ${errorCode}. Please try again.`
+      );
+    }
+  });
 };
 
-// still working on it -------needs testing
 export const resetPassword = async (stateObj, navigation) => {
   const user = auth.currentUser;
   let max_attempts_to_reset_password = 5;
+  let errorCounter = stateObj.errorCounter;
 
   // Get the user's sign in credentials
   let credential = EmailAuthProvider.credential(
@@ -77,61 +80,72 @@ export const resetPassword = async (stateObj, navigation) => {
     stateObj.oldPassword,
   );
 
-  reauthenticateWithCredential(user, credential)
-    .then(() => {
-      if (checkPasswordCredentials(stateObj)) {
-        updatePassword(user, stateObj.Password1)
-          .then(() => {
-            // reset credential and re-authenticate user session
-            credential = EmailAuthProvider.credential(
-              user.email,
-              stateObj.Password1,
-            );
-            reauthenticateWithCredential(user, credential)
-            .then(() => {
-              console.log('user reauthenticated with new password');
-              Alert.alert('Your password has been reset');
-              navigation.navigate('Profile');
-  
-            })
-            .catch(error => {
-              console.log(
-                'could not reauthenticate after change of password',
-              );
-            });
-          })
-          // an error occured updating the password
-          .catch(error => {
-            console.log('could not update password: ' + error.message);
-          });
-      }
-    })
-    // error authenticating user with their old password
-    .catch(error => {
-      stateObj.errorCounter++;
-      if (stateObj.errorCounter < max_attempts_to_reset_password) {
-        Alert.alert(
-          'The old password you entered is incorrect.',
-          `You have ${
-            max_attempts_to_reset_password - stateObj.errorCounter
-          } attempts left`,
+  await reauthenticateWithCredential(user, credential)
+  .then(async () => {
+    let validPassword = await checkPasswordCredentials(stateObj);
+    if (validPassword) {
+      updatePassword(user, stateObj.Password1)
+      .then(() => {
+        // reset credential and re-authenticate user session
+        credential = EmailAuthProvider.credential(
+          user.email,
+          stateObj.Password1,
         );
-      } else {
+        reauthenticateWithCredential(user, credential)
+        .then(() => {
+          Alert.alert('Your password has been reset!');
+
+          // reset the error counter
+          errorCounter = 0;
+          navigation.navigate('Profile Screen');
+        })
+        .catch(error => {
+          const errorCode = error.code;
+          Alert.alert(
+            'Error',
+            `Internal app error: ${errorCode}. Please try again.`
+          );
+        });
+      })
+      // an error occured updating the password
+      .catch(error => {
+        const errorCode = error.code;
         Alert.alert(
-          'You have attempted to reset your password too many times.',
-          'You will be signed out now.',
+          'Error',
+          `Internal app error: ${errorCode}. Please try again.`
         );
-        signOut(auth)
-          .then(
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'Login'}],
-            }),
-          )
-          .catch(errorSignout => Alert.alert(errorSignout.message));
-      }
-    });
-  return stateObj.errorCounter;
+      });
+    }
+  })
+  // error authenticating user with their old password
+  .catch(error => {
+    errorCounter++;
+    if (errorCounter < max_attempts_to_reset_password) {
+      Alert.alert(
+        'The old password you entered is incorrect.',
+        `You have ${
+          max_attempts_to_reset_password - errorCounter
+        } attempts left.`,
+      );
+    } else {
+      Alert.alert(
+        'Error resetting your password.',
+        'You have attempted to reset your password too many times. You will be signed out now.',
+      );
+      signOut(auth)
+      .then(
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Login'}],
+        }),
+      )
+      .catch(errorSignout => Alert.alert(
+        'Error',
+        `Internal app error: ${errorSignout.code}. Please try again.`)
+      );
+    }
+  });
+  return errorCounter;
 };
 
 export const likePost = async postID => {
@@ -240,7 +254,11 @@ export const createPost = async postObj => {
       userType: snapshot.val().userType,
       creatorsUID: uid,
     }).catch(error => {
-      Alert.alert('error ', error);
+      const errorCode = error.code;
+      Alert.alert(
+        'Error',
+        `Internal app error: ${errorCode}. Please try again.`
+      );
     });
     Alert.alert('Post added successfully.');
   });
@@ -272,7 +290,11 @@ export const createEvent = async eventObj => {
     location: eventObj.location,
     pastor_uid: uid,
   }).catch(error => {
-    Alert.alert('error ', error);
+    const errorCode = error.code;
+    Alert.alert(
+      'Error',
+      `Internal app error: ${errorCode}. Please try again.`
+    );
   });
   Alert.alert('Event added successfully');
 };
@@ -314,7 +336,11 @@ export const addCommentToPost = async (postID, comment) => {
       reports: 0,
       key: `${uid}_${unique_id}`,
     }).catch(error => {
-      Alert.alert('error ', error);
+      const errorCode = error.code;
+      Alert.alert(
+        'Error',
+        `Internal app error: ${errorCode}. Please try again.`
+      );
     });
     await updateUserCommentCount(uid, snapshot.val().commentNum);
     Alert.alert('Comment added successfully.');
@@ -383,23 +409,34 @@ export const reportComment = async (postID, commentId) => {
 };
 
 export const sendForgotPasswordEmail = async (navigation, email) => {
-  sendPasswordResetEmail(auth, email)
+  let validEmail = await checkEmailExists(email);
+  if (validEmail) {
+    sendPasswordResetEmail(auth, email)
     .then(() => {
       // Password reset email sent!
       Alert.alert(
-        'Reset Password',
-        'Your password has been reset.\nPlease check your email to finish the process',
+        'Reset Password Email Sent',
+        'Please check your email to reset your password. Once you have reset it, please try to log in.',
         [{text: 'OK', onPress: () => navigation.goBack()}],
         {cancelable: false},
       );
     })
     .catch(error => {
+      const errorCode = error.code;
       if (error.code === 'auth/user-not-found') {
         Alert.alert("User doesn't exist", [{text: 'OK'}], {cancelable: false});
-      } else if (error.code === 'auth/invalid-email') {
+      } 
+      else if (error.code === 'auth/invalid-email') {
         Alert.alert('Invalid email', [{text: 'OK'}], {cancelable: false});
       }
+      else {
+        Alert.alert(
+          'Error',
+          `Internal app error: ${errorCode}. Please try again.`
+        );
+      }
     });
+  }
 };
 
 export const validatePastorCode = async (code, navigation) => {
@@ -422,12 +459,13 @@ export const validatePastorCode = async (code, navigation) => {
   }
 };
 
-//firebase error here
 export const handleSignUp = async (normalUser, signupObject, navigation) => {
-  if (await checkUsername(signupObject.Username)) {
+  let validUsername = await checkUsername(signupObject.Username);
+  if (validUsername) {
 
     // Password are not empty
-    if (await checkPasswordCredentials(signupObject)) {
+    let passwordMeetsStandards = await checkPasswordCredentials(signupObject)
+    if (passwordMeetsStandards) {
       await createUserWithEmailAndPassword(
         auth,
         signupObject.Email,
@@ -479,8 +517,8 @@ export const handleSignUp = async (normalUser, signupObject, navigation) => {
         else {
           Alert.alert(
             'Error',
-            'Internal app error. Please try again.'
-          )
+            `Internal app error: ${errorCode}. Please try again.`
+          );
         } 
       });
     } 
@@ -494,15 +532,31 @@ export const checkUsername = async username => {
       if (user.val().Username === username) {
         Alert.alert(
           'Username Error',
-          'The username "' +
-            username +
-            '" is already in use. Please try a different username.',
+          `The username "${username}" is already in use. Please try a different username.`,
         );
         valid = false;
       }
     });
-    valid = true;
   });
+  return valid;
+};
+
+export const checkEmailExists = async email => {
+  let valid = false;
+  await get(child(ref(db), 'userInfo/')).then(async snapshot => {
+    snapshot.forEach(user => {
+      if (user.val().Email === email) {
+        valid = true;
+      }
+    });
+  });
+
+  if (!valid) {
+    Alert.alert(
+      'Email Error',
+      `The email "${email}" does not exist. Please try a different one.`,
+    );
+  }
   return valid;
 };
 
@@ -529,14 +583,26 @@ export const delUser = async (navigation, userPassword) => {
           reauthenticateWithCredential(user, credential)
           .then( () => {
             deleteUser(user);
-          }).catch(error => Alert.alert(error.message))
+          }).catch(error => {
+            const errorCode = error.code;
+            Alert.alert(
+              'Error',
+              `Internal app error: ${errorCode}. Please try again.`
+            );
+          })
           .then(() =>
             navigation.reset({
               index: 0,
               routes: [{name: 'Login'}],
             })
           )
-          .catch(error => Alert.alert(error.message));
+          .catch(error => {
+            const errorCode = error.code;
+            Alert.alert(
+              'Error',
+              `Internal app error: ${errorCode}. Please try again.`
+            );
+          });
         },
         style: {color: 'red'},
       },

@@ -12,6 +12,7 @@ import {
   Image,
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export default class LoginScreen extends Component {
   constructor(props) {
@@ -21,12 +22,14 @@ export default class LoginScreen extends Component {
       Password: '',
       Loading: false,
       loginDisabled: true,
+      Spinner: false
     };
     this.clearEmail = React.createRef();
     this.clearPassword = React.createRef();
   }
 
   render() {
+    console.log("rebuilding login");
     LayoutAnimation.easeInEaseOut();
     return (
       <SafeAreaView style={styles.safeAreaStyle}>
@@ -42,7 +45,14 @@ export default class LoginScreen extends Component {
             ]}
             scrollEnabled={true}
             enableOnAndroid={true}
-            keyboardShouldPersistTaps={'handled'}>
+            keyboardShouldPersistTaps={'handled'}
+          >
+            <Spinner
+              visible={this.state.Spinner}
+              textContent={'Logging in...'}
+              textStyle={styles.spinnerTextStyle}
+              cancelable={true}
+            />
             <Image
               style={styles.logo}
               source={require('../assets/images/CM_logo02.png')}
@@ -50,6 +60,7 @@ export default class LoginScreen extends Component {
             <TextInput
               style={[styles.inputBox, styles.width300]}
               placeholder="Enter your Email"
+              value={this.state.Email || null}
               keyboardType="email-address"
               placeholderTextColor="grey"
               onChangeText={e => {
@@ -64,6 +75,7 @@ export default class LoginScreen extends Component {
             <TextInput
               style={[styles.inputBox, styles.width300]}
               placeholder="Password"
+              value={this.state.Password || null}
               placeholderTextColor="grey"
               secureTextEntry={true}
               onChangeText={e => {
@@ -81,16 +93,21 @@ export default class LoginScreen extends Component {
                   ? styles.disabledButtons
                   : styles.Buttons,
               ]}
+              // *************************************************************************************************
+              // RE ENABLE ME BEFORE PUBLISHING
               // disabled={this.state.loginDisabled}
-              onPress={async () =>
-                logInUser(
+              // RE ENABLE ME BEFORE PUBLISHING
+              // *************************************************************************************************
+              onPress={async () => {
+                this.setState({Spinner: true});
+                await logInUser(
                   this.state.Email,
                   this.state.Password,
                   this.props.navigation,
-                ).then(() => {
-                  this.setState({Email: '', Password: ''});
-                })
-              }>
+                );
+                this.state.Spinner = false;
+                this.setState({Email: '', Password: ''});
+              }}>
               <Text
                 style={[
                   this.state.loginDisabled

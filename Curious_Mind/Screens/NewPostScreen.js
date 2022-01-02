@@ -14,6 +14,7 @@ import {styles} from '../assets/styles/styles';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {createPost, updateUserPostCount} from '../logic/DbLogic';
 import {cleanUsersInput} from '../logic/helpers';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export default class ResetPasswordScreen extends Component {
   constructor(props) {
@@ -25,6 +26,7 @@ export default class ResetPasswordScreen extends Component {
       pastorOnly: false,
       username: '',
       ButtonDisabled: true,
+      Spinner: false,
     };
     this.clearQuestion = React.createRef();
     this.clearDescription = React.createRef();
@@ -44,7 +46,14 @@ export default class ResetPasswordScreen extends Component {
             ]}
             scrollEnabled={true}
             extraHeight={100}
-            keyboardShouldPersistTaps="handled">
+            keyboardShouldPersistTaps="handled"
+          >
+            <Spinner
+              visible={this.state.Spinner}
+              textContent={'Posting...'}
+              textStyle={styles.spinnerTextStyle}
+              cancelable={true}
+            />
             <View style={styles.container}>
               <Text
                 style={[
@@ -58,7 +67,7 @@ export default class ResetPasswordScreen extends Component {
               <TextInput
                 style={[styles.inputBox]}
                 placeholder="Type your question here"
-                value={this.state.Question}
+                value={this.state.Question || null}
                 placeholderTextColor="black"
                 onChangeText={e => {
                   e.replace(/ /g, '') === ''
@@ -79,7 +88,7 @@ export default class ResetPasswordScreen extends Component {
               <TextInput
                 style={[styles.multiline]}
                 placeholder="Type your description here"
-                value={this.state.Description}
+                value={this.state.Description || null}
                 placeholderTextColor="black"
                 multiline={true}
                 numberOfLines={10}
@@ -134,6 +143,7 @@ export default class ResetPasswordScreen extends Component {
                 ]}
                 disabled={this.state.ButtonDisabled}
                 onPress={async () => {
+                  this.setState({Spinner: true});
                   await cleanUsersInput(this.state.Question).then(
                     val => (this.state.Question = val),
                   );
@@ -148,6 +158,7 @@ export default class ResetPasswordScreen extends Component {
                     Anon: false,
                     pastorOnly: false,
                     ButtonDisabled: true,
+                    Spinner: false,
                   });
                   this.props.navigation.navigate('Home Tab');
                 }}>

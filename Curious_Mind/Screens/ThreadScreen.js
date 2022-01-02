@@ -22,6 +22,7 @@ import {
 } from '../logic/helpers';
 import {onValue, ref} from 'firebase/database';
 import {getAuth} from 'firebase/auth';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export default class ThreadScreen extends Component {
   constructor(props) {
@@ -124,6 +125,12 @@ export default class ThreadScreen extends Component {
                 }}
               />
             }>
+            <Spinner
+              visible={this.state.Spinner}
+              textContent={'Posting...'}
+              textStyle={styles.spinnerTextStyle}
+              cancelable={true}
+            />
             <View style={styles.container}>
               {this.state.display}
               <TouchableOpacity
@@ -143,6 +150,7 @@ export default class ThreadScreen extends Component {
                     multiline={true}
                     numberOfLines={10}
                     placeholder="Add new comment here"
+                    value={this.state.comment || null}
                     placeholderTextColor="grey"
                     returnKeyType="done"
                     blurOnSubmit={true}
@@ -163,6 +171,7 @@ export default class ThreadScreen extends Component {
                     ]}
                     disabled={this.state.ButtonDisabled}
                     onPress={async () => {
+                      this.setState({Spinner: true});
                       await cleanUsersInput(this.state.comment).then(
                         val => (this.state.comment = val),
                       );
@@ -172,6 +181,7 @@ export default class ThreadScreen extends Component {
                       );
                       // this.refreshScreen(this.state.postID);
                       this.clearComment.current.clear();
+                      this.setState({Spinner: false});
                     }}>
                     <Text style={styles.customBtnText}>Post</Text>
                   </TouchableOpacity>

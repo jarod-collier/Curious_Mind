@@ -391,4 +391,8 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     marginHorizontal: 7,
   },
+  spinnerTextStyle: {
+    color: '#FFF',
+    fontSize: 25,
+  },
 });

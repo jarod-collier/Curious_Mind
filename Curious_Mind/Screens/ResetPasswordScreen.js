@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
 import {resetPassword} from '../logic/DbLogic';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export default class ResetPasswordScreen extends Component {
   constructor(props) {
@@ -24,6 +25,7 @@ export default class ResetPasswordScreen extends Component {
       Password2: '',
       errorCounter: 0,
       buttonDisabled: true,
+      Spinner: false,
     };
 
     this.clearOldPassword = React.createRef();
@@ -55,7 +57,14 @@ export default class ResetPasswordScreen extends Component {
             contentContainerStyle={[styles.container, styles.aligItemsCenter]}
             scrollEnabled={true}
             extraHeight={100}
-            keyboardShouldPersistTaps="handled">
+            keyboardShouldPersistTaps="handled"
+          >
+            <Spinner
+              visible={this.state.Spinner}
+              textContent={'Resetting Password...'}
+              textStyle={styles.spinnerTextStyle}
+              cancelable={true}
+            />
             <View style={styles.logo}>
               <Image source={require('../assets/images/CM_logo02.png')} />
             </View>
@@ -66,6 +75,7 @@ export default class ResetPasswordScreen extends Component {
               <TextInput
                 style={[styles.inputBox, styles.width300]}
                 placeholder="Enter old password"
+                value={this.state.oldPassword || null}
                 placeholderTextColor="black"
                 secureTextEntry={true}
                 onChangeText={e => {
@@ -76,6 +86,7 @@ export default class ResetPasswordScreen extends Component {
               <TextInput
                 style={[styles.inputBox, styles.width300]}
                 placeholder="Enter new password*"
+                value={this.state.Password1 || null}
                 placeholderTextColor="black"
                 secureTextEntry={true}
                 onChangeText={e => {
@@ -86,6 +97,7 @@ export default class ResetPasswordScreen extends Component {
               <TextInput
                 style={[styles.inputBox, styles.width300]}
                 placeholder="Enter new password again*"
+                value={this.state.Password2 || null}
                 placeholderTextColor="black"
                 secureTextEntry={true}
                 onChangeText={e => {
@@ -104,8 +116,8 @@ export default class ResetPasswordScreen extends Component {
                     : styles.Buttons,
                 ]}
                 onPress={async () => {
-                  Keyboard.dismiss;
-                  resetPassword(this.state, this.props.navigation).then(
+                  this.setState({Spinner: true});
+                  await resetPassword(this.state, this.props.navigation).then(
                     counter => (this.state.errorCounter = counter),
                   )
                   .then(
@@ -113,7 +125,7 @@ export default class ResetPasswordScreen extends Component {
                       oldPassword: '',
                       Password1: '',
                       Password2: '',
-                      errorCounter: 0,
+                      Spinner: false,
                     })
                   );
 

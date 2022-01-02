@@ -543,13 +543,12 @@ export const cleanUsersInput= async userInput => {
 };
 export const checkPasswordCredentials = async stateObj => {
   
-  console.log("inside check password");
   let password1 = stateObj.Password1;
   let password2 = stateObj.Password2;
   let min_password_length = 6;
   let valid_password = false
 
-  if (password1 < min_password_length || password2 < min_password_length) {
+  if (password1.length < min_password_length || password2.length < min_password_length) {
     Alert.alert(`New password needs to be at least ${min_password_length} characters long`);
   }
   else if (password1 !== password2) {
@@ -558,7 +557,6 @@ export const checkPasswordCredentials = async stateObj => {
   else {
     valid_password = true;
   }
-  console.log("valid password: " + valid_password);
   return valid_password;
 };
 

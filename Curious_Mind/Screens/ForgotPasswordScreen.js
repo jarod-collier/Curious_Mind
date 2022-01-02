@@ -14,12 +14,15 @@ import {
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
 import {sendForgotPasswordEmail} from '../logic/DbLogic';
+import Spinner from 'react-native-loading-spinner-overlay';
+
 export default class ForgotPasswordScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       Email: '',
       buttonDisabled: true,
+      Spinner: false,
     };
   }
 
@@ -41,7 +44,14 @@ export default class ForgotPasswordScreen extends Component {
             contentContainerStyle={[styles.container, styles.aligItemsCenter]}
             scrollEnabled={true}
             extraHeight={100}
-            keyboardShouldPersistTaps="handled">
+            keyboardShouldPersistTaps="handled"
+          >
+            <Spinner
+              visible={this.state.Spinner}
+              textContent={'Sending Email...'}
+              textStyle={styles.spinnerTextStyle}
+              cancelable={true}
+            />
             <Image
               style={styles.logo}
               source={require('../assets/images/CM_logo02.png')}
@@ -55,6 +65,7 @@ export default class ForgotPasswordScreen extends Component {
             <TextInput
               style={[styles.inputBox, styles.width300]}
               placeholder="Enter your email"
+              value={this.state.Email || null}
               placeholderTextColor="grey"
               returnKeyType="done"
               onChangeText={e => {
@@ -73,9 +84,11 @@ export default class ForgotPasswordScreen extends Component {
                 styles.marginBottom30,
                 styles.marginTop35,
               ]}
-              onPress={() =>
-                sendForgotPasswordEmail(this.props.navigation, this.state.Email)
-              }>
+              onPress={async () => {
+                this.setState({Spinner: true});
+                await sendForgotPasswordEmail(this.props.navigation, this.state.Email);
+                this.setState({Spinner: false});
+              }}>
               <Text
                 style={[
                   this.state.buttonDisabled

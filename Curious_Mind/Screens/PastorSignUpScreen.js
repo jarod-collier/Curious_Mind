@@ -13,6 +13,7 @@ import {
 import {Button} from 'react-native-vector-icons/FontAwesome';
 import {styles} from '../assets/styles/styles';
 import {handleSignUp} from '../logic/DbLogic';
+import Spinner from 'react-native-loading-spinner-overlay';
 export default class PastorSignUpScreen extends Component {
   constructor(props) {
     super(props);
@@ -27,6 +28,7 @@ export default class PastorSignUpScreen extends Component {
       seminary: '',
       addintionalInfo: '',
       buttonDisabled: true,
+      Spinner: false,
     };
     this.clearFirstName = React.createRef();
     this.clearLastName = React.createRef();
@@ -39,7 +41,6 @@ export default class PastorSignUpScreen extends Component {
   }
 
   shouldButtonBeDisabled() {
-    console.log('checking');
     if (
       this.state.Username.replace(/ /g, '') !== '' &&
       this.state.Password1.replace(/ /g, '') !== '' &&
@@ -72,7 +73,14 @@ export default class PastorSignUpScreen extends Component {
             resetScrollToCoords={{x: 0, y: 0}}
             contentContainerStyle={[styles.container, styles.aligItemsCenter]}
             scrollEnabled={true}
-            extraHeight={100}>
+            extraHeight={100}
+          >
+            <Spinner
+              visible={this.state.Spinner}
+              textContent={'Signing Up...'}
+              textStyle={styles.spinnerTextStyle}
+              cancelable={true}
+            />
             <Image
               styles={styles.logo}
               source={require('../assets/images/CM_logo02.png')}
@@ -82,6 +90,7 @@ export default class PastorSignUpScreen extends Component {
               <TextInput
                 style={styles.namesInput}
                 placeholder="First name"
+                value={this.state.FirstName || null}
                 placeholderTextColor="black"
                 blurOnSubmit={true}
                 onChangeText={e => {
@@ -92,6 +101,7 @@ export default class PastorSignUpScreen extends Component {
               <TextInput
                 style={styles.namesInput}
                 placeholder="Last name"
+                value={this.state.LastName || null}
                 placeholderTextColor="black"
                 blurOnSubmit={true}
                 onChangeText={e => {
@@ -103,6 +113,7 @@ export default class PastorSignUpScreen extends Component {
             <TextInput
               style={[styles.inputBox, styles.width300]}
               placeholder="Username*"
+              value={this.state.Username || null}
               placeholderTextColor="black"
               blurOnSubmit={true}
               onChangeText={e => {
@@ -113,6 +124,7 @@ export default class PastorSignUpScreen extends Component {
             <TextInput
               style={[styles.inputBox, styles.width300]}
               placeholder="Email*"
+              value={this.state.Email || null}
               placeholderTextColor="black"
               keyboardType="email-address"
               blurOnSubmit={true}
@@ -124,6 +136,7 @@ export default class PastorSignUpScreen extends Component {
             <TextInput
               style={[styles.inputBox, styles.width300]}
               placeholder="Password*"
+              value={this.state.Password1 || null}
               secureTextEntry={true}
               placeholderTextColor="black"
               blurOnSubmit={true}
@@ -135,6 +148,7 @@ export default class PastorSignUpScreen extends Component {
             <TextInput
               style={[styles.inputBox, styles.width300]}
               placeholder="Confirm Password*"
+              value={this.state.Password2 || null}
               secureTextEntry={true}
               placeholderTextColor="black"
               blurOnSubmit={true}
@@ -146,6 +160,7 @@ export default class PastorSignUpScreen extends Component {
             <TextInput
               style={[styles.inputBox, styles.width300]}
               placeholder="  Church preaching at"
+              value={this.state.preach || null}
               placeholderTextColor="black"
               blurOnSubmit={true}
               onChangeText={e => {
@@ -156,6 +171,7 @@ export default class PastorSignUpScreen extends Component {
             <TextInput
               style={[styles.inputBox, styles.width300]}
               placeholder="Where did you attend Seminary?"
+              value={this.state.seminary || null}
               placeholderTextColor="black"
               blurOnSubmit={true}
               onChangeText={e => {
@@ -166,6 +182,7 @@ export default class PastorSignUpScreen extends Component {
             <TextInput
               style={styles.multiline}
               placeholder="Any additional information you would like to share"
+              value={this.state.addintionalInfo || null}
               placeholderTextColor="black"
               multiline={true}
               numberOfLines={10}
@@ -184,9 +201,11 @@ export default class PastorSignUpScreen extends Component {
                     ? styles.disabledButtons
                     : styles.Buttons,
                 ]}
-                onPress={() =>
-                  handleSignUp(false, this.state, this.props.navigation)
-                }>
+                onPress={async() => {
+                  this.setState({Spinner: true});
+                  await handleSignUp(false, this.state, this.props.navigation);
+                  this.setState({Spinner: false});
+                }}>
                 <Text
                   style={[
                     this.state.buttonDisabled

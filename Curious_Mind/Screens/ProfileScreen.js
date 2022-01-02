@@ -156,7 +156,7 @@ export default class ProfileScreen extends Component {
                       onChangeText={e => {
                         this.setState({aboutMe: e});
                       }}
-                      autoFocus
+                      autoFocus={true}
                       multiline={true}
                       maxLength={175}
                       blurOnSubmit={true}

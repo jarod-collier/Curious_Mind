@@ -15,6 +15,7 @@ import {
 import {styles} from '../assets/styles/styles';
 import {createEvent} from '../logic/DbLogic';
 import { validateEventInputs, cleanUsersInput} from '../logic/helpers';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export default class NewEventScreen extends Component {
   constructor(props) {
@@ -142,7 +143,6 @@ export default class NewEventScreen extends Component {
   }
 
   render() {
-    console.log("date: " + this.state.chosenDate + " " + this.state.chosenTime);
     LayoutAnimation.easeInEaseOut();
     return (
       <SafeAreaView style={styles.safeAreaStyle}>
@@ -156,7 +156,14 @@ export default class NewEventScreen extends Component {
             ]}
             scrollEnabled={true}
             extraHeight={100}
-            keyboardShouldPersistTaps="handled">
+            keyboardShouldPersistTaps="handled"
+          >
+            <Spinner
+              visible={this.state.Spinner}
+              textContent={'Adding Event...'}
+              textStyle={styles.spinnerTextStyle}
+              cancelable={true}
+            />
             <Text
               style={[
                 styles.marginTop35,
@@ -338,14 +345,16 @@ export default class NewEventScreen extends Component {
                 styles.alignSelfCenter,
               ]}
               onPress={async () => {
+                this.setState({Spinner: true});
                 let valid_inputs = await validateEventInputs(this.state);
                 if (valid_inputs) {
                   await this.getChosenDateAndTime();
                   await this.checkEventInputForBadWords();
                   await createEvent(this.state).then(async () =>
-                    await this.props.navigation.navigate('Events'),
+                    await this.props.navigation.navigate('Event Feed'),
                   );
                 }
+                this.setState({Spinner: false});
               }}>
               <Text
                 style={
