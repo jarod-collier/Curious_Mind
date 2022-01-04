@@ -119,15 +119,15 @@ export default class ResetPasswordScreen extends Component {
                   this.setState({Spinner: true});
                   await resetPassword(this.state, this.props.navigation).then(
                     counter => (this.state.errorCounter = counter),
-                  )
-                  .then(
-                    this.setState({
-                      oldPassword: '',
-                      Password1: '',
-                      Password2: '',
-                      Spinner: false,
-                    })
                   );
+                  
+                  // For whatever reason, the spinner state being set like this seems to trigger the spinner sooner
+                  this.state.Spinner = false;
+                  this.setState({
+                    oldPassword: '',
+                    Password1: '',
+                    Password2: '',
+                  });
 
                   // need to double check that this works for iOS as well
                   this.clearOldPassword.current.clear();

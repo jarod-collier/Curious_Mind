@@ -140,9 +140,9 @@ export const loadPostCards = async (posts, MainFeedView, navigation) => {
                   style={styles.whiteBackground}
                   color={postData.reportColor}
                   name="exclamation-triangle"
-                  onPress={async () =>
-                    await reportPost(postData.key, MainFeedView, navigation)
-                  }
+                  onPress={async () => {
+                    await reportPost(postData.key, MainFeedView, navigation);
+                  }}
                 />
                 {postData.reports > 0 && (
                   <Text style={styles.iconBadge}>{postData.reports}</Text>
@@ -294,7 +294,6 @@ export const addToCalendar = (title, date, time, location, notes) => {
 };
 
 export const preparePostsFromDB = async (snapshot, uid, sortQuestionsBy) => {
-  console.log('inside prepare posts from db');
   let postItems = [];
   let likesForEachPost = [];
   let alreadyLikedpost;
@@ -307,8 +306,11 @@ export const preparePostsFromDB = async (snapshot, uid, sortQuestionsBy) => {
       alreadyLikedpost = '#588dea';
     }
 
-    if (e.val().reportedBy.includes(uid)) {
-      alreadyReportedpost = '#f3b725';
+    if (e.val().reportedBy != null) {
+
+      if (e.val().reportedBy.includes(uid)) {
+        alreadyReportedpost = '#f3b725';
+      }
     }
 
     postItems.push({
@@ -358,8 +360,10 @@ export const preparePostsFromDB = async (snapshot, uid, sortQuestionsBy) => {
             alreadyLikedpost = '#588dea';
           }
       
-          if (e.val().reportedBy.includes(uid)) {
-            alreadyReportedpost = '#f3b725';
+          if (e.val().reportedBy != null) {
+            if (e.val().reportedBy.includes(uid)) {
+              alreadyReportedpost = '#f3b725';
+            }
           }
 
           postsSortedByMostLikes.push({
@@ -379,7 +383,6 @@ export const preparePostsFromDB = async (snapshot, uid, sortQuestionsBy) => {
           });
           valuesAdded++;
         }
-  
       });
     }
     postItems = postsSortedByMostLikes;
@@ -405,7 +408,6 @@ export const prepareEventsFromDB = async (snapshot, uid) => {
 };
 
 export const prepareThreadScreen = async (snapshot, uid, postID, SortCommentsBy) => {
-  console.log('inside prepare thread screen: ' + postID);
   let commentItems = [];
   let postItems = [];
   let alreadyLikedpost = 'black';
@@ -416,8 +418,10 @@ export const prepareThreadScreen = async (snapshot, uid, postID, SortCommentsBy)
     snapshot.child('comments').forEach(comment => {
       let alreadyReportedcomment = 'black';
 
-      if (comment.val().reportedBy.includes(uid)) {
-        alreadyReportedcomment = 'red';
+      if (comment.val().reportedBy != null) {
+        if (comment.val().reportedBy.includes(uid)) {
+          alreadyReportedcomment = 'red';
+        }
       }
 
       commentItems.push({
@@ -443,13 +447,12 @@ export const prepareThreadScreen = async (snapshot, uid, postID, SortCommentsBy)
       let commentsSortedByPastors = [];
 
       snapshot.child('comments').forEach(comment => {
-
         if (comment.val().userType === 'pastor') {
-
           let alreadyReportedcomment = 'black';
-
-          if (comment.val().reportedBy.includes(uid)) {
-            alreadyReportedcomment = 'red';
+          if (comment.val().reportedBy != null) {
+            if (comment.val().reportedBy.includes(uid)) {
+              alreadyReportedcomment = 'red';
+            }
           }
 
           commentsSortedByPastors.push({
@@ -465,13 +468,12 @@ export const prepareThreadScreen = async (snapshot, uid, postID, SortCommentsBy)
         }
       });
       snapshot.child('comments').forEach(comment => {
-
         if (comment.val().userType === 'user') {
-
           let alreadyReportedcomment = 'black';
-
-          if (comment.val().reportedBy.includes(uid)) {
-            alreadyReportedcomment = 'red';
+          if (comment.val().reportedBy != null) {
+            if (comment.val().reportedBy.includes(uid)) {
+              alreadyReportedcomment = 'red';
+            }
           }
 
           commentsSortedByPastors.push({
@@ -493,8 +495,10 @@ export const prepareThreadScreen = async (snapshot, uid, postID, SortCommentsBy)
       alreadyLikedpost = 'blue';
     }
 
-    if (snapshot.val().reportedBy.includes(uid)) {
-      alreadyReportedpost = 'orange';
+    if (snapshot.val().reportedBy != null) {
+      if (snapshot.val().reportedBy.includes(uid)) {
+        alreadyReportedpost = 'orange';
+      }
     }
 
     postItems.push({
@@ -541,6 +545,7 @@ export const cleanUsersInput= async userInput => {
 
   return cleanedUserInput;
 };
+
 export const checkPasswordCredentials = async stateObj => {
   
   let password1 = stateObj.Password1;
@@ -549,7 +554,7 @@ export const checkPasswordCredentials = async stateObj => {
   let valid_password = false
 
   if (password1.length < min_password_length || password2.length < min_password_length) {
-    Alert.alert(`New password needs to be at least ${min_password_length} characters long`);
+    Alert.alert(`New password needs to be at least ${min_password_length} characters long.`);
   }
   else if (password1 !== password2) {
     Alert.alert("Your passwords do not match. Please try again.");
@@ -663,10 +668,4 @@ export const validateEventInputs = async state => {
     valid_inputs = true;
   }
   return valid_inputs;
-};
-
-export const fixRegex = async () => {
-  wordsToFilter.forEach(badWord => {
-    console.log(badWord.replace(/(.)/g, "($1|\\W)($1*|\\s*)"));
-  });
 };

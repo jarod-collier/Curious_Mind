@@ -3,23 +3,17 @@ V1.0
     screens still needing a button (check to make sure they work):
     - LoginScreen
 - Figure out how to style alerts for "sorts"/ style the sort buttons 
+- issue with it saying the user already reported a post
 
 *************************** BEFORE PUBLISHING ************************************************************
 Make sure each screen passes tests from Jarod and Maz and maybe someone else we can get to test it?
 Jarod's pass on each screen (remove screen from list when complete):
     - EventScreen
-    - ForgotPasswordScreen
     - LoginScreen
     - MainFeedScreen
     - NewEventScreen
     - NewPostScreen
-    - PastorSecCodeScreen
-    - PastorSignUpScreen
-    - ProfileScreen
-    - ResetPasswordScreen
     - ThreadScreen
-    - UserSignUpScreen
-    - UserTypeScreen
     - ViewProfileScreen
 
 Maz's pass on each screen (remove screen from list when complete):

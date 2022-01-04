@@ -28,8 +28,8 @@ export const auth = getAuth();
 
 export const logInUser = async (email, password, navigation) => {
   // await signInWithEmailAndPassword(auth, email, password)
-  await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin731')
-  // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703', )
+  // await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin731')
+  await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703')
   .then(() => {
     navigation.reset({
       index: 0,
@@ -40,10 +40,7 @@ export const logInUser = async (email, password, navigation) => {
     const errorCode = error.code;
     const errorMessage = error.message;
 
-    console.log('error code:');
-    console.log(errorCode);
-
-    //user doesn't exist
+    // user doesn't exist
     if (errorCode === 'auth/user-not-found') {
       Alert.alert('Incorrect username or password. \nPlease try again');
     } else if (errorCode === 'auth/invalid-email') {
@@ -179,58 +176,62 @@ export const reportPost = async (postID, MainFeedView, navigation) => {
   let pastorReportWeight = 5;
   const reportPostRef = ref(db, 'posts/' + postID);
 
-  onValue(ref(db, `userInfo/${uid}`), userInfo_snapshot => {
+  await get(child(ref(db), `userInfo/${uid}`)).then( async userInfo_snapshot => {
     if (userInfo_snapshot.exists()) {
       if (userInfo_snapshot.val().userType === 'pastor') {
         incAmount = pastorReportWeight;
       }
     }
 
-    onValue(reportPostRef, report_snapshot => {
-      console.log('onValue reportPost');
-      if (report_snapshot.exists()) {
-        reportedBy = report_snapshot.val().reportedBy;
-        reportCount = report_snapshot.val().reports;
-        if (!reportedBy.includes(uid)) {
-          Alert.alert(
-            'Report Post',
-            'Are you sure you want to report this post?',
-            [
-              {text: 'Cancel', onPress: () => {}},
-              {
-                text: 'REPORT',
-                onPress: async () => {
-                  if (reportCount + incAmount >= pastorReportWeight) {
-                    remove(reportPostRef).then(() => {
-                      if (!MainFeedView) {
-                        navigation.reset({
-                          index: 0,
-                          routes: [{name: 'Home'}],
-                        });
-                      }
-                    });
-                    Alert.alert(
-                      'Post Removed',
-                      'The report count exceeded the limit. This post will be deleted now.',
-                    );
-                  } else {
-                    reportedBy.push(uid);
-                    const report_updates = {};
-                    report_updates['posts/' + postID + '/reportedBy'] =
-                      reportedBy;
-                    report_updates['posts/' + postID + '/reports'] =
-                      reportCount + incAmount;
-                    update(ref(db), report_updates);
-                    Alert.alert('This post was reported.\nThank you.');
-                  }
+    let alreadyReportedBefore = false;
+    await get(child(ref(db), `posts/${postID}`)).then( async report_snapshot => {
+      if (!alreadyReportedBefore) {
+        alreadyReportedBefore = true;
+        if (report_snapshot.exists()) {
+          reportedBy = report_snapshot.val().reportedBy != null ? report_snapshot.val().reportedBy : [];
+          reportCount = report_snapshot.val().reports;
+          let userReportedAlready = reportedBy.includes(uid);
+          if (!userReportedAlready) {
+            Alert.alert(
+              'Report Post',
+              'Are you sure you want to report this post?',
+              [
+                {text: 'Cancel', onPress: () => {}},
+                {
+                  text: 'REPORT',
+                  onPress: async () => {
+                    if (reportCount + incAmount >= pastorReportWeight) {
+                      remove(reportPostRef).then(() => {
+                        if (!MainFeedView) {
+                          navigation.reset({
+                            index: 0,
+                            routes: [{name: 'Home'}],
+                          });
+                        }
+                      });
+                      Alert.alert(
+                        'Post Removed',
+                        'The report count exceeded the limit. This post will be deleted now.',
+                      );
+                    } else {
+                      reportedBy.push(uid);
+                      const report_updates = {};
+                      report_updates[`posts/${postID}/reportedBy`] =
+                        reportedBy;
+                      report_updates[`posts/${postID}/reports`] =
+                        reportCount + incAmount;
+                      update(ref(db), report_updates);
+                      Alert.alert('This post was reported.', 'Thank you.');
+                    }
+                  },
+                  style: {color: 'red'},
                 },
-                style: {color: 'red'},
-              },
-            ],
-            {cancelable: true},
-          );
-        } else {
-          Alert.alert('You already reported this post.');
+              ],
+              {cancelable: true},
+            );
+          } else {
+            Alert.alert('You already reported this post.');
+          }
         }
       }
     });
@@ -248,7 +249,7 @@ export const createPost = async postObj => {
       likes: 0,
       likedBy: [''],
       reports: 0,
-      reportedBy: [''],
+      reportedBy: [],
       Anon: postObj.Anon,
       PastorOnly: postObj.pastorOnly,
       userType: snapshot.val().userType,
@@ -367,10 +368,12 @@ export const reportComment = async (postID, commentId) => {
     }
   });
   await get(child(ref(db), commentPath)).then(report_snapshot => {
-    reportedBy = report_snapshot.val().reportedBy;
+    reportedBy = report_snapshot.val().reportedBy != null ? report_snapshot.val().reportedBy : [];
     reportCount = report_snapshot.val().reports;
 
-    if (!reportedBy.includes(uid)) {
+    let userReportedAlready = reportedBy.includes(uid);
+
+    if (!userReportedAlready) {
       Alert.alert(
         'Report Comment',
         'Are you sure you want to report this comment?',
@@ -476,7 +479,6 @@ export const handleSignUp = async (normalUser, signupObject, navigation) => {
         let UserId = userCredential.user.uid;
         let signUpRef = ref(db, 'userInfo/' + UserId);
         let userType = normalUser ? 'user' : 'pastor';
-        console.log("user type: " + userType);
         set(signUpRef, {
           First: '' + signupObject.FirstName,
           Last: '' + signupObject.LastName,
@@ -615,7 +617,6 @@ export const updateAboutMe = async aboutmeText => {
   let uid = auth.currentUser.uid;
   const updates = {};
   updates[`userInfo/${uid}/AddintionalInfo`] = aboutmeText;
-  //update the value.
   await update(ref(db), updates);
 };
 

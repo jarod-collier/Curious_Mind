@@ -29,7 +29,6 @@ export default class LoginScreen extends Component {
   }
 
   render() {
-    console.log("rebuilding login");
     LayoutAnimation.easeInEaseOut();
     return (
       <SafeAreaView style={styles.safeAreaStyle}>

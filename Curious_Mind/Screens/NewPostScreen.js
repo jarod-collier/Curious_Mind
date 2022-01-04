@@ -152,13 +152,15 @@ export default class ResetPasswordScreen extends Component {
                   );
                   await createPost(this.state);
                   await updateUserPostCount();
+
+                  // The spinner comes up faster when we change the state like this
+                  this.state.Spinner = false;
                   this.setState({
                     Question: '',
                     Description: '',
                     Anon: false,
                     pastorOnly: false,
                     ButtonDisabled: true,
-                    Spinner: false,
                   });
                   this.props.navigation.navigate('Home Tab');
                 }}>

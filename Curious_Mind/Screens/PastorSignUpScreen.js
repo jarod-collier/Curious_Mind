@@ -56,7 +56,6 @@ export default class PastorSignUpScreen extends Component {
   }
 
   render() {
-    console.log('rebuild');
     LayoutAnimation.easeInEaseOut();
     return (
       <SafeAreaView style={styles.safeAreaStyle}>

@@ -42,7 +42,6 @@ export default class ThreadScreen extends Component {
   }
 
   async componentDidMount() {
-    console.log('component DidMount Thread');
     this.state.postID = this.props.route.params.ID;
     await this.readFromDB(this.state.postID);
 
@@ -89,7 +88,6 @@ export default class ThreadScreen extends Component {
       this.setState({Loading: true});
     }
     onValue(ref(db, 'posts/' + postID), async snapshot => {
-      console.log('onValue Thread');
       await prepareThreadScreen(snapshot, uid, postID, this.state.SortCommentsBy)
       .then(async post => {
         if (post.postItems.length > 0) {
@@ -100,10 +98,10 @@ export default class ThreadScreen extends Component {
             this.props.navigation,
           ).then(postCard => (this.state.display = postCard));
           await loadCommentCards(post.postItems, post.commentItems)
-            .then(commentCards => (this.state.comments = commentCards))
-            .then(() => {
-              this.setState({Loading: false});
-            });
+          .then(commentCards => (this.state.comments = commentCards))
+          .then(() => {
+            this.setState({Loading: false});
+          });
         } else {
           this.setState({Loading: false});
         }
@@ -179,7 +177,6 @@ export default class ThreadScreen extends Component {
                         this.state.postID,
                         this.state.comment,
                       );
-                      // this.refreshScreen(this.state.postID);
                       this.clearComment.current.clear();
                       this.setState({Spinner: false});
                     }}>

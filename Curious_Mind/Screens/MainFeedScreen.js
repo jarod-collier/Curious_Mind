@@ -91,13 +91,11 @@ export default class MainFeedScreen extends Component {
   }
 
   async readFromDB() {
-    console.log("inside read from db main");
     let uid = getAuth().currentUser.uid;
     if (!this.state.Loading) {
       this.setState({Loading: true});
     }
     onValue(ref(db, 'posts/'), async snapshot => {
-      console.log('onValue MainFeed');
       await preparePostsFromDB(snapshot, uid, this.state.SortQuestionsBy)
         .then(async postsFromDB => {
           this.state.posts = postsFromDB;
