@@ -28,8 +28,8 @@ export const auth = getAuth();
 
 export const logInUser = async (email, password, navigation) => {
   // await signInWithEmailAndPassword(auth, email, password)
-  // await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin731')
-  await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703')
+  await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin731')
+  // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703')
   .then(() => {
     navigation.reset({
       index: 0,
@@ -164,7 +164,7 @@ export const likePost = async postID => {
 
     update(ref(db), updates);
   } else {
-    Alert.alert('This post has already been liked.');
+    Alert.alert('You have already liked this post.');
   }
 };
 
@@ -290,6 +290,7 @@ export const createEvent = async eventObj => {
     time: eventObj.chosenTime,
     location: eventObj.location,
     pastor_uid: uid,
+    addToCalendarDate: eventObj.AddToCalendarDate,
   }).catch(error => {
     const errorCode = error.code;
     Alert.alert(

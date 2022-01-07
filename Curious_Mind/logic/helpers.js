@@ -180,7 +180,7 @@ export const loadEventCards = async (events, showDeleteButton) => {
             onPress={async () =>
               addToCalendar(
                 eventData.title,
-                eventData.date,
+                eventData.addToCalendarDate,
                 eventData.time,
                 eventData.location,
                 eventData.desc,
@@ -402,6 +402,7 @@ export const prepareEventsFromDB = async (snapshot, uid) => {
       time: child.val().time,
       location: child.val().location,
       pastorWhoCreatedEvent: (child.val().pastor_uid == uid) ? true : false,
+      addToCalendarDate: child.val().addToCalendarDate,
     });
   });
   return eventItems.reverse();

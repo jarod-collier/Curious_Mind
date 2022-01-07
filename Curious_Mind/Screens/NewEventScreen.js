@@ -37,6 +37,7 @@ export default class NewEventScreen extends Component {
       AM_or_PM: '',
       chosenDate: '',
       chosenTime: '',
+      AddToCalendarDate: '',
     };
     this.clearTitle = React.createRef();
     this.clearDescription = React.createRef();
@@ -95,7 +96,37 @@ export default class NewEventScreen extends Component {
   };
 
   getChosenDateAndTime = async () => {
-    this.state.chosenDate = `${this.state.Month}/${this.state.Day}/${this.state.Year} ${(new Date()).toString().split(" ")[6]}`;
+    // To make the AddToCalendar function work, we need the date to look like this: Wed Jan 05 2022 19:25:42 GMT-0500 (EST)
+    let t = [ 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 ];
+    
+    let y = parseInt(this.state.Year);
+    let m = parseInt(this.state.Month);
+    let d = parseInt(this.state.Day);
+    y -= (m < 3) ? 1 : 0;
+    let dayOfWeek = ( y + y/4 - y/100 + y/400 + t[m-1] + d) % 7;
+    let daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    let months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+
+    let calculatedDay = daysOfWeek[Math.round(dayOfWeek)];
+    let phoneDate = (new Date()).toString().split(" ");
+    let standardTime = phoneDate[5];
+    let timeZone = phoneDate[6];
+    this.state.AddToCalendarDate = `${calculatedDay} ${months[this.state.Month - 1]} ${this.state.Day} ${this.state.Year} ` +
+                                   `${this.state.Hour}:${this.state.Minute}:00 ${standardTime} ${timeZone}`;
+    this.state.chosenDate = `${this.state.Month}/${this.state.Day}/${this.state.Year} ${timeZone}`;
     this.state.AM_or_PM = this.state.Hour > 11 ? "PM" : "AM";
     this.setState({chosenTime: `${this.state.Hour}:${this.state.Minute} ${this.state.AM_or_PM}`});
   };

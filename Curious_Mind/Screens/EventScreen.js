@@ -28,7 +28,7 @@ export default class EventScreen extends Component {
   }
 
   async componentDidMount() {
-    this.state.canAdd = canAddEvent();
+    this.state.canAdd = await canAddEvent();
     await this.readFromDB();
   }
 

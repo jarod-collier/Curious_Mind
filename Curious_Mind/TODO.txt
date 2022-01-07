@@ -3,7 +3,6 @@ V1.0
     screens still needing a button (check to make sure they work):
     - LoginScreen
 - Figure out how to style alerts for "sorts"/ style the sort buttons 
-- issue with it saying the user already reported a post
 
 *************************** BEFORE PUBLISHING ************************************************************
 Make sure each screen passes tests from Jarod and Maz and maybe someone else we can get to test it?
