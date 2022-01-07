@@ -91,7 +91,7 @@ export default class ThreadScreen extends Component {
       await prepareThreadScreen(snapshot, uid, postID, this.state.SortCommentsBy)
       .then(async post => {
         if (post.postItems.length > 0) {
-          this.state.userCanComment = canComment(post.posterUsername);
+          this.state.userCanComment = await canComment(post.postItems);
           await loadPostCards(
             post.postItems,
             false,
@@ -131,11 +131,11 @@ export default class ThreadScreen extends Component {
             />
             <View style={styles.container}>
               {this.state.display}
-              <TouchableOpacity
+              {this.state.comments.length > 0 &&(<TouchableOpacity
                 style={[styles.Buttons, styles.alignSelfCenter]}
                 onPress={async () =>  this.sortComments()}>
                 <Text style={styles.customBtnText}>Sort Comments</Text>
-              </TouchableOpacity>
+              </TouchableOpacity>)}
               {this.state.comments}
               {this.state.userCanComment && (
                 <View style={styles.aligItemsCenter}>
@@ -178,7 +178,13 @@ export default class ThreadScreen extends Component {
                         this.state.comment,
                       );
                       this.clearComment.current.clear();
-                      this.setState({Spinner: false});
+
+                      // On my device, this seemed to make the spinner come up faster
+                      this.state.Spinner = false;
+                      this.setState({
+                        comment: '',
+                        ButtonDisabled: true
+                      });
                     }}>
                     <Text style={styles.customBtnText}>Post</Text>
                   </TouchableOpacity>

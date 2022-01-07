@@ -312,16 +312,18 @@ export const canAddEvent = async () => {
   return canAdd;
 };
 
-export const canComment = async posterUser => {
+export const canComment = async postValues => {
   let uid = auth.currentUser.uid;
   let userCan = true;
 
-  await get(child(ref(db), `userInfo/${uid}`)).then(snapshot => {
-    if (snapshot.val().userType !== 'pastor') {
-      userCan = false;
-    }
-  });
-  return userCan;
+  if (postValues[0]["pastorOnly"]){
+    await get(child(ref(db), `userInfo/${uid}`)).then(snapshot => {
+      if (snapshot.val().userType !== 'pastor') {
+        userCan = false;
+      }
+    });
+  }
+  return userCan && !postValues[0]["pastorOnly"];
 };
 
 export const addCommentToPost = async (postID, comment) => {

@@ -7,13 +7,7 @@ V1.0
 *************************** BEFORE PUBLISHING ************************************************************
 Make sure each screen passes tests from Jarod and Maz and maybe someone else we can get to test it?
 Jarod's pass on each screen (remove screen from list when complete):
-    - EventScreen
     - LoginScreen
-    - MainFeedScreen
-    - NewEventScreen
-    - NewPostScreen
-    - ThreadScreen
-    - ViewProfileScreen
 
 Maz's pass on each screen (remove screen from list when complete):
     - EventScreen
@@ -46,3 +40,4 @@ V2.0
     It might spark conversation to keep up an old event. Plus, do we want
     church services to be "events"? I'm thinking so, but I'm happy to change that.)
 - Make recurring Events
+- searching for posts and then filtering resets the posts

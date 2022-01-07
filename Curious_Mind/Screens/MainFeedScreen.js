@@ -133,11 +133,11 @@ export default class MainFeedScreen extends Component {
             />
           }>
           <View style={styles.container}>
-            <TouchableOpacity
+            {this.state.display.length > 0 && (<TouchableOpacity
               style={[styles.Buttons, styles.alignSelfCenter]}
               onPress={async () =>  this.sortQuestions()}>
               <Text style={styles.customBtnText}>Sort Questions</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>)}
             {!this.state.Loading ? (
               this.state.display.length > 0 ? (
                 this.state.display
