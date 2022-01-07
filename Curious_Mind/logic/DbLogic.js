@@ -27,9 +27,7 @@ export const db = getDatabase();
 export const auth = getAuth();
 
 export const logInUser = async (email, password, navigation) => {
-  // await signInWithEmailAndPassword(auth, email, password)
-  await signInWithEmailAndPassword(auth, 'collierj@mail.gvsu.edu', 'Admin731')
-  // await signInWithEmailAndPassword(auth, 'jarod.collier@yahoo.com', 'User703')
+  await signInWithEmailAndPassword(auth, email, password)
   .then(() => {
     navigation.reset({
       index: 0,

@@ -92,11 +92,7 @@ export default class LoginScreen extends Component {
                   ? styles.disabledButtons
                   : styles.Buttons,
               ]}
-              // *************************************************************************************************
-              // RE ENABLE ME BEFORE PUBLISHING
-              // disabled={this.state.loginDisabled}
-              // RE ENABLE ME BEFORE PUBLISHING
-              // *************************************************************************************************
+              disabled={this.state.loginDisabled}
               onPress={async () => {
                 this.setState({Spinner: true});
                 await logInUser(
