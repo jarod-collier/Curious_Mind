@@ -46,7 +46,6 @@ export default class ProfileScreen extends Component {
     this.setState({Loading: true});
     onValue(ref(db, 'userInfo/' + uid), snapshot => {
       if (snapshot.exists()) {
-
         this.state.fName = snapshot.val().First;
         this.state.lName = snapshot.val().Last;
         this.state.email = snapshot.val().Email;
@@ -81,7 +80,11 @@ export default class ProfileScreen extends Component {
           }>
           <KeyboardAwareScrollView
             resetScrollToCoords={{x: 0, y: 0}}
-            contentContainerStyle={[styles.container, styles.marginTop25, styles.marginBottom15]}
+            contentContainerStyle={[
+              styles.container,
+              styles.marginTop25,
+              styles.marginBottom15,
+            ]}
             scrollEnabled={true}
             extraHeight={100}>
             {!this.state.Loading ? (
@@ -284,6 +287,7 @@ export default class ProfileScreen extends Component {
                       </View>
                     </View>
                   )}
+
                   {/** delete button */}
                   <TouchableOpacity
                     style={[
@@ -294,22 +298,26 @@ export default class ProfileScreen extends Component {
                       styles.alignSelfCenter,
                       styles.redBackground,
                     ]}
-                    onPress={async () => { 
+                    onPress={async () => {
                       this.setState({showDeleteAccountTextInput: true});
                     }}>
-                    <DialogInput 
+                    <DialogInput
                       isDialogVisible={this.state.showDeleteAccountTextInput}
-                      title={"Please Provide Your Password To Delete Your Account"}
-                      message={"You need to input your password to verify your intentions to delete your account."}
-                      hintInput ={"Password"}
-                      submitInput={ async (inputText) => {{
+                      title={
+                        'Please Provide Your Password To Delete Your Account'
+                      }
+                      message={
+                        'You need to input your password to verify your intentions to delete your account.'
+                      }
+                      hintInput={'Password'}
+                      submitInput={async inputText => {
                         this.setState({showDeleteAccountTextInput: false});
                         await delUser(this.props.navigation, inputText);
-                      }}}
-                      closeDialog={ () => {
-                        this.setState({showDeleteAccountTextInput: false})
-                      }}>
-                    </DialogInput>
+                      }}
+                      closeDialog={() => {
+                        this.setState({showDeleteAccountTextInput: false});
+                      }}
+                    />
                     <Text style={styles.customBtnText}>Delete Account</Text>
                     <Button
                       style={styles.redBackground}

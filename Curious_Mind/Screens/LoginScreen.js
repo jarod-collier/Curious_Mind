@@ -22,7 +22,7 @@ export default class LoginScreen extends Component {
       Password: '',
       Loading: false,
       loginDisabled: true,
-      Spinner: false
+      Spinner: false,
     };
     this.clearEmail = React.createRef();
     this.clearPassword = React.createRef();
@@ -44,8 +44,7 @@ export default class LoginScreen extends Component {
             ]}
             scrollEnabled={true}
             enableOnAndroid={true}
-            keyboardShouldPersistTaps={'handled'}
-          >
+            keyboardShouldPersistTaps={'handled'}>
             <Spinner
               visible={this.state.Spinner}
               textContent={'Logging in...'}
@@ -62,6 +61,7 @@ export default class LoginScreen extends Component {
               value={this.state.Email || null}
               keyboardType="email-address"
               placeholderTextColor="grey"
+              autoCorrect={false}
               onChangeText={e => {
                 e.replace(/ /g, '') === '' ||
                 this.state.Password.replace(/ /g, '') === ''

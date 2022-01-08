@@ -185,6 +185,22 @@ export const styles = StyleSheet.create({
     marginVertical: 10,
     margin: 10,
   },
+  sortButton: {
+    shadowColor: 'rgba(0,0,0, .4)', // IOS
+    shadowOffset: {height: 2, width: 2}, // IOS
+    shadowOpacity: 1, // IOS
+    shadowRadius: 1, //IOS
+    elevation: 4, // Android
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    borderRadius: 25,
+    width: 130,
+  },
+  sortText: {
+    fontWeight: '400',
+    color: 'white',
+    textAlign: 'center',
+  },
   userTypeButtons: {
     width: 160,
     height: 80,

@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
 import {createEvent} from '../logic/DbLogic';
-import { validateEventInputs, cleanUsersInput} from '../logic/helpers';
+import {validateEventInputs, cleanUsersInput} from '../logic/helpers';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 export default class NewEventScreen extends Component {
@@ -28,10 +28,10 @@ export default class NewEventScreen extends Component {
       buttonDisabled: true,
       // ShowDate: Platform.OS === 'ios',
       ShowDate: false,
-      ShowTime: false, 
+      ShowTime: false,
       Month: '',
       Day: '',
-      Year:'',
+      Year: '',
       Hour: '',
       Minute: '',
       AM_or_PM: '',
@@ -48,7 +48,7 @@ export default class NewEventScreen extends Component {
     this.clearYear = React.createRef();
     this.clearHour = React.createRef();
     this.clearMinute = React.createRef();
-    this.clearAMorPM= React.createRef();
+    this.clearAMorPM = React.createRef();
   }
 
   onChangeDate = async (event, selectedDate) => {
@@ -58,9 +58,9 @@ export default class NewEventScreen extends Component {
     this.state.ShowTime = false;
     this.setState({date: currentDate});
   };
-  
-  determineEventDate = async (date_info) => {
-    let date_values = date_info.toString().split(" ");
+
+  determineEventDate = async date_info => {
+    let date_values = date_info.toString().split(' ');
     const DAY_OF_WEEK = 0;
     const MONTH = 1;
     const DAY = 2;
@@ -68,75 +68,84 @@ export default class NewEventScreen extends Component {
     const TIME = 4;
     const TIME_ZONE = 6;
     const HOUR = 0;
-    const MINUTE= 1;
+    const MINUTE = 1;
     let hours_and_minutes = date_values[TIME].split(':');
     let months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
 
     this.state.Month = (months.indexOf(date_values[MONTH]) + 1).toString();
-    this.state.Day = (date_values[DAY]).toString();
-    this.state.Year = (date_values[YEAR]).toString();
-    this.state.Hour = (hours_and_minutes[HOUR] > 12 ? hours_and_minutes[HOUR] - 12 : hours_and_minutes[HOUR]).toString();
-    this.state.Minute = (hours_and_minutes[MINUTE]).toString();
-    this.state.AM_or_PM = hours_and_minutes[HOUR] > 11 ? "PM" : "AM";
+    this.state.Day = date_values[DAY].toString();
+    this.state.Year = date_values[YEAR].toString();
+    this.state.Hour = (
+      hours_and_minutes[HOUR] > 12
+        ? hours_and_minutes[HOUR] - 12
+        : hours_and_minutes[HOUR]
+    ).toString();
+    this.state.Minute = hours_and_minutes[MINUTE].toString();
+    this.state.AM_or_PM = hours_and_minutes[HOUR] > 11 ? 'PM' : 'AM';
     this.state.chosenDate = `${date_values[DAY_OF_WEEK]} ${date_values[MONTH]} ${date_values[DAY]} ${date_values[YEAR]} ${date_values[TIME_ZONE]}`;
     this.state.chosenTime = `${this.state.Hour}:${this.state.Minute} ${this.state.AM_or_PM}`;
   };
 
   getChosenDateAndTime = async () => {
     // To make the AddToCalendar function work, we need the date to look like this: Wed Jan 05 2022 19:25:42 GMT-0500 (EST)
-    let t = [ 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 ];
-    
+    let t = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
+
     let y = parseInt(this.state.Year);
     let m = parseInt(this.state.Month);
     let d = parseInt(this.state.Day);
-    y -= (m < 3) ? 1 : 0;
-    let dayOfWeek = ( y + y/4 - y/100 + y/400 + t[m-1] + d) % 7;
-    let daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    y -= m < 3 ? 1 : 0;
+    let dayOfWeek = (y + y / 4 - y / 100 + y / 400 + t[m - 1] + d) % 7;
+    let daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     let months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
 
     let calculatedDay = daysOfWeek[Math.round(dayOfWeek)];
-    let phoneDate = (new Date()).toString().split(" ");
+    let phoneDate = new Date().toString().split(' ');
     let standardTime = phoneDate[5];
     let timeZone = phoneDate[6];
-    this.state.AddToCalendarDate = `${calculatedDay} ${months[this.state.Month - 1]} ${this.state.Day} ${this.state.Year} ` +
-                                   `${this.state.Hour}:${this.state.Minute}:00 ${standardTime} ${timeZone}`;
+    this.state.AddToCalendarDate =
+      `${calculatedDay} ${months[this.state.Month - 1]} ${this.state.Day} ${
+        this.state.Year
+      } ` +
+      `${this.state.Hour}:${this.state.Minute}:00 ${standardTime} ${timeZone}`;
     this.state.chosenDate = `${this.state.Month}/${this.state.Day}/${this.state.Year} ${timeZone}`;
-    this.state.AM_or_PM = this.state.Hour > 11 ? "PM" : "AM";
-    this.setState({chosenTime: `${this.state.Hour}:${this.state.Minute} ${this.state.AM_or_PM}`});
+    this.state.AM_or_PM = this.state.Hour > 11 ? 'PM' : 'AM';
+    this.setState({
+      chosenTime: `${this.state.Hour}:${this.state.Minute} ${this.state.AM_or_PM}`,
+    });
   };
 
   selectDate = async () => {
-    this.setState({ShowDate: true}) 
+    this.setState({ShowDate: true});
   };
 
   selectTime = async () => {
-    this.setState({ShowTime: true}) 
+    this.setState({ShowTime: true});
   };
 
   checkEventInputForBadWords = async () => {
@@ -148,13 +157,13 @@ export default class NewEventScreen extends Component {
     );
     await cleanUsersInput(this.state.location).then(
       // val => (this.state.location= val),
-      val => (this.setState({location: val})),
+      val => this.setState({location: val}),
     );
   };
 
   shouldButtonBeDisbled() {
-    let oneOrTwoNums = new RegExp("\\d{1,2}");
-    let fourNums = new RegExp("\\d{4}");
+    let oneOrTwoNums = new RegExp('\\d{1,2}');
+    let fourNums = new RegExp('\\d{4}');
     if (
       this.state.Title.replace(/ /g, '') !== '' &&
       this.state.location.replace(/ /g, '') !== '' &&
@@ -163,7 +172,7 @@ export default class NewEventScreen extends Component {
       oneOrTwoNums.test(this.state.Month) &&
       fourNums.test(this.state.Year) &&
       oneOrTwoNums.test(this.state.Hour) &&
-      oneOrTwoNums.test(this.state.Minute) 
+      oneOrTwoNums.test(this.state.Minute)
     ) {
       this.state.buttonDisabled = false;
       return false;
@@ -187,8 +196,7 @@ export default class NewEventScreen extends Component {
             ]}
             scrollEnabled={true}
             extraHeight={100}
-            keyboardShouldPersistTaps="handled"
-          >
+            keyboardShouldPersistTaps="handled">
             <Spinner
               visible={this.state.Spinner}
               textContent={'Adding Event...'}
@@ -234,11 +242,7 @@ export default class NewEventScreen extends Component {
               ref={this.clearDescription}
             />
             <View style={[styles.row, styles.aligItemsCenter]}>
-              <Text
-                style={[
-                  styles.fontSize28,
-                  styles.marginHorizontal15,
-                ]}>
+              <Text style={[styles.fontSize28, styles.marginHorizontal15]}>
                 Date:
               </Text>
               <TextInput
@@ -253,9 +257,7 @@ export default class NewEventScreen extends Component {
                 }}
                 ref={this.clearMonth}
               />
-              <Text style={[styles.fontSize28,]}>
-                /
-              </Text>
+              <Text style={[styles.fontSize28]}>/</Text>
               <TextInput
                 style={[styles.eventInputBox, styles.widthDay]}
                 placeholder="DD"
@@ -268,9 +270,7 @@ export default class NewEventScreen extends Component {
                 }}
                 ref={this.clearDay}
               />
-              <Text style={[styles.fontSize28,]}>
-                /
-              </Text>
+              <Text style={[styles.fontSize28]}>/</Text>
               <TextInput
                 style={[styles.eventInputBox, styles.widthYear]}
                 placeholder="YYYY"
@@ -283,20 +283,23 @@ export default class NewEventScreen extends Component {
                 }}
                 ref={this.clearYear}
               />
-              <TouchableOpacity onPress={ this.selectDate } >
-                <Image style={styles.defaultButtonColor} source={require('../assets/images/calendar_icon.png')} />
+              <TouchableOpacity onPress={this.selectDate}>
+                <Image
+                  style={styles.defaultButtonColor}
+                  source={require('../assets/images/outline_event_black_24dp.png')}
+                />
               </TouchableOpacity>
-              { this.state.ShowDate && ( 
+              {this.state.ShowDate && (
                 <DateTimePicker
                   value={this.state.date}
-                  mode='date'
+                  mode="date"
                   display={Platform.OS === 'ios' ? 'compact' : 'calendar'}
-                  onChange={ this.onChangeDate }
+                  onChange={this.onChangeDate}
                 />
               )}
             </View>
             <View style={[styles.row, styles.aligItemsCenter]}>
-              <Text style={[ styles.fontSize28, styles.marginHorizontal15,]}>
+              <Text style={[styles.fontSize28, styles.marginHorizontal15]}>
                 Time:
               </Text>
               <TextInput
@@ -311,11 +314,9 @@ export default class NewEventScreen extends Component {
                 }}
                 ref={this.clearHour}
               />
-              <Text style={[styles.fontSize28,]}>
-                :
-              </Text>
+              <Text style={[styles.fontSize28]}>:</Text>
               <TextInput
-                style={[styles.eventInputBox, styles.widthMinute ]}
+                style={[styles.eventInputBox, styles.widthMinute]}
                 placeholder="Minutes"
                 value={this.state.Minute || null}
                 keyboardType="numeric"
@@ -327,7 +328,7 @@ export default class NewEventScreen extends Component {
                 ref={this.clearMinute}
               />
               <TextInput
-                style={[styles.eventInputBox, styles.widthAMorPM ]}
+                style={[styles.eventInputBox, styles.widthAMorPM]}
                 placeholder="AM/PM"
                 value={this.state.AM_or_PM || null}
                 keyboardType="default"
@@ -338,10 +339,13 @@ export default class NewEventScreen extends Component {
                 }}
                 ref={this.clearAMorPM}
               />
-              <TouchableOpacity onPress={ this.selectTime } >
-                <Image style={styles.defaultButtonColor} source={require('../assets/images/clock.png')} />
+              <TouchableOpacity onPress={this.selectTime}>
+                <Image
+                  style={styles.defaultButtonColor}
+                  source={require('../assets/images/outline_schedule_black_24dp.png')}
+                />
               </TouchableOpacity>
-              { this.state.ShowTime && (  
+              {this.state.ShowTime && (
                 <DateTimePicker
                   style={[styles.width120, styles.marginTop15]}
                   value={this.state.date}
@@ -351,11 +355,7 @@ export default class NewEventScreen extends Component {
                 />
               )}
             </View>
-            <Text
-              style={[
-                styles.fontSize28,
-                styles.marginHorizontal15,
-              ]}>
+            <Text style={[styles.fontSize28, styles.marginHorizontal15]}>
               Location:
             </Text>
             <TextInput
@@ -381,8 +381,9 @@ export default class NewEventScreen extends Component {
                 if (valid_inputs) {
                   await this.getChosenDateAndTime();
                   await this.checkEventInputForBadWords();
-                  await createEvent(this.state).then(async () =>
-                    await this.props.navigation.navigate('Event Feed'),
+                  await createEvent(this.state).then(
+                    async () =>
+                      await this.props.navigation.navigate('Event Feed'),
                   );
                 }
                 this.setState({Spinner: false});

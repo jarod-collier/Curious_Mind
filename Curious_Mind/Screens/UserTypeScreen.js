@@ -25,16 +25,20 @@ export default class UserTypeScreen extends Component {
             onPress={() => this.props.navigation.goBack()}
           />
         </View>
-        <ScrollView style={styles.container}>
-          <View style={[styles.logo, styles.aligItemsCenter]}>
-            <Image source={require('../assets/images/CM_logo02.png')} />
-          </View>
+        <ScrollView
+          contentContainerStyle={{flex: 1, justifyContent: 'space-between'}}
+          style={[styles.container]}>
           <View>
-            <Text style={styles.iAmUserTypeText}>
-              Please choose{'\n'}user type
-            </Text>
+            <View style={[styles.logo, styles.aligItemsCenter]}>
+              <Image source={require('../assets/images/CM_logo02.png')} />
+            </View>
+            <View>
+              <Text style={styles.iAmUserTypeText}>
+                Please choose{'\n'}user type
+              </Text>
+            </View>
           </View>
-          <View style={styles.rowSpaceAround}>
+          <View style={[{height: 200}, styles.rowSpaceAround]}>
             <TouchableOpacity
               style={[styles.Buttons, styles.userTypeButtons]}
               onPress={() => this.props.navigation.navigate('Security Code')}>

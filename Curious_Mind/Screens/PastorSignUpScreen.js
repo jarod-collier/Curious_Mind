@@ -72,8 +72,7 @@ export default class PastorSignUpScreen extends Component {
             resetScrollToCoords={{x: 0, y: 0}}
             contentContainerStyle={[styles.container, styles.aligItemsCenter]}
             scrollEnabled={true}
-            extraHeight={100}
-          >
+            extraHeight={100}>
             <Spinner
               visible={this.state.Spinner}
               textContent={'Signing Up...'}
@@ -200,7 +199,7 @@ export default class PastorSignUpScreen extends Component {
                     ? styles.disabledButtons
                     : styles.Buttons,
                 ]}
-                onPress={async() => {
+                onPress={async () => {
                   this.setState({Spinner: true});
                   await handleSignUp(false, this.state, this.props.navigation);
                   this.setState({Spinner: false});

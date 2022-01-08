@@ -144,10 +144,10 @@ function Nested_Main({navigation}) {
         headerTitle: () => (
           <Image source={require('./assets/images/CM_logo02_header.png')} />
         ),
-        headerTitleAlign: 'center'
+        headerTitleAlign: 'center',
       }}>
       <Nested_Stack_Main.Screen name="Main Feed" component={MainFeedScreen} />
-      <Nested_Stack_Main.Screen 
+      <Nested_Stack_Main.Screen
         name="Thread"
         component={ThreadScreen}
         options={{
@@ -156,7 +156,7 @@ function Nested_Main({navigation}) {
               style={styles.backButton}
               color="black"
               name="arrow-left"
-              onPress={() => navigation.navigate("Main Feed")}
+              onPress={() => navigation.navigate('Main Feed')}
             />
           ),
           headerBackTitle: '',
@@ -171,7 +171,7 @@ function Nested_Main({navigation}) {
               style={styles.backButton}
               color="black"
               name="arrow-left"
-              onPress={() => navigation.navigate("Main Feed")}
+              onPress={() => navigation.navigate('Main Feed')}
             />
           ),
           headerBackTitle: '',
@@ -190,19 +190,19 @@ function Nested_Event({navigation}) {
         headerTitle: () => (
           <Image source={require('./assets/images/CM_logo02_header.png')} />
         ),
-        headerTitleAlign: 'center'
+        headerTitleAlign: 'center',
       }}>
       <Nested_Stack_Event.Screen name="Event Feed" component={EventScreen} />
-      <Nested_Stack_Event.Screen 
-        name="Add Event" 
-        component={NewEventScreen} 
+      <Nested_Stack_Event.Screen
+        name="Add Event"
+        component={NewEventScreen}
         options={{
           headerBackImage: () => (
             <Button
               style={styles.backButton}
               color="black"
               name="arrow-left"
-              onPress={() => navigation.navigate("Event Feed")}
+              onPress={() => navigation.navigate('Event Feed')}
             />
           ),
         }}
@@ -220,11 +220,11 @@ function Nested_Profile({navigation}) {
         headerTitle: () => (
           <Image source={require('./assets/images/CM_logo02_header.png')} />
         ),
-        headerTitleAlign: 'center'
+        headerTitleAlign: 'center',
       }}>
-      <Nested_Stack_Profile.Screen 
-        name="Profile Screen" 
-        component={ProfileScreen} 
+      <Nested_Stack_Profile.Screen
+        name="Profile Screen"
+        component={ProfileScreen}
         options={{
           headerRight: props => (
             <TouchableOpacity
@@ -244,7 +244,7 @@ function Nested_Profile({navigation}) {
               style={styles.backButton}
               color="black"
               name="arrow-left"
-              onPress={() => navigation.navigate("Profile Screen")}
+              onPress={() => navigation.navigate('Profile Screen')}
             />
           ),
         }}
@@ -269,9 +269,11 @@ const MyTheme = {
 };
 
 function AppContainer() {
+  console.log(getAuth());
   return (
     <NavigationContainer theme={MyTheme}>
       <Stack.Navigator
+        initialRouteName={getAuth().currentUser !== null ? 'Home' : 'Login'}
         screenOptions={{
           headerShown: false,
         }}>

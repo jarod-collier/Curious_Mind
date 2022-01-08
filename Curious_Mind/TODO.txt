@@ -1,25 +1,15 @@
 V1.0
-- Figure out how to style alerts for "sorts"/ style the sort buttons 
 
 *************************** BEFORE PUBLISHING ************************************************************
 Make sure each screen passes tests from Jarod and Maz and maybe someone else we can get to test it?
 Jarod's pass on each screen (remove screen from list when complete):
 
 Maz's pass on each screen (remove screen from list when complete):
-    - EventScreen
-    - ForgotPasswordScreen
-    - LoginScreen
-    - MainFeedScreen
-    - NewEventScreen
-    - NewPostScreen
-    - PastorSecCodeScreen
-    - PastorSignUpScreen
-    - ProfileScreen
-    - ResetPasswordScreen
-    - ThreadScreen
-    - UserSignUpScreen
-    - UserTypeScreen
-    - ViewProfileScreen
+    - ForgotPasswordScreen -- (remove DB link from screen + edit email)
+    - NewEventScreen -- (change check date functionality)
+    - PastorSignUpScreen -- (make sure its not overwritting data from DBLogic handleSignup)
+    - ThreadScreen -- (update sort button)
+    - Firebase event rules -- add this to events write (&& data.child('userInfo').child(auth.uid).child('userType') === 'pastor')
 
 V2.0
 - search for users

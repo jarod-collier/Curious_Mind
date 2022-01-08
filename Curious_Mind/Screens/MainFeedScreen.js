@@ -7,13 +7,12 @@ import {
   ScrollView,
   RefreshControl,
   LayoutAnimation,
-  TouchableOpacity,
-  Alert,
 } from 'react-native';
+import {FloatingAction} from 'react-native-floating-action';
 import {SearchBar} from 'react-native-elements';
 import {styles} from '../assets/styles/styles';
 import {db} from '../logic/DbLogic';
-import {loadPostCards, preparePostsFromDB,} from '../logic/helpers';
+import {loadPostCards, preparePostsFromDB} from '../logic/helpers';
 import {onValue, ref} from 'firebase/database';
 import {getAuth} from 'firebase/auth';
 export default class MainFeedScreen extends Component {
@@ -25,8 +24,31 @@ export default class MainFeedScreen extends Component {
       Loading: true,
       filteredDisplay: [],
       searchQuery: '',
-      SortQuestionsBy: "Most Recent",
+      SortQuestionsBy: 'Most Recent',
     };
+    this.floatingButtonActions = [
+      {
+        color: '#3c4498',
+        text: 'Oldest First',
+        icon: require('../assets/images/outline_swap_vert_white_24dp.png'),
+        name: 'Oldest First',
+        position: 1,
+      },
+      {
+        color: '#3c4498',
+        text: 'Most Recent',
+        icon: require('../assets/images/outline_update_white_24dp.png'),
+        name: 'Most Recent',
+        position: 2,
+      },
+      {
+        color: '#3c4498',
+        text: 'Most Liked',
+        icon: require('../assets/images/outline_recommend_white_24dp.png'),
+        name: 'Most Liked',
+        position: 3,
+      },
+    ];
   }
 
   async componentDidMount() {
@@ -56,39 +78,6 @@ export default class MainFeedScreen extends Component {
       this.setState({searchQuery: text});
     }
   };
-
-  AsyncAlert = async () => new Promise((resolve) => {
-    Alert.alert(
-      'Sort Questions',
-      'How would you like to sort the questions that you see?',
-      [
-        {
-          text: 'Oldest First', onPress: () => {
-            this.state.SortQuestionsBy = "Oldest First";
-            resolve('YES');
-          }
-        },
-        {
-          text: 'Most Recent', onPress: () => {
-            this.state.SortQuestionsBy = "Most Recent";
-            resolve('YES');
-          }
-        },
-        {
-          text: 'Most Liked', onPress: async () => {
-            this.state.SortQuestionsBy = "Most Liked";
-            resolve('YES');
-          },
-        },
-      ],
-      {cancelable: true},
-    );
-  });
-
-  async sortQuestions() {
-    await this.AsyncAlert();    
-    await this.readFromDB();
-  }
 
   async readFromDB() {
     let uid = getAuth().currentUser.uid;
@@ -133,14 +122,9 @@ export default class MainFeedScreen extends Component {
             />
           }>
           <View style={styles.container}>
-            {this.state.display.length > 0 && (<TouchableOpacity
-              style={[styles.Buttons, styles.alignSelfCenter]}
-              onPress={async () =>  this.sortQuestions()}>
-              <Text style={styles.customBtnText}>Sort Questions</Text>
-            </TouchableOpacity>)}
             {!this.state.Loading ? (
               this.state.display.length > 0 ? (
-                this.state.display
+                <>{this.state.display}</>
               ) : this.state.searchQuery === '' ? (
                 <Text style={styles.generalText}>
                   No posts found. Please make a new post or try refreshing the
@@ -156,6 +140,28 @@ export default class MainFeedScreen extends Component {
             )}
           </View>
         </ScrollView>
+        <FloatingAction
+          actions={this.floatingButtonActions}
+          onPressItem={async name => {
+            switch (name) {
+              case 'Oldest First':
+                this.state.SortQuestionsBy = 'Oldest First';
+                break;
+              case 'Most Recent':
+                this.state.SortQuestionsBy = 'Most Recent';
+                break;
+              case 'Most Liked':
+                this.state.SortQuestionsBy = 'Most Liked';
+                break;
+            }
+            this.readFromDB();
+          }}
+          floatingIcon={require('../assets/images/outline_sort_white_24dp.png')}
+          iconHeight={30}
+          iconWidth={30}
+          distanceToEdge={15}
+          color="#3c4498"
+        />
       </SafeAreaView>
     );
   }

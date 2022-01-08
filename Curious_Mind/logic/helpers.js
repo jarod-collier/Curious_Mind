@@ -9,7 +9,7 @@ import {Alert} from 'react-native';
 
 // List of regex strings to filter words out on. This tests to make sure that each letter
 // exists or a symbol (Ex: f$ck). Then it tests if there are repeated letters or spaces
-// after the letter. I saw someone use this to exploit another app I use and figured 
+// after the letter. I saw someone use this to exploit another app I use and figured
 // we should guard against this. So this will catch "f u c k" and "ffffuuuuuccccckkk".
 const wordsToFilter = [
   '(f|\\W)(f*|\\s*)(u|\\W)(u*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s)',
@@ -105,11 +105,11 @@ export const loadPostCards = async (posts, MainFeedView, navigation) => {
               {!postData.anon && (
                 <Text
                   style={styles.blueText}
-                  onPress={() =>{
+                  onPress={() => {
                     navigation.navigate('View Profile', {
-                      uid: postData.creatorsUID
-                    });}
-                  }>
+                      uid: postData.creatorsUID,
+                    });
+                  }}>
                   @{postData.username}
                 </Text>
               )}
@@ -206,11 +206,7 @@ export const loadEventCards = async (events, showDeleteButton) => {
               ]}
               onPress={async () => await deleteEvent(eventData.key)}>
               <Text style={styles.customBtnText}>Delete Event</Text>
-              <Button
-                style={styles.redBackground}
-                name="trash"
-                color="white"
-              />
+              <Button style={styles.redBackground} name="trash" color="white" />
             </TouchableOpacity>
           )}
         </Card>
@@ -299,15 +295,13 @@ export const preparePostsFromDB = async (snapshot, uid, sortQuestionsBy) => {
   let alreadyLikedpost;
   let alreadyReportedpost;
   snapshot.forEach(e => {
-
     alreadyLikedpost = '#cac5c4';
     alreadyReportedpost = '#cac5c4';
     if (e.val().likedBy.includes(uid)) {
-      alreadyLikedpost = '#588dea';
+      alreadyLikedpost = '#3c4498';
     }
 
     if (e.val().reportedBy != null) {
-
       if (e.val().reportedBy.includes(uid)) {
         alreadyReportedpost = '#f3b725';
       }
@@ -333,33 +327,34 @@ export const preparePostsFromDB = async (snapshot, uid, sortQuestionsBy) => {
   });
 
   // There might eventually be more ways to sort questions
-  if (sortQuestionsBy === "Oldest First") {
+  if (sortQuestionsBy === 'Oldest First') {
     // leave the posts in the order we read them from the DB.
-  }
-  else if (sortQuestionsBy === "Most Recent") {
+  } else if (sortQuestionsBy === 'Most Recent') {
     postItems = postItems.reverse();
-  }
-  else if (sortQuestionsBy === "Most Liked") {
+  } else if (sortQuestionsBy === 'Most Liked') {
     let valuesAdded = 0;
     let postsSortedByMostLikes = [];
 
     // Sort posts from highest to lowest likes
-    likesForEachPost.sort(function(a, b){return b-a});
+    likesForEachPost.sort(function (a, b) {
+      return b - a;
+    });
 
     // Make sure we capture all of the posts, regardless of their original order
-    while(valuesAdded < likesForEachPost.length) {
+    while (valuesAdded < likesForEachPost.length) {
       snapshot.forEach(e => {
-
         // Grab the posts in order of most likes, ensuring we haven't already added this post
-        if (e.val().likes === likesForEachPost[valuesAdded] && !postsSortedByMostLikes.includes(e.key)) {
-          
+        if (
+          e.val().likes === likesForEachPost[valuesAdded] &&
+          !postsSortedByMostLikes.includes(e.key)
+        ) {
           alreadyLikedpost = '#cac5c4';
           alreadyReportedpost = '#cac5c4';
 
           if (e.val().likedBy.includes(uid)) {
             alreadyLikedpost = '#588dea';
           }
-      
+
           if (e.val().reportedBy != null) {
             if (e.val().reportedBy.includes(uid)) {
               alreadyReportedpost = '#f3b725';
@@ -401,18 +396,23 @@ export const prepareEventsFromDB = async (snapshot, uid) => {
       date: child.val().date,
       time: child.val().time,
       location: child.val().location,
-      pastorWhoCreatedEvent: (child.val().pastor_uid == uid) ? true : false,
+      pastorWhoCreatedEvent: child.val().pastor_uid == uid ? true : false,
       addToCalendarDate: child.val().addToCalendarDate,
     });
   });
   return eventItems.reverse();
 };
 
-export const prepareThreadScreen = async (snapshot, uid, postID, SortCommentsBy) => {
+export const prepareThreadScreen = async (
+  snapshot,
+  uid,
+  postID,
+  SortCommentsBy,
+) => {
   let commentItems = [];
   let postItems = [];
-  let alreadyLikedpost = 'black';
-  let alreadyReportedpost = 'black';
+  let alreadyLikedpost = '#cac5c4';
+  let alreadyReportedpost = '#cac5c4';
   let posterUsername = '';
 
   if (snapshot.exists()) {
@@ -437,13 +437,11 @@ export const prepareThreadScreen = async (snapshot, uid, postID, SortCommentsBy)
     });
 
     // There might eventually be more ways to sort comments
-    if (SortCommentsBy === "Oldest First") {
+    if (SortCommentsBy === 'Oldest First') {
       // leave the posts in the order we read them from the DB
-    }
-    else if (SortCommentsBy === "Most Recent") {
+    } else if (SortCommentsBy === 'Most Recent') {
       commentItems = commentItems.reverse();
-    }
-    else if (SortCommentsBy === "Pastors First") {
+    } else if (SortCommentsBy === 'Pastors First') {
       let valuesAdded = 0;
       let commentsSortedByPastors = [];
 
@@ -493,7 +491,7 @@ export const prepareThreadScreen = async (snapshot, uid, postID, SortCommentsBy)
     }
 
     if (snapshot.val().likedBy.includes(uid)) {
-      alreadyLikedpost = 'blue';
+      alreadyLikedpost = '#3c4498';
     }
 
     if (snapshot.val().reportedBy != null) {
@@ -521,7 +519,7 @@ export const prepareThreadScreen = async (snapshot, uid, postID, SortCommentsBy)
   return {postItems, commentItems, posterUsername};
 };
 
-export const cleanUsersInput= async userInput => {
+export const cleanUsersInput = async userInput => {
   let cleanedUserInput = userInput;
 
   wordsToFilter.forEach(badWord => {
@@ -532,14 +530,14 @@ export const cleanUsersInput= async userInput => {
     if (matches && matches.length) {
       // This prevents duplicate matches as we replace bad words with the '*', but
       // we are also checking for '*'s in the regex as people can type words like
-      // 'f*ck'. To make sure we handle such cases, we still want to capture words 
+      // 'f*ck'. To make sure we handle such cases, we still want to capture words
       // like 'f*ck', but not capture a string of '*'s that have already been used
-      // to replace parts of the user input. 
+      // to replace parts of the user input.
       if (!/\*{2,}/.test(matches[0])) {
         cleanedUserInput = cleanedUserInput.replace(
           regEx,
-          '*'.repeat(matches[0].length)
-        ); 
+          '*'.repeat(matches[0].length),
+        );
       }
     }
   });
@@ -548,26 +546,27 @@ export const cleanUsersInput= async userInput => {
 };
 
 export const checkPasswordCredentials = async stateObj => {
-  
   let password1 = stateObj.Password1;
   let password2 = stateObj.Password2;
   let min_password_length = 6;
-  let valid_password = false
+  let valid_password = false;
 
-  if (password1.length < min_password_length || password2.length < min_password_length) {
-    Alert.alert(`New password needs to be at least ${min_password_length} characters long.`);
-  }
-  else if (password1 !== password2) {
-    Alert.alert("Your passwords do not match. Please try again.");
-  }
-  else {
+  if (
+    password1.length < min_password_length ||
+    password2.length < min_password_length
+  ) {
+    Alert.alert(
+      `New password needs to be at least ${min_password_length} characters long.`,
+    );
+  } else if (password1 !== password2) {
+    Alert.alert('Your passwords do not match. Please try again.');
+  } else {
     valid_password = true;
   }
   return valid_password;
 };
 
 export const validateEventInputs = async state => {
-
   const JAN = 1;
   const FEB = 2;
   const MAR = 3;
@@ -589,80 +588,86 @@ export const validateEventInputs = async state => {
   let minute = parseInt(state.Minute);
   let am_or_pm = state.AM_or_PM;
 
-  if (month < 1 || month > 12){
+  if (month < 1 || month > 12) {
     Alert.alert(
-      "Incorrect Month", 
-      `Please provide a month value between 1 and 12. You provided: ${month}.` 
+      'Incorrect Month',
+      `Please provide a month value between 1 and 12. You provided: ${month}.`,
     );
   }
   // Make sure the provided day value is positive
-  else if ( day < 1 ) {
+  else if (day < 1) {
     Alert.alert(
-      "Incorrect Day", 
-      `Please provide a day that is greater than 0. You provided: ${day}.` 
+      'Incorrect Day',
+      `Please provide a day that is greater than 0. You provided: ${day}.`,
     );
   }
   // Ensure the months with 31 days are capped at 31
-  else if ( (month == JAN || month == MAR || month == MAY || month == JUL || 
-             month == AUG || month == OCT || month == DEC) && day > 31 ) 
-  {
+  else if (
+    (month == JAN ||
+      month == MAR ||
+      month == MAY ||
+      month == JUL ||
+      month == AUG ||
+      month == OCT ||
+      month == DEC) &&
+    day > 31
+  ) {
     Alert.alert(
-      "Incorrect Day",
-      `The provided month does not have more than 31 days in it. You entered: ${day}.`
+      'Incorrect Day',
+      `The provided month does not have more than 31 days in it. You entered: ${day}.`,
     );
   }
   // Ensure the months with 31 days are capped at 31
-  else if ( (month == APR || month == JUN || month == SEP || month == NOV) && day > 30 ) 
-  {
+  else if (
+    (month == APR || month == JUN || month == SEP || month == NOV) &&
+    day > 30
+  ) {
     Alert.alert(
-      "Incorrect Day",
-      `The provided month does not have more than 30 days in it. You entered: ${day}.`
+      'Incorrect Day',
+      `The provided month does not have more than 30 days in it. You entered: ${day}.`,
     );
   }
-  // Determine what to do with February 
-  else if ( month == FEB )
-  {
-    if ( year % 4 == 0 && day > 29) {
+  // Determine what to do with February
+  else if (month == FEB) {
+    if (year % 4 == 0 && day > 29) {
       Alert.alert(
-        "Incorrect Day",
-        `When it is a Leap Year, February can not have more than 29 days. You entered: ${day}.`
+        'Incorrect Day',
+        `When it is a Leap Year, February can not have more than 29 days. You entered: ${day}.`,
       );
-    } 
-    else if (day > 28) {
+    } else if (day > 28) {
       Alert.alert(
-        "Incorrect Day",
-        `February can not have more than 28 days in it. You entered: ${day}.`
+        'Incorrect Day',
+        `February can not have more than 28 days in it. You entered: ${day}.`,
       );
     }
   }
-  // Make sure the year is at least as new as the year this app is published 
+  // Make sure the year is at least as new as the year this app is published
   else if (year < 2021) {
     Alert.alert(
-      "Incorrect Year",
-      `The provided year must be after 2021. You entered: ${year}.`
+      'Incorrect Year',
+      `The provided year must be after 2021. You entered: ${year}.`,
     );
   }
   // Make sure the minutes are correct
   else if (minute < 0 || minute > 59) {
     Alert.alert(
-      "Incorrect Minutes",
-      `The provided minutes must be between 1 and 59. You entered: ${minute}`
+      'Incorrect Minutes',
+      `The provided minutes must be between 1 and 59. You entered: ${minute}`,
     );
   }
   // Make sure the hours are correct
   else if (hour < 1 || hour > 12) {
     Alert.alert(
-      "Incorrect Hours",
-      `The provided hours must be between 1 and 12. You entered: ${hour}`
+      'Incorrect Hours',
+      `The provided hours must be between 1 and 12. You entered: ${hour}`,
     );
   }
   // Get the correct time of day
-  else if (am_or_pm != "AM" && am_or_pm != "PM") {
+  else if (am_or_pm != 'AM' && am_or_pm != 'PM') {
     Alert.alert(
-      "Incorrect time of day",
-      `You must provide "AM" or "PM". You entered: ${am_or_pm}`
+      'Incorrect time of day',
+      `You must provide "AM" or "PM". You entered: ${am_or_pm}`,
     );
-
   }
   // everything seems to be good
   else {
