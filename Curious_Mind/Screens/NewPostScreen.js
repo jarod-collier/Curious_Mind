@@ -53,6 +53,8 @@ export default class ResetPasswordScreen extends Component {
               textContent={'Posting...'}
               textStyle={styles.spinnerTextStyle}
               cancelable={true}
+              overlayColor='rgba(0, 0, 0, 0.75)'
+              animation='fade'
             />
             <View style={styles.container}>
               <Text

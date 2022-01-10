@@ -12,83 +12,81 @@ import {Alert} from 'react-native';
 // after the letter. I saw someone use this to exploit another app I use and figured
 // we should guard against this. So this will catch "f u c k" and "ffffuuuuuccccckkk".
 const wordsToFilter = [
-  '(f|\\W)(f*|\\s*)(u|\\W)(u*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s)',
-  '(f|\\W)(f*|\\s*)(u|\\W)(u*|\\s*)(c|\\W)(c*|\\s*)',
-  '(f|\\W)(f*|\\s*)(u|\\W)(u*|\\s*)(k|\\W)(k*|\\s*)',
-  '(f|\\W)(f*|\\s*)( |\\W)( *|\\s*)(u|\\W)(u*|\\s*)( |\\W)( *|\\s*)(c|\\W)(c*|\\s*)( |\\W)( *|\\s*)(k|\\W)(k*|\\s*)',
-  '(f|\\W)(f*|\\s*)(u|\\W)(u*|\\s*)(k|\\W)(k*|\\s*)(c|\\W)(c*|\\s*)',
-  '(f|\\W)(f*|\\s*)(v|\\W)(v*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)',
-  '(f|\\W)(f*|\\s*)(x|\\W)(x*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)',
-  '(d|\\W)(d*|\\s*)(a|\\W)(a*|\\s*)(m|\\W)(m*|\\s*)(n|\\W)(n*|\\s*)( |\\W)( *|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
-  '(d|\\W)(d*|\\s*)(a|\\W)(a*|\\s*)(m|\\W)(m*|\\s*)(n|\\W)(n*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
-  '(d|\\W)(d*|\\s*)(a|\\W)(a*|\\s*)(m|\\W)(m*|\\s*)(m|\\W)(m*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
-  '(s|\\W)(s*|\\s*)(h|\\W)(h*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
-  '(b|\\W)(b*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)(c|\\W)(c*|\\s*)(h|\\W)(h*|\\s*)',
-  '(n|\\W)(n*|\\s*)(i|\\W)(i*|\\s*)(g|\\W)(g*|\\s*)(g|\\W)(g*|\\s*)(e|\\W)(e*|\\s*)(r|\\W)(r*|\\s*)',
-  '(n|\\W)(n*|\\s*)(i|\\W)(i*|\\s*)(g|\\W)(g*|\\s*)(g|\\W)(g*|\\s*)(a|\\W)(a*|\\s*)',
-  '(c|\\W)(c*|\\s*)(h|\\W)(h*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(k|\\W)(k*|\\s*)',
-  '(g|\\W)(g*|\\s*)(r|\\W)(r*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(g|\\W)(g*|\\s*)(o|\\W)(o*|\\s*)',
-  '( |\\W)( *|\\s*)(k|\\W)(k*|\\s*)(i|\\W)(i*|\\s*)(k|\\W)(k*|\\s*)(e|\\W)(e*|\\s*)( |\\W)( *|\\s*)',
-  '( |\\W)( *|\\s*)(s|\\W)(s*|\\s*)(p|\\W)(p*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)( |\\W)( *|\\s*)',
-  '( |\\W)( *|\\s*)(s|\\W)(s*|\\s*)(p|\\W)(p*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)( |\\W)( *|\\s*)',
-  '(c|\\W)(c*|\\s*)(u|\\W)(u*|\\s*)(n|\\W)(n*|\\s*)(t|\\W)(t*|\\s*)',
-  '(p|\\W)(p*|\\s*)(u|\\W)(u*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)(y|\\W)(y*|\\s*)',
-  '(d|\\W)(d*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)',
-  '(p|\\W)(p*|\\s*)(e|\\W)(e*|\\s*)(n|\\W)(n*|\\s*)(i|\\W)(i*|\\s*)(s|\\W)(s*|\\s*)',
-  '(v|\\W)(v*|\\s*)(a|\\W)(a*|\\s*)(g|\\W)(g*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(a|\\W)(a*|\\s*)',
-  '(a|\\W)(a*|\\s*)(n|\\W)(n*|\\s*)(a|\\W)(a*|\\s*)(l|\\W)(l*|\\s*)',
-  '(a|\\W)(a*|\\s*)(r|\\W)(r*|\\s*)(e|\\W)(e*|\\s*)(o|\\W)(o*|\\s*)(l|\\W)(l*|\\s*)(a|\\W)(a*|\\s*)',
-  '(a|\\W)(a*|\\s*)(r|\\W)(r*|\\s*)(e|\\W)(e*|\\s*)(o|\\W)(o*|\\s*)(l|\\W)(l*|\\s*)(e|\\W)(e*|\\s*)',
-  '(c|\\W)(c*|\\s*)(o|\\W)(o*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)',
-  '( |\\W)( *|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)( |\\W)( *|\\s*)',
-  '( |\\W)( *|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)(h|\\W)(h*|\\s*)(o|\\W)(o*|\\s*)(l|\\W)(l*|\\s*)(e|\\W)(e*|\\s*)',
-  '(t|\\W)(t*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)(s|\\W)(s*|\\s*)',
-  '(t|\\W)(t*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
-  '(b|\\W)(b*|\\s*)(o|\\W)(o*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
-  '(b|\\W)(b*|\\s*)(l|\\W)(l*|\\s*)(o|\\W)(o*|\\s*)(w|\\W)(w*|\\s*)( |\\W)( *|\\s*)(j|\\W)(j*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
-  '(b|\\W)(b*|\\s*)(l|\\W)(l*|\\s*)(o|\\W)(o*|\\s*)(w|\\W)(w*|\\s*)(j|\\W)(j*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
-  '(b|\\W)(b*|\\s*)(u|\\W)(u*|\\s*)(k|\\W)(k*|\\s*)(k|\\W)(k*|\\s*)(a|\\W)(a*|\\s*)(k|\\W)(k*|\\s*)(e|\\W)(e*|\\s*)',
-  '( |\\W)( *|\\s*)(c|\\W)(c*|\\s*)(l|\\W)(l*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
-  '(b|\\W)(b*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(t|\\W)(t*|\\s*)(a|\\W)(a*|\\s*)(r|\\W)(r*|\\s*)(d|\\W)(d*|\\s*)',
-  '( |\\W)( *|\\s*)(c|\\W)(c*|\\s*)(u|\\W)(u*|\\s*)(m|\\W)(m*|\\s*)( |\\W)( *|\\s*)',
-  '(c|\\W)(c*|\\s*)(u|\\W)(u*|\\s*)(m|\\W)(m*|\\s*)(m|\\W)(m*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(g|\\W)(g*|\\s*)',
-  '(s|\\W)(s*|\\s*)(l|\\W)(l*|\\s*)(u|\\W)(u*|\\s*)(t|\\W)(t*|\\s*)',
-  '(d|\\W)(d*|\\s*)(i|\\W)(i*|\\s*)(l|\\W)(l*|\\s*)(d|\\W)(d*|\\s*)(o|\\W)(o*|\\s*)',
-  '(d|\\W)(d*|\\s*)(o|\\W)(o*|\\s*)(u|\\W)(u*|\\s*)(c|\\W)(c*|\\s*)(h|\\W)(h*|\\s*)(e|\\W)(e*|\\s*)',
-  '(d|\\W)(d*|\\s*)(u|\\W)(u*|\\s*)(m|\\W)(m*|\\s*)(b|\\W)(b*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)',
-  '(e|\\W)(e*|\\s*)(j|\\W)(j*|\\s*)(a|\\W)(a*|\\s*)(c|\\W)(c*|\\s*)(u|\\W)(u*|\\s*)(l|\\W)(l*|\\s*)(a|\\W)(a*|\\s*)(t|\\W)(t*|\\s*)(e|\\W)(e*|\\s*)',
-  '(f|\\W)(f*|\\s*)(a|\\W)(a*|\\s*)(g|\\W)(g*|\\s*)(g|\\W)(g*|\\s*)(o|\\W)(o*|\\s*)(t|\\W)(t*|\\s*)',
-  '( |\\W)( *|\\s*)(f|\\W)(f*|\\s*)(a|\\W)(a*|\\s*)(g|\\W)(g*|\\s*)( |\\W)( *|\\s*)',
-  '(f|\\W)(f*|\\s*)(e|\\W)(e*|\\s*)(l|\\W)(l*|\\s*)(l|\\W)(l*|\\s*)(a|\\W)(a*|\\s*)(t|\\W)(t*|\\s*)(i|\\W)(i*|\\s*)(o|\\W)(o*|\\s*)',
-  '(h|\\W)(h*|\\s*)(a|\\W)(a*|\\s*)(n|\\W)(n*|\\s*)(d|\\W)(d*|\\s*)(j|\\W)(j*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
-  '(h|\\W)(h*|\\s*)(o|\\W)(o*|\\s*)(r|\\W)(r*|\\s*)(n|\\W)(n*|\\s*)(y|\\W)(y*|\\s*)',
-  '(h|\\W)(h*|\\s*)(u|\\W)(u*|\\s*)(m|\\W)(m*|\\s*)(p|\\W)(p*|\\s*)',
-  '(j|\\W)(j*|\\s*)(a|\\W)(a*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)',
-  '(j|\\W)(j*|\\s*)(e|\\W)(e*|\\s*)(r|\\W)(r*|\\s*)(k|\\W)(k*|\\s*)(o|\\W)(o*|\\s*)(f|\\W)(f*|\\s*)(f|\\W)(f*|\\s*)',
-  '( |\\W)( *|\\s*)(j|\\W)(j*|\\s*)(i|\\W)(i*|\\s*)(z|\\W)(z*|\\s*)(z|\\W)(z*|\\s*)( |\\W)( *|\\s*)',
-  '(k|\\W)(k*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(k|\\W)(k*|\\s*)(y|\\W)(y*|\\s*)',
-  '(m|\\W)(m*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(t|\\W)(t*|\\s*)(e|\\W)(e*|\\s*)(r|\\W)(r*|\\s*)(b|\\W)(b*|\\s*)(a|\\W)(a*|\\s*)(t|\\W)(t*|\\s*)',
-  '(m|\\W)(m*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(t|\\W)(t*|\\s*)(u|\\W)(u*|\\s*)(r|\\W)(r*|\\s*)(b|\\W)(b*|\\s*)(a|\\W)(a*|\\s*)(t|\\W)(t*|\\s*)',
-  '(o|\\W)(o*|\\s*)(r|\\W)(r*|\\s*)(g|\\W)(g*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(m|\\W)(m*|\\s*)',
-  '(o|\\W)(o*|\\s*)(r|\\W)(r*|\\s*)(g|\\W)(g*|\\s*)(i|\\W)(i*|\\s*)(e|\\W)(e*|\\s*)(s|\\W)(s*|\\s*)',
-  '(o|\\W)(o*|\\s*)(r|\\W)(r*|\\s*)(g|\\W)(g*|\\s*)(y|\\W)(y*|\\s*)',
-  '(p|\\W)(p*|\\s*)(h|\\W)(h*|\\s*)(a|\\W)(a*|\\s*)(l|\\W)(l*|\\s*)(l|\\W)(l*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)',
-  '( |\\W)( *|\\s*)(p|\\W)(p*|\\s*)(e|\\W)(e*|\\s*)(e|\\W)(e*|\\s*)( |\\W)( *|\\s*)',
-  '( |\\W)( *|\\s*)(p|\\W)(p*|\\s*)(i|\\W)(i*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)( |\\W)( *|\\s*)',
-  '( |\\W)( *|\\s*)(p|\\W)(p*|\\s*)(i|\\W)(i*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)(e|\\W)(e*|\\s*)(d|\\W)(d*|\\s*)( |\\W)( *|\\s*)',
-  '(p|\\W)(p*|\\s*)(u|\\W)(u*|\\s*)(b|\\W)(b*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)',
-  '(r|\\W)(r*|\\s*)(e|\\W)(e*|\\s*)(t|\\W)(t*|\\s*)(a|\\W)(a*|\\s*)(r|\\W)(r*|\\s*)(d|\\W)(d*|\\s*)',
-  '(r|\\W)(r*|\\s*)(i|\\W)(i*|\\s*)(m|\\W)(m*|\\s*)(j|\\W)(j*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
-  '(s|\\W)(s*|\\s*)(e|\\W)(e*|\\s*)(m|\\W)(m*|\\s*)(e|\\W)(e*|\\s*)(n|\\W)(n*|\\s*)',
-  '(s|\\W)(s*|\\s*)(k|\\W)(k*|\\s*)(a|\\W)(a*|\\s*)(n|\\W)(n*|\\s*)(k|\\W)(k*|\\s*)',
-  '(s|\\W)(s*|\\s*)(p|\\W)(p*|\\s*)(e|\\W)(e*|\\s*)(r|\\W)(r*|\\s*)(m|\\W)(m*|\\s*)',
-  '(s|\\W)(s*|\\s*)(t|\\W)(t*|\\s*)(f|\\W)(f*|\\s*)(u|\\W)(u*|\\s*)',
-  '(t|\\W)(t*|\\s*)(a|\\W)(a*|\\s*)(m|\\W)(m*|\\s*)(p|\\W)(p*|\\s*)(o|\\W)(o*|\\s*)(n|\\W)(n*|\\s*)',
-  '( |\\W)( *|\\s*)(u|\\W)(u*|\\s*)(r|\\W)(r*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(e|\\W)(e*|\\s*)( |\\W)( *|\\s*)',
-  '( |\\W)( *|\\s*)(u|\\W)(u*|\\s*)(r|\\W)(r*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(a|\\W)(a*|\\s*)(l|\\W)(l*|\\s*)( |\\W)( *|\\s*)',
-  '(l|\\W)(l*|\\s*)(m|\\W)(m*|\\s*)(a|\\W)(a*|\\s*)(o|\\W)(o*|\\s*)',
-  '(l|\\W)(l*|\\s*)(m|\\W)(m*|\\s*)(f|\\W)(f*|\\s*)(a|\\W)(a*|\\s*)(o|\\W)(o*|\\s*)',
-  '(b|\\W)(b*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)(c|\\W)(c*|\\s*)(h|\\W)(h*|\\s*)',
+  'f(f*|\\s*)(u|\\W)(u*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s)',
+  'f(f*|\\s*)(u|\\W)(u*|\\s*)(c|\\W)(c*|\\s*)',
+  'f(f*|\\s*)(u|\\W)(u*|\\s*)(k|\\W)(k*|\\s*)',
+  'f(f*|\\s*)( |\\W)( *|\\s*)(u|\\W)(u*|\\s*)( |\\W)( *|\\s*)(c|\\W)(c*|\\s*)( |\\W)( *|\\s*)(k|\\W)(k*|\\s*)',
+  'f(f*|\\s*)(u|\\W)(u*|\\s*)(k|\\W)(k*|\\s*)(c|\\W)(c*|\\s*)',
+  'f(f*|\\s*)(v|\\W)(v*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)',
+  'f(f*|\\s*)(x|\\W)(x*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)',
+  'd(d*|\\s*)(a|\\W)(a*|\\s*)(m|\\W)(m*|\\s*)(n|\\W)(n*|\\s*)( |\\W)( *|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
+  'd(d*|\\s*)(a|\\W)(a*|\\s*)(m|\\W)(m*|\\s*)(n|\\W)(n*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
+  'd(d*|\\s*)(a|\\W)(a*|\\s*)(m|\\W)(m*|\\s*)(m|\\W)(m*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
+  's(s*|\\s*)(h|\\W)(h*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
+  'b(b*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)(c|\\W)(c*|\\s*)(h|\\W)(h*|\\s*)',
+  'n(n*|\\s*)(i|\\W)(i*|\\s*)(g|\\W)(g*|\\s*)(g|\\W)(g*|\\s*)(e|\\W)(e*|\\s*)(r|\\W)(r*|\\s*)',
+  'n(n*|\\s*)(i|\\W)(i*|\\s*)(g|\\W)(g*|\\s*)(g|\\W)(g*|\\s*)(a|\\W)(a*|\\s*)',
+  'c(c*|\\s*)(h|\\W)(h*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(k|\\W)(k*|\\s*)',
+  'g(g*|\\s*)(r|\\W)(r*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(g|\\W)(g*|\\s*)(o|\\W)(o*|\\s*)',
+  ' ( *|\\s*)(k|\\W)(k*|\\s*)(i|\\W)(i*|\\s*)(k|\\W)(k*|\\s*)(e|\\W)(e*|\\s*)( |\\W)( *|\\s*)',
+  ' ( *|\\s*)(s|\\W)(s*|\\s*)(p|\\W)(p*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)( |\\W)( *|\\s*)',
+  ' ( *|\\s*)(s|\\W)(s*|\\s*)(p|\\W)(p*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)( |\\W)( *|\\s*)',
+  'c(c*|\\s*)(u|\\W)(u*|\\s*)(n|\\W)(n*|\\s*)(t|\\W)(t*|\\s*)',
+  'p(p*|\\s*)(u|\\W)(u*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)(y|\\W)(y*|\\s*)',
+  'd(d*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)',
+  'p(p*|\\s*)(e|\\W)(e*|\\s*)(n|\\W)(n*|\\s*)(i|\\W)(i*|\\s*)(s|\\W)(s*|\\s*)',
+  'v(v*|\\s*)(a|\\W)(a*|\\s*)(g|\\W)(g*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(a|\\W)(a*|\\s*)',
+  'a(a*|\\s*)(n|\\W)(n*|\\s*)(a|\\W)(a*|\\s*)(l|\\W)(l*|\\s*)',
+  'a(a*|\\s*)(r|\\W)(r*|\\s*)(e|\\W)(e*|\\s*)(o|\\W)(o*|\\s*)(l|\\W)(l*|\\s*)(a|\\W)(a*|\\s*)',
+  'a(a*|\\s*)(r|\\W)(r*|\\s*)(e|\\W)(e*|\\s*)(o|\\W)(o*|\\s*)(l|\\W)(l*|\\s*)(e|\\W)(e*|\\s*)',
+  'c(c*|\\s*)(o|\\W)(o*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)',
+  ' ( *|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)( |\\W)( *|\\s*)',
+  ' ( *|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)(h|\\W)(h*|\\s*)(o|\\W)(o*|\\s*)(l|\\W)(l*|\\s*)(e|\\W)(e*|\\s*)',
+  'b(b*|\\s*)(o|\\W)(o*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
+  'b(b*|\\s*)(l|\\W)(l*|\\s*)(o|\\W)(o*|\\s*)(w|\\W)(w*|\\s*)( |\\W)( *|\\s*)(j|\\W)(j*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
+  'b(b*|\\s*)(l|\\W)(l*|\\s*)(o|\\W)(o*|\\s*)(w|\\W)(w*|\\s*)(j|\\W)(j*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
+  'b(b*|\\s*)(u|\\W)(u*|\\s*)(k|\\W)(k*|\\s*)(k|\\W)(k*|\\s*)(a|\\W)(a*|\\s*)(k|\\W)(k*|\\s*)(e|\\W)(e*|\\s*)',
+  ' ( *|\\s*)(c|\\W)(c*|\\s*)(l|\\W)(l*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)',
+  'b(b*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(t|\\W)(t*|\\s*)(a|\\W)(a*|\\s*)(r|\\W)(r*|\\s*)(d|\\W)(d*|\\s*)',
+  ' ( *|\\s*)(c|\\W)(c*|\\s*)(u|\\W)(u*|\\s*)(m|\\W)(m*|\\s*)( |\\W)( *|\\s*)',
+  'c(c*|\\s*)(u|\\W)(u*|\\s*)(m|\\W)(m*|\\s*)(m|\\W)(m*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(g|\\W)(g*|\\s*)',
+  's(s*|\\s*)(l|\\W)(l*|\\s*)(u|\\W)(u*|\\s*)(t|\\W)(t*|\\s*)',
+  'd(d*|\\s*)(i|\\W)(i*|\\s*)(l|\\W)(l*|\\s*)(d|\\W)(d*|\\s*)(o|\\W)(o*|\\s*)',
+  'd(d*|\\s*)(o|\\W)(o*|\\s*)(u|\\W)(u*|\\s*)(c|\\W)(c*|\\s*)(h|\\W)(h*|\\s*)(e|\\W)(e*|\\s*)',
+  'd(d*|\\s*)(u|\\W)(u*|\\s*)(m|\\W)(m*|\\s*)(b|\\W)(b*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)',
+  'e(e*|\\s*)(j|\\W)(j*|\\s*)(a|\\W)(a*|\\s*)(c|\\W)(c*|\\s*)(u|\\W)(u*|\\s*)(l|\\W)(l*|\\s*)(a|\\W)(a*|\\s*)(t|\\W)(t*|\\s*)(e|\\W)(e*|\\s*)',
+  'f(f*|\\s*)(a|\\W)(a*|\\s*)(g|\\W)(g*|\\s*)(g|\\W)(g*|\\s*)(o|\\W)(o*|\\s*)(t|\\W)(t*|\\s*)',
+  ' ( *|\\s*)(f|\\W)(f*|\\s*)(a|\\W)(a*|\\s*)(g|\\W)(g*|\\s*)( |\\W)( *|\\s*)',
+  'f(f*|\\s*)(e|\\W)(e*|\\s*)(l|\\W)(l*|\\s*)(l|\\W)(l*|\\s*)(a|\\W)(a*|\\s*)(t|\\W)(t*|\\s*)(i|\\W)(i*|\\s*)(o|\\W)(o*|\\s*)',
+  'h(h*|\\s*)(a|\\W)(a*|\\s*)(n|\\W)(n*|\\s*)(d|\\W)(d*|\\s*)(j|\\W)(j*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
+  'h(h*|\\s*)(o|\\W)(o*|\\s*)(r|\\W)(r*|\\s*)(n|\\W)(n*|\\s*)(y|\\W)(y*|\\s*)',
+  'h(h*|\\s*)(u|\\W)(u*|\\s*)(m|\\W)(m*|\\s*)(p|\\W)(p*|\\s*)',
+  'j(j*|\\s*)(a|\\W)(a*|\\s*)(c|\\W)(c*|\\s*)(k|\\W)(k*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)',
+  'j(j*|\\s*)(e|\\W)(e*|\\s*)(r|\\W)(r*|\\s*)(k|\\W)(k*|\\s*)(o|\\W)(o*|\\s*)(f|\\W)(f*|\\s*)(f|\\W)(f*|\\s*)',
+  ' ( *|\\s*)(j|\\W)(j*|\\s*)(i|\\W)(i*|\\s*)(z|\\W)(z*|\\s*)(z|\\W)(z*|\\s*)( |\\W)( *|\\s*)',
+  'k(k*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(k|\\W)(k*|\\s*)(y|\\W)(y*|\\s*)',
+  'm(m*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(t|\\W)(t*|\\s*)(e|\\W)(e*|\\s*)(r|\\W)(r*|\\s*)(b|\\W)(b*|\\s*)(a|\\W)(a*|\\s*)(t|\\W)(t*|\\s*)',
+  'm(m*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(t|\\W)(t*|\\s*)(u|\\W)(u*|\\s*)(r|\\W)(r*|\\s*)(b|\\W)(b*|\\s*)(a|\\W)(a*|\\s*)(t|\\W)(t*|\\s*)',
+  'o(o*|\\s*)(r|\\W)(r*|\\s*)(g|\\W)(g*|\\s*)(a|\\W)(a*|\\s*)(s|\\W)(s*|\\s*)(m|\\W)(m*|\\s*)',
+  'o(o*|\\s*)(r|\\W)(r*|\\s*)(g|\\W)(g*|\\s*)(i|\\W)(i*|\\s*)(e|\\W)(e*|\\s*)(s|\\W)(s*|\\s*)',
+  'o(o*|\\s*)(r|\\W)(r*|\\s*)(g|\\W)(g*|\\s*)(y|\\W)(y*|\\s*)',
+  'p(p*|\\s*)(h|\\W)(h*|\\s*)(a|\\W)(a*|\\s*)(l|\\W)(l*|\\s*)(l|\\W)(l*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)',
+  ' ( *|\\s*)(p|\\W)(p*|\\s*)(e|\\W)(e*|\\s*)(e|\\W)(e*|\\s*)( |\\W)( *|\\s*)',
+  ' ( *|\\s*)(p|\\W)(p*|\\s*)(i|\\W)(i*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)( |\\W)( *|\\s*)',
+  ' ( *|\\s*)(p|\\W)(p*|\\s*)(i|\\W)(i*|\\s*)(s|\\W)(s*|\\s*)(s|\\W)(s*|\\s*)(e|\\W)(e*|\\s*)(d|\\W)(d*|\\s*)( |\\W)( *|\\s*)',
+  'p(p*|\\s*)(u|\\W)(u*|\\s*)(b|\\W)(b*|\\s*)(i|\\W)(i*|\\s*)(c|\\W)(c*|\\s*)',
+  'r(r*|\\s*)(e|\\W)(e*|\\s*)(t|\\W)(t*|\\s*)(a|\\W)(a*|\\s*)(r|\\W)(r*|\\s*)(d|\\W)(d*|\\s*)',
+  'r(r*|\\s*)(i|\\W)(i*|\\s*)(m|\\W)(m*|\\s*)(j|\\W)(j*|\\s*)(o|\\W)(o*|\\s*)(b|\\W)(b*|\\s*)',
+  's(s*|\\s*)(e|\\W)(e*|\\s*)(m|\\W)(m*|\\s*)(e|\\W)(e*|\\s*)(n|\\W)(n*|\\s*)',
+  's(s*|\\s*)(k|\\W)(k*|\\s*)(a|\\W)(a*|\\s*)(n|\\W)(n*|\\s*)(k|\\W)(k*|\\s*)',
+  's(s*|\\s*)(p|\\W)(p*|\\s*)(e|\\W)(e*|\\s*)(r|\\W)(r*|\\s*)(m|\\W)(m*|\\s*)',
+  's(s*|\\s*)(t|\\W)(t*|\\s*)(f|\\W)(f*|\\s*)(u|\\W)(u*|\\s*)',
+  't(t*|\\s*)(a|\\W)(a*|\\s*)(m|\\W)(m*|\\s*)(p|\\W)(p*|\\s*)(o|\\W)(o*|\\s*)(n|\\W)(n*|\\s*)',
+  ' ( *|\\s*)(u|\\W)(u*|\\s*)(r|\\W)(r*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(e|\\W)(e*|\\s*)( |\\W)( *|\\s*)',
+  ' ( *|\\s*)(u|\\W)(u*|\\s*)(r|\\W)(r*|\\s*)(i|\\W)(i*|\\s*)(n|\\W)(n*|\\s*)(a|\\W)(a*|\\s*)(l|\\W)(l*|\\s*)( |\\W)( *|\\s*)',
+  'l(l*|\\s*)(m|\\W)(m*|\\s*)(a|\\W)(a*|\\s*)(o|\\W)(o*|\\s*)',
+  'l(l*|\\s*)(m|\\W)(m*|\\s*)(f|\\W)(f*|\\s*)(a|\\W)(a*|\\s*)(o|\\W)(o*|\\s*)',
+  'b(b*|\\s*)(i|\\W)(i*|\\s*)(t|\\W)(t*|\\s*)(c|\\W)(c*|\\s*)(h|\\W)(h*|\\s*)',
 ];
 
 export const loadPostCards = async (posts, MainFeedView, navigation) => {
@@ -175,7 +173,8 @@ export const loadEventCards = async (events, showDeleteButton) => {
           <Text>Date: {eventData.date}</Text>
           <Text>Time: {eventData.time}</Text>
           <Text>Where: {eventData.location}</Text>
-          <TouchableOpacity
+          {/* Commenting out until we can figure out how to best do this */}
+          {/* <TouchableOpacity
             style={[styles.Buttons, styles.alignSelfCenter]}
             onPress={async () =>
               addToCalendar(
@@ -194,7 +193,7 @@ export const loadEventCards = async (events, showDeleteButton) => {
                 color="white"
               />
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           {eventData.pastorWhoCreatedEvent && (
             <TouchableOpacity
               style={[
@@ -587,6 +586,10 @@ export const validateEventInputs = async state => {
   let hour = parseInt(state.Hour);
   let minute = parseInt(state.Minute);
   let am_or_pm = state.AM_or_PM;
+  let phoneDate = new Date();
+  let currentDay = phoneDate.getDate();
+  let currentMonth = phoneDate.getMonth() + 1;
+  let currentYear = phoneDate.getFullYear();
 
   if (month < 1 || month > 12) {
     Alert.alert(
@@ -641,32 +644,46 @@ export const validateEventInputs = async state => {
       );
     }
   }
-  // Make sure the year is at least as new as the year this app is published
-  else if (year < 2021) {
-    Alert.alert(
-      'Incorrect Year',
-      `The provided year must be after 2021. You entered: ${year}.`,
-    );
-  }
   // Make sure the minutes are correct
   else if (minute < 0 || minute > 59) {
     Alert.alert(
       'Incorrect Minutes',
-      `The provided minutes must be between 1 and 59. You entered: ${minute}`,
+      `The provided minutes must be between 1 and 59. You entered: ${minute}.`,
     );
   }
   // Make sure the hours are correct
   else if (hour < 1 || hour > 12) {
     Alert.alert(
       'Incorrect Hours',
-      `The provided hours must be between 1 and 12. You entered: ${hour}`,
+      `The provided hours must be between 1 and 12. You entered: ${hour}.`,
     );
   }
   // Get the correct time of day
   else if (am_or_pm != 'AM' && am_or_pm != 'PM') {
     Alert.alert(
       'Incorrect time of day',
-      `You must provide "AM" or "PM". You entered: ${am_or_pm}`,
+      `You must provide "AM" or "PM". You entered: ${am_or_pm}.`,
+    );
+  }
+  // The provided year has to be at least our year
+  else if ( year < currentYear ){
+    Alert.alert(
+      'Incorrect Year Provided',
+      `The event's year needs to at least be the current year of ${currentYear}. You entered: ${year}.`,
+    );
+  }
+  // The provided month has to be at least our month
+  else if ( month < currentMonth ){
+    Alert.alert(
+      'Incorrect Month Provided',
+      `The event's month needs to at least be the current month of ${currentMonth}. You entered: ${month}.`,
+    );
+  }
+  // The provided day has to be at least be past the current day 
+  else if ( month == currentMonth && day < currentDay){
+    Alert.alert(
+      'Incorrect Day Provided',
+      `The event's day needs to at least be the current day of ${currentDay}. You entered: ${day}.`,
     );
   }
   // everything seems to be good

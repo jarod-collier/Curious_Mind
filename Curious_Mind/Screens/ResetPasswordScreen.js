@@ -64,6 +64,8 @@ export default class ResetPasswordScreen extends Component {
               textContent={'Resetting Password...'}
               textStyle={styles.spinnerTextStyle}
               cancelable={true}
+              overlayColor='rgba(0, 0, 0, 0.75)'
+              animation='fade'
             />
             <View style={styles.logo}>
               <Image source={require('../assets/images/CM_logo02.png')} />

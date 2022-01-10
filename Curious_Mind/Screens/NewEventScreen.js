@@ -156,7 +156,6 @@ export default class NewEventScreen extends Component {
       val => (this.state.Description = val),
     );
     await cleanUsersInput(this.state.location).then(
-      // val => (this.state.location= val),
       val => this.setState({location: val}),
     );
   };
@@ -202,6 +201,8 @@ export default class NewEventScreen extends Component {
               textContent={'Adding Event...'}
               textStyle={styles.spinnerTextStyle}
               cancelable={true}
+              overlayColor='rgba(0, 0, 0, 0.75)'
+              animation='fade'
             />
             <Text
               style={[
@@ -286,7 +287,7 @@ export default class NewEventScreen extends Component {
               <TouchableOpacity onPress={this.selectDate}>
                 <Image
                   style={styles.defaultButtonColor}
-                  source={require('../assets/images/outline_event_black_24dp.png')}
+                  source={require('../assets/images/calendar_icon.png')}
                 />
               </TouchableOpacity>
               {this.state.ShowDate && (
@@ -342,7 +343,7 @@ export default class NewEventScreen extends Component {
               <TouchableOpacity onPress={this.selectTime}>
                 <Image
                   style={styles.defaultButtonColor}
-                  source={require('../assets/images/outline_schedule_black_24dp.png')}
+                  source={require('../assets/images/clock.png')}
                 />
               </TouchableOpacity>
               {this.state.ShowTime && (

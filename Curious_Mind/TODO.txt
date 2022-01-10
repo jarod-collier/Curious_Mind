@@ -5,10 +5,7 @@ Make sure each screen passes tests from Jarod and Maz and maybe someone else we 
 Jarod's pass on each screen (remove screen from list when complete):
 
 Maz's pass on each screen (remove screen from list when complete):
-    - ForgotPasswordScreen -- (remove DB link from screen + edit email)
-    - NewEventScreen -- (change check date functionality)
-    - PastorSignUpScreen -- (make sure its not overwritting data from DBLogic handleSignup)
-    - ThreadScreen -- (update sort button)
+    - ForgotPasswordScreen -- (edit email)
     - Firebase event rules -- add this to events write (&& data.child('userInfo').child(auth.uid).child('userType') === 'pastor')
 
 V2.0

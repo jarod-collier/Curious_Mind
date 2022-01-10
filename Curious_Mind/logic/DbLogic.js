@@ -331,7 +331,7 @@ export const canComment = async postValues => {
       }
     });
   }
-  return userCan && !postValues[0].pastorOnly;
+  return userCan;
 };
 
 export const addCommentToPost = async (postID, comment) => {
@@ -480,24 +480,34 @@ export const handleSignUp = async (normalUser, signupObject, navigation) => {
       )
         .then(userCredential => {
           // Signed in
-          console.log(userCredential);
           let UserId = userCredential.user.uid;
           let signUpRef = ref(db, 'userInfo/' + UserId);
           let userType = normalUser ? 'user' : 'pastor';
-          set(signUpRef, {
-            First: '' + signupObject.FirstName,
-            Last: '' + signupObject.LastName,
-            Username: '' + signupObject.Username,
-            uid: UserId,
-            postNum: 0,
-            commentNum: 0,
-            score: 0,
-            Email: signupObject.Email,
-            userType: userType,
-          });
-          if (!normalUser) {
-            //TODO: DON"T OVERWRITE
+          
+          if (normalUser) {
             set(signUpRef, {
+              First: '' + signupObject.FirstName,
+              Last: '' + signupObject.LastName,
+              Username: '' + signupObject.Username,
+              uid: UserId,
+              postNum: 0,
+              commentNum: 0,
+              score: 0,
+              Email: signupObject.Email,
+              userType: userType,
+            });
+          }
+          else {
+            set(signUpRef, {
+              First: '' + signupObject.FirstName,
+              Last: '' + signupObject.LastName,
+              Username: '' + signupObject.Username,
+              uid: UserId,
+              postNum: 0,
+              commentNum: 0,
+              score: 0,
+              Email: signupObject.Email,
+              userType: userType,
               AddintionalInfo: '' + signupObject.addintionalInfo,
               pastorCode:
                 '' +

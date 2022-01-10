@@ -51,6 +51,8 @@ export default class ForgotPasswordScreen extends Component {
               textContent={'Sending Email...'}
               textStyle={styles.spinnerTextStyle}
               cancelable={true}
+              overlayColor='rgba(0, 0, 0, 0.75)'
+              animation='fade'
             />
             <Image
               style={styles.logo}
@@ -58,9 +60,7 @@ export default class ForgotPasswordScreen extends Component {
             />
             <Text style={styles.generalText}>
               Please enter the email address for your account. You will then get
-              an email from "noreply@curios-mind-82101.firebaseapp.com".
-              {'\n\n'}Follow the instructions in the email to reset your
-              password.
+              an email from us to be able to reset your password.
             </Text>
             <TextInput
               style={[styles.inputBox, styles.width300]}

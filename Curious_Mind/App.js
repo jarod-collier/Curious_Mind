@@ -269,7 +269,6 @@ const MyTheme = {
 };
 
 function AppContainer() {
-  console.log(getAuth());
   return (
     <NavigationContainer theme={MyTheme}>
       <Stack.Navigator

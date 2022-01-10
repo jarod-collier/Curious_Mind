@@ -75,6 +75,8 @@ export default class UserSignUpScreen extends Component {
               textContent={'Signing Up...'}
               textStyle={styles.spinnerTextStyle}
               cancelable={true}
+              overlayColor='rgba(0, 0, 0, 0.75)'
+              animation='fade'
             />
             <Image
               style={styles.logo}

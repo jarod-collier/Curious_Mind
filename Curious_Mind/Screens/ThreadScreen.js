@@ -23,6 +23,7 @@ import {
 import {onValue, ref} from 'firebase/database';
 import {getAuth} from 'firebase/auth';
 import Spinner from 'react-native-loading-spinner-overlay';
+import {FloatingAction} from 'react-native-floating-action';
 
 export default class ThreadScreen extends Component {
   constructor(props) {
@@ -39,6 +40,29 @@ export default class ThreadScreen extends Component {
       ButtonDisabled: true,
       SortCommentsBy: "Oldest First",
     };
+    this.floatingButtonActions = [
+      {
+        color: '#3c4498',
+        text: 'Oldest First',
+        icon: require('../assets/images/outline_swap_vert_white_24dp.png'),
+        name: 'Oldest First',
+        position: 1,
+      },
+      {
+        color: '#3c4498',
+        text: 'Most Recent',
+        icon: require('../assets/images/outline_update_white_24dp.png'),
+        name: 'Most Recent',
+        position: 2,
+      },
+      {
+        color: '#3c4498',
+        text: 'Most Liked',
+        icon: require('../assets/images/outline_recommend_white_24dp.png'),
+        name: 'Most Liked',
+        position: 3,
+      },
+    ];
   }
 
   async componentDidMount() {
@@ -128,15 +152,35 @@ export default class ThreadScreen extends Component {
               textContent={'Posting...'}
               textStyle={styles.spinnerTextStyle}
               cancelable={true}
+              overlayColor='rgba(0, 0, 0, 0.75)'
+              animation='fade'
             />
             <View style={styles.container}>
               {this.state.display}
-              {this.state.comments.length > 0 &&(<TouchableOpacity
-                style={[styles.Buttons, styles.alignSelfCenter]}
-                onPress={async () =>  this.sortComments()}>
-                <Text style={styles.customBtnText}>Sort Comments</Text>
-              </TouchableOpacity>)}
               {this.state.comments}
+              <FloatingAction
+                actions={this.floatingButtonActions}
+                onPressItem={async name => {
+                  switch (name) {
+                    case 'Oldest First':
+                      this.state.SortQuestionsBy = 'Oldest First';
+                      break;
+                    case 'Most Recent':
+                      this.state.SortQuestionsBy = 'Most Recent';
+                      break;
+                    case 'Most Liked':
+                      this.state.SortQuestionsBy = 'Most Liked';
+                      break;
+                  }
+                  this.readFromDB();
+                }}
+                floatingIcon={require('../assets/images/outline_sort_white_24dp.png')}
+                iconHeight={30}
+                iconWidth={30}
+                distanceToEdge={15}
+                color="#3c4498"
+                buttonSize={35}
+              />
               {this.state.userCanComment && (
                 <View style={styles.aligItemsCenter}>
                   <TextInput

@@ -52,6 +52,8 @@ export default class PastorSecCodeScreen extends Component {
               textContent={'Verifying code...'}
               textStyle={styles.spinnerTextStyle}
               cancelable={true}
+              overlayColor='rgba(0, 0, 0, 0.75)'
+              animation='fade'
             />
             <Image
               style={styles.logo}
