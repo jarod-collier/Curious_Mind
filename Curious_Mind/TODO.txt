@@ -5,8 +5,6 @@ Make sure each screen passes tests from Jarod and Maz and maybe someone else we 
 Jarod's pass on each screen (remove screen from list when complete):
 
 Maz's pass on each screen (remove screen from list when complete):
-    - ForgotPasswordScreen -- (edit email)
-    - Firebase event rules -- add this to events write (&& data.child('userInfo').child(auth.uid).child('userType') === 'pastor')
 
 V2.0
 - search for users
