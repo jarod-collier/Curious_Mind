@@ -533,8 +533,8 @@ export const handleSignUp = async (normalUser, signupObject, navigation) => {
             );
           } else if (errorCode === 'auth/email-already-in-use') {
             Alert.alert(
-              'Registed user',
-              'The entered email is already registed, please login or rest your password if needed',
+              'Registered user',
+              'The entered email is already registered, please login or reset your password if needed',
             );
           } else {
             Alert.alert(

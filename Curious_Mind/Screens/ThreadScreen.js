@@ -57,9 +57,9 @@ export default class ThreadScreen extends Component {
       },
       {
         color: '#3c4498',
-        text: 'Most Liked',
-        icon: require('../assets/images/outline_recommend_white_24dp.png'),
-        name: 'Most Liked',
+        text: 'Pastors First',
+        icon: require('../assets/images/outline_psychology_black_24dp.png'),
+        name: 'Pastors First',
         position: 3,
       },
     ];
@@ -158,29 +158,6 @@ export default class ThreadScreen extends Component {
             <View style={styles.container}>
               {this.state.display}
               {this.state.comments}
-              <FloatingAction
-                actions={this.floatingButtonActions}
-                onPressItem={async name => {
-                  switch (name) {
-                    case 'Oldest First':
-                      this.state.SortQuestionsBy = 'Oldest First';
-                      break;
-                    case 'Most Recent':
-                      this.state.SortQuestionsBy = 'Most Recent';
-                      break;
-                    case 'Most Liked':
-                      this.state.SortQuestionsBy = 'Most Liked';
-                      break;
-                  }
-                  this.readFromDB();
-                }}
-                floatingIcon={require('../assets/images/outline_sort_white_24dp.png')}
-                iconHeight={30}
-                iconWidth={30}
-                distanceToEdge={15}
-                color="#3c4498"
-                buttonSize={35}
-              />
               {this.state.userCanComment && (
                 <View style={styles.aligItemsCenter}>
                   <TextInput
@@ -237,6 +214,29 @@ export default class ThreadScreen extends Component {
             </View>
           </ScrollView>
         </KeyboardAwareScrollView>
+        <FloatingAction
+          actions={this.floatingButtonActions}
+          onPressItem={async name => {
+            switch (name) {
+              case 'Oldest First':
+                this.state.SortCommentsBy = 'Oldest First';
+                break;
+              case 'Most Recent':
+                this.state.SortCommentsBy = 'Most Recent';
+                break;
+              case 'Pastors First':
+                this.state.SortCommentsBy = 'Pastors First';
+                break;
+            }
+            this.readFromDB(this.state.postID);
+          }}
+          floatingIcon={require('../assets/images/outline_sort_white_24dp.png')}
+          iconHeight={30}
+          iconWidth={30}
+          distanceToEdge={15}
+          color="#3c4498"
+          buttonSize={35}
+        />
       </SafeAreaView>
     );
   }
