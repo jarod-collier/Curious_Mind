@@ -11,6 +11,8 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		47C6DC722797A566002915A2 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C6DC712797A566002915A2 /* AuthenticationServices.framework */; };
+		47C6DC742797A5F1002915A2 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C6DC732797A5F1002915A2 /* GameKit.framework */; };
 		7185111FA770CEF35B2C1730 /* libPods-Curious_Mind.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A31016A325EC132438B00E8 /* libPods-Curious_Mind.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		BAD5013B858908DB7D11C5F2 /* libPods-Curious_Mind-Curious_MindTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 723BD4EE2082680E023E3280 /* libPods-Curious_Mind-Curious_MindTests.a */; };
@@ -39,6 +41,9 @@
 		2A31016A325EC132438B00E8 /* libPods-Curious_Mind.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Curious_Mind.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E0CD6C924A38D3ACC75FFE0 /* Pods-Curious_Mind.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Curious_Mind.debug.xcconfig"; path = "Target Support Files/Pods-Curious_Mind/Pods-Curious_Mind.debug.xcconfig"; sourceTree = "<group>"; };
 		2E5B8353BCFDAF25D1685D9E /* Pods-Curious_Mind.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Curious_Mind.release.xcconfig"; path = "Target Support Files/Pods-Curious_Mind/Pods-Curious_Mind.release.xcconfig"; sourceTree = "<group>"; };
+		47C6DC702797A566002915A2 /* Curious_Mind.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Curious_Mind.entitlements; path = Curious_Mind/Curious_Mind.entitlements; sourceTree = "<group>"; };
+		47C6DC712797A566002915A2 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
+		47C6DC732797A5F1002915A2 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		5A658DC59D549ED82953278D /* Pods-Curious_Mind-Curious_MindTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Curious_Mind-Curious_MindTests.debug.xcconfig"; path = "Target Support Files/Pods-Curious_Mind-Curious_MindTests/Pods-Curious_Mind-Curious_MindTests.debug.xcconfig"; sourceTree = "<group>"; };
 		723BD4EE2082680E023E3280 /* libPods-Curious_Mind-Curious_MindTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Curious_Mind-Curious_MindTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Curious_Mind/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -59,6 +64,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47C6DC742797A5F1002915A2 /* GameKit.framework in Frameworks */,
+				47C6DC722797A566002915A2 /* AuthenticationServices.framework in Frameworks */,
 				7185111FA770CEF35B2C1730 /* libPods-Curious_Mind.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -86,6 +93,7 @@
 		13B07FAE1A68108700A75B9A /* Curious_Mind */ = {
 			isa = PBXGroup;
 			children = (
+				47C6DC702797A566002915A2 /* Curious_Mind.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -104,13 +112,14 @@
 				5A658DC59D549ED82953278D /* Pods-Curious_Mind-Curious_MindTests.debug.xcconfig */,
 				CFAC181398E6BC7A4E63FD76 /* Pods-Curious_Mind-Curious_MindTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				47C6DC732797A5F1002915A2 /* GameKit.framework */,
+				47C6DC712797A566002915A2 /* AuthenticationServices.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				2A31016A325EC132438B00E8 /* libPods-Curious_Mind.a */,
 				723BD4EE2082680E023E3280 /* libPods-Curious_Mind-Curious_MindTests.a */,
@@ -498,7 +507,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Curious_Mind/Curious_Mind.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CNQ68LQ39V;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Curious_Mind/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -510,7 +521,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Curious-Mind";
 				PRODUCT_NAME = Curious_Mind;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -524,7 +535,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Curious_Mind/Curious_Mind.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CNQ68LQ39V;
 				INFOPLIST_FILE = Curious_Mind/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -535,7 +548,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Curious-Mind";
 				PRODUCT_NAME = Curious_Mind;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

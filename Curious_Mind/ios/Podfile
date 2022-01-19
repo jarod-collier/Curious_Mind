@@ -12,7 +12,6 @@ target 'Curious_Mind' do
     :hermes_enabled => false
   )
 
-  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
   target 'Curious_MindTests' do
     inherit! :complete
@@ -27,5 +26,19 @@ target 'Curious_Mind' do
 
   post_install do |installer|
     react_native_post_install(installer)
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+        config.build_settings["ONLY_ACTIVE_ARCH"] = "YES"
+      end
+      
+      case target.name
+      when 'RCT-Folly'
+        target.build_configurations.each do |config|
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
+        end
+      end
+    end
   end
 end
