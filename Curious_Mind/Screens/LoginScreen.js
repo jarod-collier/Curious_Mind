@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import {styles} from '../assets/styles/styles';
 import Spinner from 'react-native-loading-spinner-overlay';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class LoginScreen extends Component {
   constructor(props) {
@@ -26,6 +27,27 @@ export default class LoginScreen extends Component {
     };
     this.clearEmail = React.createRef();
     this.clearPassword = React.createRef();
+  }
+
+  async componentDidMount() {
+
+    // Attempt to see if the user has already logged in and their credentials are saved.
+    try {
+      const email = await AsyncStorage.getItem('userEmail');
+      const password = await AsyncStorage.getItem('userPassword');
+      if ( email !== null && password !== null ) {
+        this.setState({Spinner: true});
+        await logInUser(
+          email,
+          password,
+          this.props.navigation,
+        );
+        this.setState({Spinner: false});
+      }
+      
+    } catch (error) {
+      // Could not auto log the user in
+    }
   }
 
   render() {

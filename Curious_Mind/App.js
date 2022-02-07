@@ -22,6 +22,8 @@ import {Button} from 'react-native-vector-icons/FontAwesome';
 import {signOut, getAuth} from 'firebase/auth';
 import './Firebase/config';
 
+import { signUserOut } from './logic/DbLogic';
+
 import {styles} from './assets/styles/styles';
 
 import {LogBox} from 'react-native';
@@ -253,12 +255,6 @@ function Nested_Profile({navigation}) {
   );
 }
 
-function signUserOut(navigation) {
-  const auth = getAuth();
-  signOut(auth)
-    .then(navigation.navigate('Login'))
-    .catch(error => Alert.alert(error.message));
-}
 const Stack = createStackNavigator();
 
 const MyTheme = {

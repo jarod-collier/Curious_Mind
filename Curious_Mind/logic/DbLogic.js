@@ -23,7 +23,7 @@ import {
   equalTo,
 } from 'firebase/database';
 import {Alert} from 'react-native';
-import {checkPasswordCredentials} from './helpers';
+import { checkPasswordCredentials, storeData, removeData } from './helpers';
 
 export const db = getDatabase();
 export const auth = getAuth();
@@ -38,7 +38,9 @@ export const isUserLoggedIn = async => {
 
 export const logInUser = async (email, password, navigation) => {
   await signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
+    .then( async () => {
+      await storeData( "userEmail", email );
+      await storeData ("userPassword", password );
       navigation.reset({
         index: 0,
         routes: [{name: 'Home'}],
@@ -96,11 +98,12 @@ export const resetPassword = async (stateObj, navigation) => {
               stateObj.Password1,
             );
             reauthenticateWithCredential(user, credential)
-              .then(() => {
+              .then( async () => {
                 Alert.alert('Your password has been reset!');
 
                 // reset the error counter
                 errorCounter = 0;
+                await storeData ("userPassword", stateObj.Password1 );
                 navigation.navigate('Profile Screen');
               })
               .catch(error => {
@@ -518,12 +521,14 @@ export const handleSignUp = async (normalUser, signupObject, navigation) => {
             });
           }
         })
-        .then(() =>
+        .then( async () => {
+          await storeData( "userEmail", signupObject.Email );
+          await storeData ( "userPassword", signupObject.Password1 );
           navigation.reset({
             index: 0,
             routes: [{name: 'Home'}],
-          }),
-        )
+          });
+        })
         .catch(error => {
           const errorCode = error.code;
           if (errorCode === 'auth/invalid-email') {
@@ -594,12 +599,14 @@ export const delUser = async (navigation, userPassword) => {
                 `Internal app error: ${errorCode}. Please try again.`,
               );
             })
-            .then(() =>
+            .then( async () => {
+              await removeData( "userEmail" );
+              await removeData( "userPassword" );
               navigation.reset({
                 index: 0,
                 routes: [{name: 'Login'}],
-              }),
-            )
+              });
+            })
             .catch(error => {
               const errorCode = error.code;
               Alert.alert(
@@ -639,4 +646,21 @@ export const deleteEvent = async eventKey => {
     ],
     {cancelable: true},
   );
+};
+
+export const signUserOut = async navigation => {
+  try {
+    await signOut(auth);
+    await removeData( "userEmail" );
+    await removeData( "userPassword" );
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Login'}],
+    });
+  } catch (errorSignout) {
+    Alert.alert(
+      'Error',
+      `Internal app error: ${errorSignout.code}. Please try again.`,
+    );
+  }
 };

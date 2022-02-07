@@ -6,6 +6,7 @@ import React from 'react';
 import {Card} from 'react-native-shadow-cards';
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
 import {Alert} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // List of regex strings to filter words out on. This tests to make sure that each letter
 // exists or a symbol (Ex: f$ck). Then it tests if there are repeated letters or spaces
@@ -638,4 +639,20 @@ export const validateEventInputs = async state => {
     valid_inputs = true;
   }
   return valid_inputs;
+};
+
+export const storeData= async (key, value) => {
+  try {
+    await AsyncStorage.setItem(key, value);
+  } catch (e) {
+    // error storing data
+  }
+};
+
+export const removeData = async (key) => {
+  try {
+    await AsyncStorage.removeItem(key);
+  } catch (e) {
+    // error removing data
+  }
 };

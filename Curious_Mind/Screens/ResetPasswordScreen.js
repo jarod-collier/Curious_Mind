@@ -76,7 +76,7 @@ export default class ResetPasswordScreen extends Component {
               </Text>
               <TextInput
                 style={[styles.inputBox, styles.width300]}
-                placeholder="Enter old password"
+                placeholder="Enter old password*"
                 value={this.state.oldPassword || null}
                 placeholderTextColor="black"
                 secureTextEntry={true}
