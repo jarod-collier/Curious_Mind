@@ -166,17 +166,24 @@ export const likePost = async postID => {
     likedBy = snapshot.val().likedBy;
     likesCount = snapshot.val().likes;
   });
-
+  
+  const updates = {};
+  
+  // The user has not liked the post
   if (!likedBy.includes(uid)) {
     likedBy.push(uid);
 
-    const updates = {};
     updates['/posts/' + postID + '/likedBy'] = likedBy;
     updates['/posts/' + postID + '/likes'] = likesCount + 1;
 
     update(ref(db), updates);
+
+  // The user has liked the post, so we need to remove their like
   } else {
-    Alert.alert('You have already liked this post.');
+    updates['/posts/' + postID + '/likedBy'] = likedBy.filter( (element) => { return element !== uid });
+    updates['/posts/' + postID + '/likes'] = likesCount - 1;
+
+    update(ref(db), updates);
   }
 };
 
